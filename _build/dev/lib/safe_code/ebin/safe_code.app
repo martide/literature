@@ -1,0 +1,12 @@
+{application,safe_code,
+             [{applications,[kernel,stdlib,elixir,logger,phoenix_live_view,
+                             jason]},
+              {description,"Validate if code is safe to load and run"},
+              {modules,['Elixir.SafeCode','Elixir.SafeCode.HeexParser',
+                        'Elixir.SafeCode.Parser','Elixir.SafeCode.Validator',
+                        'Elixir.SafeCode.Validator.FunctionValidators',
+                        'Elixir.SafeCode.Validator.FunctionValidators.Behaviour',
+                        'Elixir.SafeCode.Validator.FunctionValidators.Elixir',
+                        'Elixir.SafeCode.Validator.FunctionValidators.Phoenix']},
+              {registered,[]},
+              {vsn,"0.2.2"}]}.
