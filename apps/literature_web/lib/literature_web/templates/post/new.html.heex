@@ -1,0 +1,6 @@
+<div id="editPostModal" tabindex="-1" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center p-4 w-full md:inset-0 h-modal md:h-full flex" aria-modal="true" role="dialog">
+  <div class="relative w-full max-w-2xl h-full md:h-auto">
+    <!-- Modal content -->
+    <%= render "form.html", Map.merge(assigns, %{form_title: "New Post", action: Routes.post_path(@conn, :create)}) %>
+  </div>
+</div>

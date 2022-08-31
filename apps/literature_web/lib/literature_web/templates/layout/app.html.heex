@@ -1,5 +1,4 @@
-<main class="bg-gray-50 dark:bg-gray-900 min-h-screen">
-  <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-  <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+<main class="min-h-screen max-w-screen-xl mx-auto">
+  <%= render "_alert.html", assigns %>
   <%= @inner_content %>
 </main>
