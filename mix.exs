@@ -17,7 +17,7 @@ defmodule Literature.Umbrella.MixProject do
 
   defp aliases do
     [
-      # run `mix setup` in all child apps
+      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
       setup: ["cmd mix setup"]
     ]
   end
