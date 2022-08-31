@@ -19,16 +19,11 @@ defmodule LiteratureWeb.Router do
     plug :accepts, ["json"]
   end
 
-  pipeline :beacon do
-    plug BeaconWeb.Plug
-  end
-
   scope "/", BeaconWeb do
     pipe_through :browser
-    pipe_through :beacon
 
     live_session :beacon, session: %{"beacon_site" => "my_site"} do
-      live "/beacon/*path", PageLive, :path
+      live "beacon/*path", PageLive, :path
     end
   end
 
