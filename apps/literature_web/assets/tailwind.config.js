@@ -8,13 +8,15 @@ module.exports = {
   content: [
     './js/**/*.js',
     '../lib/*_web.ex',
-    '../lib/*_web/**/*.*ex',
-    '../../literature/priv/repo/**/*.*exs'
+    '../lib/*_web/**/*.*ex'
   ],
   theme: {
     colors: {
       primary: colors.blue,
-      ...colors
+      transparent: 'transparent',
+      current: 'currentColor',
+      gray: colors.gray,
+      white: colors.white
     },
     extend: {},
   },

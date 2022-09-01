@@ -11,10 +11,7 @@ import Config
 
 # Configure Mix tasks and generators
 config :literature,
-  ecto_repos: [Literature.Repo, Beacon.Repo]
-
-config :beacon,
-  data_source: Literature.BeaconDataSource
+  ecto_repos: [Literature.Repo]
 
 # Configures the mailer
 #
@@ -29,7 +26,7 @@ config :literature, Literature.Mailer, adapter: Swoosh.Adapters.Local
 config :swoosh, :api_client, false
 
 config :literature_web,
-  ecto_repos: [Literature.Repo, Beacon.Repo],
+  ecto_repos: [Literature.Repo],
   generators: [context_app: :literature]
 
 # Configures the endpoint
@@ -58,7 +55,8 @@ config :tailwind,
     --input=css/app.css
     --output=../priv/static/assets/app.css
   ),
-    cd: Path.expand("../apps/literature_web/assets", __DIR__)
+    cd: Path.expand("../apps/literature_web/assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
 # Configures Elixir's Logger

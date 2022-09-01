@@ -50,7 +50,6 @@ defmodule LiteratureWeb.MixProject do
       {:literature, in_umbrella: true},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:beacon, github: "beaconCMS/beacon"},
       {:esbuild, "~> 0.4", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.1", runtime: Mix.env() == :dev}
     ]

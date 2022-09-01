@@ -3,8 +3,6 @@ defmodule LiteratureWeb.Router do
 
   import LiteratureWeb.UserAuth
 
-  require BeaconWeb.PageManagement
-
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -17,12 +15,6 @@ defmodule LiteratureWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
-  end
-
-  scope "/page_management", BeaconWeb.PageManagement do
-    pipe_through :browser
-
-    BeaconWeb.PageManagement.routes()
   end
 
   if Mix.env() in [:dev, :test] do
@@ -47,6 +39,14 @@ defmodule LiteratureWeb.Router do
     end
   end
 
+  ## Public routes
+
+  scope "/", LiteratureWeb do
+    pipe_through :browser
+
+    get "/", BlogController, :index
+  end
+
   ## Authentication routes
 
   scope "/", LiteratureWeb do
@@ -54,12 +54,12 @@ defmodule LiteratureWeb.Router do
 
     get "/users/register", UserRegistrationController, :new
     post "/users/register", UserRegistrationController, :create
-    get "/users/log_in", UserSessionController, :new
-    post "/users/log_in", UserSessionController, :create
-    get "/users/reset_password", UserResetPasswordController, :new
-    post "/users/reset_password", UserResetPasswordController, :create
-    get "/users/reset_password/:token", UserResetPasswordController, :edit
-    put "/users/reset_password/:token", UserResetPasswordController, :update
+    get "/users/login", UserSessionController, :new
+    post "/users/login", UserSessionController, :create
+    get "/users/reset-password", UserResetPasswordController, :new
+    post "/users/reset-password", UserResetPasswordController, :create
+    get "/users/reset-password/:token", UserResetPasswordController, :edit
+    put "/users/reset-password/:token", UserResetPasswordController, :update
   end
 
   scope "/", LiteratureWeb do
@@ -67,7 +67,7 @@ defmodule LiteratureWeb.Router do
 
     get "/users/settings", UserSettingsController, :edit
     put "/users/settings", UserSettingsController, :update
-    get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
+    get "/users/settings/confirm-email/:token", UserSettingsController, :confirm_email
 
     resources "/posts", PostController
   end
@@ -75,18 +75,10 @@ defmodule LiteratureWeb.Router do
   scope "/", LiteratureWeb do
     pipe_through [:browser]
 
-    delete "/users/log_out", UserSessionController, :delete
+    delete "/users/logout", UserSessionController, :delete
     get "/users/confirm", UserConfirmationController, :new
     post "/users/confirm", UserConfirmationController, :create
     get "/users/confirm/:token", UserConfirmationController, :edit
     post "/users/confirm/:token", UserConfirmationController, :update
-  end
-
-  scope "/", BeaconWeb do
-    pipe_through :browser
-
-    live_session :beacon, session: %{"beacon_site" => "martide_blog"} do
-      live "/*path", PageLive, :path
-    end
   end
 end
