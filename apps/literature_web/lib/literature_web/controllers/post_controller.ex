@@ -4,6 +4,16 @@ defmodule LiteratureWeb.PostController do
   alias Literature.Blog
   alias Literature.Blog.Post
 
+  def publish(conn, _params) do
+    posts = Blog.list_posts()
+    render(conn, "publish.html", posts: posts)
+  end
+
+  def draft(conn, _params) do
+    posts = Blog.list_posts()
+    render(conn, "draft.html", posts: posts)
+  end
+
   def index(conn, _params) do
     posts = Blog.list_posts()
     render(conn, "index.html", posts: posts)

@@ -1,4 +1,9 @@
 <main class="min-h-screen max-w-screen-xl mx-auto">
   <%= render "_alert.html", assigns %>
-  <%= @inner_content %>
+  <div class="flex space-x-10">
+    <%= render "_sidebar.html", assigns %>
+    <div class="w-full">
+      <%= @inner_content %>
+    </div>
+  </div>
 </main>

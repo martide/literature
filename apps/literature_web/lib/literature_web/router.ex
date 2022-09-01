@@ -42,16 +42,9 @@ defmodule LiteratureWeb.Router do
   ## Public routes
 
   scope "/", LiteratureWeb do
-    pipe_through :browser
-
-    get "/", BlogController, :index
-  end
-
-  ## Authentication routes
-
-  scope "/", LiteratureWeb do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
+    get "/", BlogController, :index
     get "/users/register", UserRegistrationController, :new
     post "/users/register", UserRegistrationController, :create
     get "/users/login", UserSessionController, :new
@@ -62,14 +55,18 @@ defmodule LiteratureWeb.Router do
     put "/users/reset-password/:token", UserResetPasswordController, :update
   end
 
-  scope "/", LiteratureWeb do
+  ## Authentication routes
+
+  scope "/admin", LiteratureWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    get "/users/settings", UserSettingsController, :edit
-    put "/users/settings", UserSettingsController, :update
-    get "/users/settings/confirm-email/:token", UserSettingsController, :confirm_email
+    get "/posts/publish", PostController, :publish
+    get "/posts/draft", PostController, :draft
+    resources "/posts", PostController, except: [:index]
 
-    resources "/posts", PostController
+    get "/settings", UserSettingsController, :edit
+    put "/settings", UserSettingsController, :update
+    get "/settings/confirm-email/:token", UserSettingsController, :confirm_email
   end
 
   scope "/", LiteratureWeb do
