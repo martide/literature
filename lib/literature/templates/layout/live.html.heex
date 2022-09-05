@@ -1,10 +1,6 @@
 <main class="min-h-screen max-w-screen-xl mx-auto">
   <div class="flex space-x-10">
-    <.live_component 
-       id="sidebar"
-       module={Literature.Sidebar}
-       current_path={assigns[:entry_path]}
-     />
+    <.live_component id="sidebar" module={Literature.Sidebar} current_path={assigns[:entry_path]} />
     <div class="w-full">
       <%= @inner_content %>
     </div>
