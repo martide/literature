@@ -53,7 +53,7 @@ defmodule Literature.Migrations do
   def down, do: change(:down)
 
   defp change(direction) do
-    for name <- ~w(post) do
+    for name <- ~w(author tag post) do
       table_name = String.capitalize(name)
 
       [__MODULE__, table_name]
