@@ -3,7 +3,7 @@ defmodule Literature.Migrations.Post do
   use Ecto.Migration
 
   def up do
-    create_if_not_exists table(:posts, primary_key: false) do
+    create_if_not_exists table(:literature_posts, primary_key: false) do
       add(:id, :binary_id, primary_key: true)
       add(:slug, :string, null: false)
       add(:title, :string)
@@ -18,10 +18,10 @@ defmodule Literature.Migrations.Post do
       timestamps()
     end
 
-    create(unique_index(:posts, [:slug]))
+    create(unique_index(:literature_posts, [:slug]))
   end
 
   def down do
-    drop(table(:posts))
+    drop(table(:literature_posts))
   end
 end
