@@ -1,11 +1,12 @@
-<main class="container">
-  <p class="alert alert-info" role="alert"
-    phx-click="lv:clear-flash"
-    phx-value-key="info"><%= live_flash(@flash, :info) %></p>
-
-  <p class="alert alert-danger" role="alert"
-    phx-click="lv:clear-flash"
-    phx-value-key="error"><%= live_flash(@flash, :error) %></p>
-
-  <%= @inner_content %>
+<main class="min-h-screen max-w-screen-xl mx-auto">
+  <div class="flex space-x-10">
+    <.live_component 
+       id="sidebar"
+       module={Literature.Sidebar}
+       current_path={assigns[:entry_path]}
+     />
+    <div class="w-full">
+      <%= @inner_content %>
+    </div>
+  </div>
 </main>

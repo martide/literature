@@ -16,8 +16,9 @@ defmodule Literature.Web do
   def view do
     quote do
       @moduledoc false
+
       use Phoenix.View,
-        namespace: LiteratureWeb,
+        namespace: Literature,
         root: "lib/literature/templates"
 
       unquote(view_helpers())
@@ -29,7 +30,7 @@ defmodule Literature.Web do
     quote do
       @moduledoc false
       use Phoenix.LiveView,
-        layout: {LiteratureWeb.LayoutView, "live.html"}
+        layout: {Literature.LayoutView, "live.html"}
 
       unquote(view_helpers())
     end
@@ -51,7 +52,7 @@ defmodule Literature.Web do
 
       # Import convenience functions for LiveView rendering
       import Phoenix.LiveView.Helpers
-      import Literature.Helpers
+      import Literature.RouteHelpers
 
       alias Literature.Router.Helpers, as: Routes
     end

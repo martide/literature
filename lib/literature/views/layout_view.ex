@@ -7,14 +7,11 @@ defmodule Literature.LayoutView do
   @env Application.compile_env(:literature, :env)
 
   defp asset_path(conn_or_socket, path) do
-    assets_path = assets_path(conn_or_socket)
-    Path.join(assets_path, asset_file_name(path, @env))
+    live_literature_path(conn_or_socket, :root) <> "/assets/" <> asset_file_name(path, @env)
   end
 
-  defp assets_path(s = %Phoenix.LiveView.Socket{}), do: s.assigns.__assigns__.assets_path
-  defp assets_path(conn = %Plug.Conn{}), do: conn.private.assets_path
-
   @manifest_path Path.expand("static/cache_manifest.json", :code.priv_dir(:literature))
+  @external_resource @manifest_path
   @manifest AssetHelpers.parse_manifest(@manifest_path, @env)
   defp asset_file_name(asset, :prod) do
     if String.ends_with?(asset, [".js", ".css"]) do
