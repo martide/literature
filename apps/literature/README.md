@@ -1,3 +1,0 @@
-# Literature
-
-**TODO: Add description**

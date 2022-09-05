@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "build:css": "tailwindcss --minify -i css/app.css -o ../priv/static/css/app.css",
+    "build:js": "esbuild js/*.js --minify --bundle --outdir=../priv/static/js",
+    "build": "npm-run-all build:*",
+    "watch:css": "tailwindcss -i css/app.css -o ../priv/static/css/app.css --watch",
+    "watch:js": "esbuild js/*.js --bundle --outdir=../priv/static/js --watch",
+    "watch": "npm-run-all --parallel watch:*"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.4",
+    "@tiptap/core": "^2.0.0-beta.182",
+    "@tiptap/starter-kit": "^2.0.0-beta.191",
+    "alpinejs": "^3.10.3",
+    "esbuild": "^0.15.7",
+    "flowbite": "^1.5.2",
+    "npm-run-all": "^4.1.5",
+    "phoenix": "file:../deps/phoenix",
+    "phoenix_live_view": "file:../deps/phoenix_live_view",
+    "tailwindcss": "^3.1.8"
+  }
+}
