@@ -4,18 +4,18 @@ defmodule Literature.Author do
   import Ecto.Changeset
 
   schema "literature_authors" do
-    field :slug, :string
-    field :name, :string
-    field :profile_image, :string
-    field :cover_image, :string
-    field :bio, :string
-    field :website, :string
-    field :location, :string
-    field :facebook, :string
-    field :twitter, :string
-    field :meta_title, :string
-    field :meta_description, :string
-    field :url, :string
+    field(:slug, :string)
+    field(:name, :string)
+    field(:profile_image, :string)
+    field(:cover_image, :string)
+    field(:bio, :string)
+    field(:website, :string)
+    field(:location, :string)
+    field(:facebook, :string)
+    field(:twitter, :string)
+    field(:meta_title, :string)
+    field(:meta_description, :string)
+    field(:url, :string)
 
     timestamps()
   end

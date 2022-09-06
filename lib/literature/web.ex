@@ -18,7 +18,7 @@ defmodule Literature.Web do
   def live_view do
     quote do
       @moduledoc false
-      
+
       use Phoenix.LiveView
 
       unquote(view_helpers())
@@ -29,9 +29,9 @@ defmodule Literature.Web do
   def live_component do
     quote do
       @moduledoc false
-      
+
       use Phoenix.LiveComponent
-      
+
       unquote(view_helpers())
     end
   end

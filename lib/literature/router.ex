@@ -32,17 +32,18 @@ defmodule Literature.Router do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
 
         pipeline :literature_assets do
-          plug Plug.Static,
+          plug(Plug.Static,
             at: Path.join(path, "assets"),
             from: :literature,
             only: ~w(css js),
             gzip: @gzip_assets
+          )
         end
 
         pipeline :literature_browser do
-          plug :accepts, ["html"]
-          plug :fetch_session
-          plug :protect_from_forgery
+          plug(:accepts, ["html"])
+          plug(:fetch_session)
+          plug(:protect_from_forgery)
         end
 
         scope path: "/" do
@@ -51,10 +52,10 @@ defmodule Literature.Router do
           {session_name, session_opts, route_opts} = Literature.Router.__options__(opts)
 
           live_session session_name, session_opts do
-            live "/", Literature.PageLive, :root, route_opts
-            live "/authors", Literature.AuthorLive, :index, route_opts
-            live "/posts", Literature.PostLive, :index, route_opts
-            live "/tags", Literature.TagLive, :index, route_opts
+            live("/", Literature.PageLive, :root, route_opts)
+            live("/authors", Literature.AuthorLive, :index, route_opts)
+            live("/posts", Literature.PostLive, :index, route_opts)
+            live("/tags", Literature.TagLive, :index, route_opts)
           end
         end
       end

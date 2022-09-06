@@ -4,20 +4,20 @@ defmodule Literature.Tag do
   import Ecto.Changeset
 
   schema "literature_tags" do
-    field :slug, :string
-    field :name, :string
-    field :description, :string
-    field :feature_image, :string
-    field :visibility, :boolean
-    field :meta_title, :string
-    field :meta_description, :string
-    field :og_image, :string
-    field :og_title, :string
-    field :og_description, :string
-    field :twitter_image, :string
-    field :twitter_title, :string
-    field :twitter_description, :string
-    field :url, :string
+    field(:slug, :string)
+    field(:name, :string)
+    field(:description, :string)
+    field(:feature_image, :string)
+    field(:visibility, :boolean)
+    field(:meta_title, :string)
+    field(:meta_description, :string)
+    field(:og_image, :string)
+    field(:og_title, :string)
+    field(:og_description, :string)
+    field(:twitter_image, :string)
+    field(:twitter_title, :string)
+    field(:twitter_description, :string)
+    field(:url, :string)
 
     timestamps()
   end

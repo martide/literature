@@ -5,4 +5,3 @@ defmodule Literature.Test.Repo do
     otp_app: :literature,
     adapter: Ecto.Adapters.Postgres
 end
-

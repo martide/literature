@@ -6,28 +6,28 @@ defmodule Literature.Post do
   alias Literature.{Author, Tag}
 
   schema "literature_posts" do
-    field :slug, :string
-    field :title, :string
-    field :html, :string
-    field :feature_image, :string
-    field :feature_image_alt, :string
-    field :feature_image_caption, :string
-    field :featured, :boolean
-    field :published_at, :utc_datetime
-    field :meta_title, :string
-    field :meta_description, :string
-    field :custom_excerpt, :string
-    field :og_image, :string
-    field :og_title, :string
-    field :og_description, :string
-    field :twitter_image, :string
-    field :twitter_title, :string
-    field :twitter_description, :string
-    field :url, :string
-    field :excerpt, :string
+    field(:slug, :string)
+    field(:title, :string)
+    field(:html, :string)
+    field(:feature_image, :string)
+    field(:feature_image_alt, :string)
+    field(:feature_image_caption, :string)
+    field(:featured, :boolean)
+    field(:published_at, :utc_datetime)
+    field(:meta_title, :string)
+    field(:meta_description, :string)
+    field(:custom_excerpt, :string)
+    field(:og_image, :string)
+    field(:og_title, :string)
+    field(:og_description, :string)
+    field(:twitter_image, :string)
+    field(:twitter_title, :string)
+    field(:twitter_description, :string)
+    field(:url, :string)
+    field(:excerpt, :string)
 
-    belongs_to :primary_author, Author
-    belongs_to :primary_tag, Tag
+    belongs_to(:primary_author, Author)
+    belongs_to(:primary_tag, Tag)
 
     timestamps()
   end

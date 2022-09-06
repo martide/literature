@@ -47,24 +47,6 @@ defmodule Literature.Case do
     {:ok, %{}}
   end
 
-  def start_supervised_oban!(opts) do
-    opts =
-      opts
-      |> Keyword.put_new(:name, make_ref())
-      |> Keyword.put_new(:repo, Repo)
-      |> Keyword.put_new(:shutdown_grace_period, 1)
-
-    name = opts[:name]
-
-    start_supervised!({Literature, opts})
-
-    name
-  end
-
-  def build(args, opts \\ []) do
-    Worker.new(args, opts)
-  end
-
   def insert!(args, opts \\ []) do
     args
     |> build(opts)
