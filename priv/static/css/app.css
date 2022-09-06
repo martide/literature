@@ -564,6 +564,10 @@ video {
   display: flex;
 }
 
+.table {
+  display: table;
+}
+
 .h-6 {
   height: 1.5rem;
 }
@@ -649,6 +653,10 @@ video {
 
 .font-normal {
   font-weight: 400;
+}
+
+.capitalize {
+  text-transform: capitalize;
 }
 
 .text-gray-900 {
