@@ -10,13 +10,16 @@ defmodule Literature.Migrations do
   mix ecto.gen.migration add_literature
   ```
 
-  Open the generated migration in your editor and call the `Literature.Migrations` inside change function:
-
+  Open the generated migration in your editor and call the `up` and `down` functions on
+  `Literature.Migrations`:
+  
   ```elixir
   defmodule MyApp.Repo.Migrations.AddLiterature do
     use Ecto.Migration
     
-    def change, do: Literature.Migrations.change()
+    def up, do: Literature.Migrations.up()
+    
+    def down, do: Literature.Migrations.down()
   end
   ```
 

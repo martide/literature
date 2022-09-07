@@ -27,6 +27,9 @@ defmodule Literature.Router do
       end
   """
   defmacro literature_dashboard(path, opts \\ []) do
+    opts = Keyword.put(opts, :application_router, __CALLER__.module)
+    gzip_assets? = @gzip_assets
+
     quote bind_quoted: binding() do
       scope path, alias: false, as: false do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
@@ -36,7 +39,7 @@ defmodule Literature.Router do
             at: Path.join(path, "assets"),
             from: :literature,
             only: ~w(css js),
-            gzip: @gzip_assets
+            gzip: gzip_assets?
           )
         end
 
@@ -70,6 +73,13 @@ defmodule Literature.Router do
       root_layout: {Literature.LayoutView, :root}
     ]
 
-    {session_name, session_opts, as: session_name}
+    route_opts = [
+      private: %{
+        application_router: Keyword.get(opts, :application_router)
+      },
+      as: session_name
+    ]
+
+    {session_name, session_opts, route_opts}
   end
 end

@@ -7,7 +7,7 @@ defmodule Literature.LayoutView do
   @env Application.compile_env(:literature, :env)
 
   defp asset_path(conn_or_socket, path) do
-    live_literature_path(conn_or_socket, :root) <> "/assets/" <> asset_file_name(path, @env)
+    literature_dashboard_path(conn_or_socket, :root) <> "/assets/" <> asset_file_name(path, @env)
   end
 
   @manifest_path Path.expand("static/cache_manifest.json", :code.priv_dir(:literature))

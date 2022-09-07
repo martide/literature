@@ -5,11 +5,9 @@ defmodule Literature.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [
-      Literature.Repo,
-      {Phoenix.PubSub, name: Literature.PubSub}
-    ]
-
-    Supervisor.start_link(children, strategy: :one_for_one, name: Literature.Supervisor)
+    Supervisor.start_link([{Phoenix.PubSub, name: Literature.PubSub}],
+      strategy: :one_for_one,
+      name: Literature.Supervisor
+    )
   end
 end

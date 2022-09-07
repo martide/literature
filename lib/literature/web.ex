@@ -40,8 +40,8 @@ defmodule Literature.Web do
     quote do
       use Phoenix.HTML
 
-      import Literature.Helpers
       import Phoenix.LiveView.Helpers
+      import Literature.Helpers
     end
   end
 
