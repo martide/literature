@@ -22,13 +22,13 @@ defmodule Literature.LayoutComponent do
           <div class="hidden justify-between items-center w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
             <ul class="flex flex-col p-4 mt-4 bg-gray-50 rounded-lg border border-gray-100 md:flex-row md:space-x-12 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white">
               <li>
-                <%= live_patch "Authors", to: "#", class: "block py-2 pr-46 pl-3 text-white bg-primary-700 rounded md:bg-transparent md:text-primary-700 md:p-0", "aria-current": "page" %>
+                <%= live_patch "Authors", to: literature_dashboard_path(@socket, :list_authors), class: "block py-2 pr-46 pl-3 text-white bg-primary-700 rounded md:bg-transparent md:text-primary-700 md:p-0", "aria-current": "page" %>
               </li>
               <li>
-                <%= live_patch "Tags", to: "#", class: "block py-2 pr-4 pl-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-primary-700 md:p-0" %>
+                <%= live_patch "Tags", to: literature_dashboard_path(@socket, :list_tags), class: "block py-2 pr-4 pl-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-primary-700 md:p-0" %>
               </li>
               <li>
-                <%= live_patch "Posts", to: "#", class: "block py-2 pr-4 pl-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-primary-700 md:p-0" %>
+                <%= live_patch "Posts", to: literature_dashboard_path(@socket, :list_posts), class: "block py-2 pr-4 pl-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-primary-700 md:p-0" %>
               </li>
             </ul>
           </div>
@@ -40,7 +40,7 @@ defmodule Literature.LayoutComponent do
 
   def footer(assigns) do
     ~H"""
-    <footer class="py-4 rounded-lg md:py-6">
+    <footer class="pb-4 rounded-lg md:pb-6">
       <hr class="mb-6 border-gray-200 sm:mx-auto" />
       <span class="block text-sm text-gray-500 sm:text-center">
         &copy; <%= Date.utc_today().year %> <a href="https://martide.com/" class="hover:underline">Literature</a>. All Rights Reserved.

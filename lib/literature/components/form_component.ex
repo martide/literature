@@ -66,7 +66,7 @@ defmodule Literature.FormComponent do
     assigns = assign_defaults(assigns, text_input_classes(field_has_errors?(assigns)))
 
     ~H"""
-    <%= textarea @form, @field, [class: @classes, rows: "4", phx_feedback_for: input_name(@form, @field)] ++ @rest %>
+    <%= textarea @form, @field, [class: @classes, rows: "5", phx_feedback_for: input_name(@form, @field)] ++ @rest %>
     """
   end
 

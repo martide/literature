@@ -46,15 +46,15 @@ defmodule Literature.Router do
             live("/", Literature.PageLive, :root, route_opts)
 
             # Author routes
-            live("/authors", Literature.AuthorLive, :index, route_opts)
-            live("/authors/new", Literature.AuthorLive, :new, route_opts)
-            live("/authors/:id/edit", Literature.AuthorLive, :edit, route_opts)
+            live("/authors", Literature.AuthorLive, :list_authors, route_opts)
+            live("/authors/new", Literature.AuthorLive, :new_author, route_opts)
+            live("/authors/:id/edit", Literature.AuthorLive, :edit_author, route_opts)
 
             # Post routes
-            live("/posts", Literature.PostLive, :index, route_opts)
+            live("/posts", Literature.PostLive, :list_posts, route_opts)
 
             # Tag routes
-            live("/tags", Literature.TagLive, :index, route_opts)
+            live("/tags", Literature.TagLive, :list_tags, route_opts)
 
             live("/*page", Literature.PageLive, :page, route_opts)
           end
