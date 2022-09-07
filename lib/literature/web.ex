@@ -19,7 +19,11 @@ defmodule Literature.Web do
     quote do
       @moduledoc false
 
-      use Phoenix.LiveView
+      use Phoenix.LiveView, layout: {Literature.LayoutView, "live.html"}
+
+      import Literature.FormComponent
+      import Literature.SidebarComponent
+      import Literature.TableComponent
 
       unquote(view_helpers())
     end

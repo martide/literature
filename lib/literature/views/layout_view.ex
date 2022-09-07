@@ -2,6 +2,8 @@ defmodule Literature.LayoutView do
   @moduledoc false
   use Literature.Web, :view
 
+  import Literature.LayoutComponent
+
   alias Literature.AssetHelpers
 
   @env Application.compile_env(:literature, :env)

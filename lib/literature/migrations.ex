@@ -12,7 +12,7 @@ defmodule Literature.Migrations do
 
   Open the generated migration in your editor and call the `up` and `down` functions on
   `Literature.Migrations`:
-  
+
   ```elixir
   defmodule MyApp.Repo.Migrations.AddLiterature do
     use Ecto.Migration

@@ -1,18 +1,14 @@
-defmodule Literature.Sidebar do
-  @moduledoc false
+defmodule Literature.SidebarComponent do
   use Literature.Web, :live_component
 
-  def mount(socket) do
-    {:ok, socket}
-  end
-
-  def render(assigns) do
+  @impl Phoenix.LiveComponent
+  def sidebar(assigns) do
     ~H"""
-    <aside id={@id} class="w-72" aria-label="Sidebar">
-      <div class="overflow-y-auto py-4 px-3 rounded dark:bg-gray-800">
+    <aside aria-label="Sidebar">
+      <div class="overflow-y-auto py-4 px-3 rounded">
         <ul class="space-y-2">
           <li>
-            <%= link to: "#", class: "flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700" do %>
+            <%= link to: "#", class: "flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" do %>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -48,12 +44,12 @@ defmodule Literature.Sidebar do
             <% end %>
           </li>
           <li>
-            <%= link to: "#", class: "flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700" do %>
+            <%= link to: "#", class: "flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-100" do %>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                class="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 group-hover:text-gray-900"
               >
                 <path
                   fill-rule="evenodd"

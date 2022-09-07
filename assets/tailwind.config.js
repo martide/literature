@@ -4,11 +4,12 @@ module.exports = {
   content: ["../lib/**/*.{ex,heex}", "./js/**/*.js"],
   theme: {
     colors: {
-      primary: colors.blue,
+      primary: colors.sky,
       transparent: 'transparent',
       current: 'currentColor',
       gray: colors.gray,
       blue: colors.blue,
+      sky: colors.sky,
       green: colors.green,
       red: colors.red,
       yellow: colors.yellow,
