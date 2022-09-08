@@ -6,7 +6,7 @@ defmodule Literature.PostLive do
   alias Literature.TableComponent
 
   @impl Phoenix.LiveView
-  def mount(params, session, socket) do
+  def mount(_params, _session, socket) do
     socket =
       socket
       |> assign(:posts, list_posts())

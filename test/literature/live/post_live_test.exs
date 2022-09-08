@@ -2,7 +2,7 @@ defmodule Literature.PostLiveTest do
   use Literature.ConnCase
 
   import Phoenix.LiveViewTest
-  import Literature.Fixtures
+  import Literature.Test.Fixtures
 
   @create_attrs %{title: "some new title", slug: "some-new-title"}
   @update_attrs %{title: "some updated title", slug: "some-updated-title"}

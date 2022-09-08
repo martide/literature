@@ -2,7 +2,7 @@ defmodule Literature.AuthorLiveTest do
   use Literature.ConnCase
 
   import Phoenix.LiveViewTest
-  import Literature.Fixtures
+  import Literature.Test.Fixtures
 
   @create_attrs %{name: "some new name", slug: "some-new-name"}
   @update_attrs %{name: "some updated name", slug: "some-updated-name"}

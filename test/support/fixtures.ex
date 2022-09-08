@@ -1,4 +1,4 @@
-defmodule Literature.Fixtures do
+defmodule Literature.Test.Fixtures do
   @moduledoc """
   This module defines test helpers for creating
   entities via the `Literature` context.

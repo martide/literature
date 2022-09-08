@@ -1,4 +1,4 @@
-defmodule LiveCrud.Repo.Migrations.AddLiterature do
+defmodule Literature.Test.Migrations.AddLiterature do
   use Ecto.Migration
 
   def up, do: Literature.Migrations.up()
