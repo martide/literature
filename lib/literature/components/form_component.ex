@@ -103,7 +103,7 @@ defmodule Literature.FormComponent do
   end
 
   defp select(assigns) do
-    assigns = assign_defaults(assigns, select_classes(field_has_errors?(assigns)))
+    assigns = assign_defaults(assigns, text_input_classes(field_has_errors?(assigns)))
 
     ~H"""
     <%= select @form, @field, @options, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
@@ -143,10 +143,6 @@ defmodule Literature.FormComponent do
 
   defp text_input_classes(has_error) do
     "#{if has_error, do: "bg-red-50 border-red-500 focus:border-red-500 focus:ring-red-500", else: "bg-gray-50 border-gray-300 focus:border-primary-500 focus:ring-primary-500"} focus:ring-1 border text-gray-900 text-sm rounded-lg focus:outline-none block w-full p-2.5"
-  end
-
-  defp select_classes(has_error) do
-    "#{if has_error, do: "has-error", else: ""} bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
   end
 
   defp field_has_errors?(%{form: form, field: field}) do

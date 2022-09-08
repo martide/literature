@@ -5,12 +5,14 @@ defmodule Literature.PostFormComponent do
 
   @impl Phoenix.LiveComponent
   def update(%{post: post} = assigns, socket) do
-    changeset = Literature.change_post(post)
+    socket =
+      socket
+      |> assign(assigns)
+      |> assign(:changeset, Literature.change_post(post))
+      |> assign(:authors, Literature.list_authors() |> select_options)
+      |> assign(:tags, Literature.list_tags() |> select_options)
 
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign(:changeset, changeset)}
+    {:ok, socket}
   end
 
   @impl Phoenix.LiveComponent
@@ -41,6 +43,8 @@ defmodule Literature.PostFormComponent do
         <.form_group title="Contents">
           <.form_field form={f} type="text_input" field={:title} label="Title" />
           <.form_field form={f} type="text_input" field={:slug} label="Slug" />
+          <.form_field form={f} type="select" field={:primary_author_id} options={@authors} label="Primary Author" prompt="Select author" />
+          <.form_field form={f} type="select" field={:primary_tag_id} options={@tags} label="Primary Tag" prompt="Select tag" />
           <.form_field form={f} type="url_input" field={:feature_image} label="Feature Image" />
           <.form_field form={f} type="text_input" field={:feature_image_alt} label="Feature Image Alt" />
           <.form_field form={f} type="text_input" field={:feature_image_caption} label="Feature Image Caption" />

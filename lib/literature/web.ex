@@ -48,6 +48,7 @@ defmodule Literature.Web do
 
       import Phoenix.LiveView.Helpers
       import Literature.Helpers
+      import Literature.QueryHelpers
     end
   end
 
