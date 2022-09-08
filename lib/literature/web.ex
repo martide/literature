@@ -22,8 +22,8 @@ defmodule Literature.Web do
       use Phoenix.LiveView, layout: {Literature.LayoutView, "live.html"}
 
       import Literature.FormComponent
+      import Literature.LayoutComponent
       import Literature.SidebarComponent
-      import Literature.TableComponent
 
       unquote(view_helpers())
     end
@@ -35,6 +35,8 @@ defmodule Literature.Web do
       @moduledoc false
 
       use Phoenix.LiveComponent
+
+      alias Phoenix.LiveView.JS
 
       unquote(view_helpers())
     end

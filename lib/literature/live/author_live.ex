@@ -3,33 +3,79 @@ defmodule Literature.AuthorLive do
 
   alias Literature.Author
   alias Literature.AuthorFormComponent
+  alias Literature.TableComponent
 
   @impl Phoenix.LiveView
   def mount(params, session, socket) do
-    {:ok, assign(socket, :authors, list_authors())}
+    socket =
+      socket
+      |> assign(:authors, list_authors())
+      |> assign(:return_to, literature_dashboard_path(socket, :list_authors))
+
+    {:ok, socket}
   end
 
   @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
-    <div class="col-span-1">
-      <.sidebar id="author-sidebar" />
-    </div>
-    <div class="col-span-4 px-10 py-10 rounded-r-lg bg-white">
-      <h2 class="font-extrabold text-3xl text-primary-700 mb-5"><%= @page_title %></h2>
+    <.sidebar id="author-sidebar" live_action={@live_action}>
+      <:tab title="List Authors" path={literature_dashboard_path(@socket, :list_authors)} icon="table-cells" action={:list_authors} />
+      <:tab title="Create Author" path={literature_dashboard_path(@socket, :new_author)} icon="plus-circle" action={:new_author} />
+    </.sidebar>
+    <.container>
+      <.h1><%= @page_title %></.h1>
       <%= if @live_action == :list_authors do %>
-        <.table socket={@socket} id="author-table" items={@authors} columns={columns()} />
+        <.live_component
+          module={TableComponent}
+          id="authors-table"
+          items={@authors}
+          columns={columns()}
+          base_path={@return_to}
+        />
+        <%= if @author do %>
+          <.delete_modal label={@author.name} item={@author} return_to={@return_to} />
+        <% end %>
       <% end %>
       <%= if @live_action in [:new_author, :edit_author] do %>
-        <.live_component module={AuthorFormComponent} id={@author.id || :new_author} author={@author} action={@live_action} return_to={literature_dashboard_path(@socket, :list_authors)} />
+        <.live_component
+          module={AuthorFormComponent}
+          id={@author.id || :new_author}
+          author={@author}
+          action={@live_action}
+          return_to={@return_to}
+        />
       <% end %>
-    </div>
+    </.container>
     """
   end
 
   @impl Phoenix.LiveView
   def handle_params(params, _url, socket) do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_event("open_delete_modal", %{"id" => id}, socket) do
+    {:noreply, assign(socket, :author, Literature.get_author!(id))}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_event("close_delete_modal", _params, socket) do
+    {:noreply, assign(socket, :author, nil)}
+  end
+
+  @impl Phoenix.LiveView
+  def handle_event("delete", %{"id" => id}, socket) do
+    author = Literature.get_author!(id)
+    {:ok, _} = Literature.delete_author(author)
+
+    socket =
+      socket
+      |> assign(:authors, list_authors())
+      |> assign(:author, nil)
+      |> put_flash(:success, "Author deleted successfully")
+
+    {:noreply, socket}
   end
 
   defp apply_action(socket, :list_authors, _params) do
