@@ -7,30 +7,33 @@ defmodule Literature.Repo do
   to the Literature configuration.
   """
 
-  @repo Application.compile_env(:literature, :repo)
-
   @doc "Wraps `c:Ecto.Repo.all/2`."
   def all(queryable, opts \\ []) do
-    @repo.all(queryable, opts)
+    repo().all(queryable, opts)
   end
 
   @doc "Wraps `c:Ecto.Repo.get/2`."
   def get(struct, opts \\ []) do
-    @repo.get(struct, opts)
+    repo().get(struct, opts)
   end
 
   @doc "Wraps `c:Ecto.Repo.insert/2`."
   def insert(struct_or_changeset, opts \\ []) do
-    @repo.insert(struct_or_changeset, opts)
+    repo().insert(struct_or_changeset, opts)
   end
 
   @doc "Wraps `c:Ecto.Repo.update/2`."
   def update(changeset, opts \\ []) do
-    @repo.update(changeset, opts)
+    repo().update(changeset, opts)
   end
 
   @doc "Wraps `c:Ecto.Repo.delete/2`."
   def delete(struct_or_changeset, opts \\ []) do
-    @repo.delete(struct_or_changeset, opts)
+    repo().delete(struct_or_changeset, opts)
+  end
+
+  @doc false
+  defp repo do
+    Application.fetch_env!(:literature, :repo)
   end
 end
