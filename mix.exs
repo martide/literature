@@ -30,9 +30,11 @@ defmodule Literature.MixProject do
   defp deps do
     [
       {:ecto_sql, "~> 3.8"},
-      {:jason, "~> 1.3"},
+      {:jason, "~> 1.3", optional: true},
+      {:phoenix_ecto, "~> 4.4"},
       {:phoenix_live_view, "~> 0.17.11"},
       {:postgrex, "~> 0.16.4"},
+      {:floki, ">= 0.33.1", only: :test},
       {:credo, "~> 1.6", only: [:test, :dev], runtime: false},
       {:dialyxir, "~> 1.0", only: [:test, :dev], runtime: false}
     ]
@@ -41,8 +43,7 @@ defmodule Literature.MixProject do
   defp aliases do
     [
       setup: ["deps.get", "ecto.setup"],
-      "test.reset": ["ecto.drop", "test.setup"],
-      "test.setup": ["ecto.create", "ecto.migrate"],
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "test.ci": [
         "format --check-formatted",
         "deps.unlock --check-unused",

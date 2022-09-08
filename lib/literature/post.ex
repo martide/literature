@@ -38,11 +38,11 @@ defmodule Literature.Post do
   @required_params ~w(
     slug
     title
-    primary_author_id
-    primary_tag_id
   )a
 
   @optional_params ~w(
+    primary_author_id
+    primary_tag_id
     html
     feature_image
     feature_image_alt
@@ -66,7 +66,7 @@ defmodule Literature.Post do
   def changeset(post, params) do
     post
     |> cast(params, @required_params ++ @optional_params)
-    |> validate_required(@required_params)
+    |> validate_required(@required_params, message: "This field is required")
     |> unique_constraint(:slug)
   end
 end

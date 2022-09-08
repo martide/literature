@@ -2,6 +2,18 @@ defmodule Literature.Web do
   @moduledoc false
 
   @doc false
+  def controller do
+    quote do
+      @moduledoc false
+
+      use Phoenix.Controller, namespace: Literature
+      import Plug.Conn
+
+      unquote(view_helpers())
+    end
+  end
+
+  @doc false
   def view do
     quote do
       @moduledoc false

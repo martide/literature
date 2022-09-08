@@ -49,7 +49,7 @@ defmodule Literature.Tag do
   def changeset(post, params) do
     post
     |> cast(params, @required_params ++ @optional_params)
-    |> validate_required(@required_params)
+    |> validate_required(@required_params, message: "This field is required")
     |> unique_constraint(:slug)
   end
 end

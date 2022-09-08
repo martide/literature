@@ -33,7 +33,7 @@ defmodule Literature.PostLive do
           base_path={@return_to}
         />
         <%= if @post do %>
-          <.delete_modal label={@post.name} item={@post} return_to={@return_to} />
+          <.delete_modal label={@post.title} item={@post} return_to={@return_to} />
         <% end %>
       <% end %>
       <%= if @live_action in [:new_post, :edit_post] do %>

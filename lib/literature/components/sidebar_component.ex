@@ -24,7 +24,7 @@ defmodule Literature.SidebarComponent do
 
   defp render_tab(assigns) do
     ~H"""
-    <%= link to: @path, class: @classes do %>
+    <%= live_patch to: @path, class: @classes do %>
       <%= render_slot(@inner_block) %>
       <span class="flex-1 ml-3 whitespace-nowrap"><%= @title %></span>
     <% end %>
