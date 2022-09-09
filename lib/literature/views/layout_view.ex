@@ -9,7 +9,7 @@ defmodule Literature.LayoutView do
   @env Application.compile_env(:literature, :env)
 
   defp asset_path(conn_or_socket, path) do
-    literature_path(conn_or_socket, :root) <> "/assets/" <> asset_file_name(path, @env)
+    literature_path(conn_or_socket, :index) <> "/assets/" <> asset_file_name(path, @env)
   end
 
   defp asset_dashboard_path(conn_or_socket, path) do

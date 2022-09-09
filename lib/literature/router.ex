@@ -109,8 +109,6 @@ defmodule Literature.Router do
             Literature.Router.__options__(opts, :literature, :root)
 
           live_session session_name, session_opts do
-            live("/", Literature.BlogLive, :root, route_opts)
-
             # Blog routes
             live("/", Literature.BlogLive, :index, route_opts)
             live("/tags", Literature.BlogLive, :tags, route_opts)
