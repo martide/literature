@@ -17,6 +17,11 @@ defmodule Literature.Repo do
     repo().get(struct, opts)
   end
 
+  @doc "Wraps `c:Ecto.Repo.get_by/2`."
+  def get_by(struct, opts \\ []) do
+    repo().get_by(struct, opts)
+  end
+
   @doc "Wraps `c:Ecto.Repo.insert/2`."
   def insert(struct_or_changeset, opts \\ []) do
     repo().insert(struct_or_changeset, opts)

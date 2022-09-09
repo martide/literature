@@ -224,7 +224,8 @@ defmodule Literature do
       ** (Ecto.NoResultsError)
 
   """
-  def get_tag!(id), do: Repo.get(Tag, id)
+  def get_tag!(id) when is_binary(id), do: Repo.get(Tag, id)
+  def get_tag!(list), do: Repo.get_by(Tag, list)
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking tag changes.

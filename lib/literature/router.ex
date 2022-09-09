@@ -112,9 +112,56 @@ defmodule Literature.Router do
             # Blog routes
             live("/", Literature.BlogLive, :index, route_opts)
             live("/tags", Literature.BlogLive, :tags, route_opts)
-            live("/tags/:slug", Literature.BlogLive, :tag, route_opts)
-            live("/authors/:slug", Literature.BlogLive, :author, route_opts)
-            live("/:slug", Literature.BlogLive, :post, route_opts)
+            live("/authors", Literature.BlogLive, :authors, route_opts)
+            live("/:slug", Literature.BlogLive, :show, route_opts)
+          end
+        end
+      end
+    end
+  end
+
+  @doc """
+  Defines a Literature tag route.
+
+  It requires a path where to mount the tag page at and allows options to customize routing.
+
+  ## Examples
+
+  Mount a `tag` at the path "/tag":
+
+      defmodule MyAppWeb.Router do
+        use Phoenix.Router
+
+        import Literature.Router
+
+        scope "/", MyAppWeb do
+          pipe_through [:browser]
+
+          literature_tag "/tag"
+        end
+      end
+  """
+  defmacro literature_tag(path, opts \\ []) do
+    opts = Keyword.put(opts, :application_router, __CALLER__.module)
+
+    quote bind_quoted: binding() do
+      scope path, alias: false, as: false do
+        import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
+
+        pipeline :literature_browser do
+          plug(:accepts, ["html"])
+          plug(:fetch_session)
+          plug(:protect_from_forgery)
+        end
+
+        scope path: "/" do
+          pipe_through(:literature_browser)
+
+          {session_name, session_opts, route_opts} =
+            Literature.Router.__options__(opts, :literature_tag, :root)
+
+          live_session session_name, session_opts do
+            live("/", Literature.Blog.TagLive, :tag, route_opts)
           end
         end
       end
