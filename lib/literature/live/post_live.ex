@@ -78,6 +78,10 @@ defmodule Literature.PostLive do
     {:noreply, socket}
   end
 
+  defp apply_action(socket, :root, _params) do
+    push_patch(socket, to: literature_dashboard_path(socket, :list_posts))
+  end
+
   defp apply_action(socket, :list_posts, _params) do
     socket
     |> assign(:page_title, "Posts")

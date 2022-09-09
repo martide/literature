@@ -31,7 +31,7 @@ defmodule Literature.Web do
     quote do
       @moduledoc false
 
-      use Phoenix.LiveView, layout: {Literature.LayoutView, "live.html"}
+      use Phoenix.LiveView, layout: {Literature.LayoutView, "live_dashboard.html"}
 
       import Literature.FormComponent
       import Literature.LayoutComponent

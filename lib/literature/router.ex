@@ -40,15 +40,17 @@ defmodule Literature.Router do
         scope path: "/" do
           pipe_through(:literature_browser)
 
-          {session_name, session_opts, route_opts} = Literature.Router.__options__(opts)
+          {session_name, session_opts, route_opts} =
+            Literature.Router.__options__(opts, :literature_dashboard, :root_dashboard)
 
           live_session session_name, session_opts do
-            live("/", Literature.PageLive, :root, route_opts)
+            live("/", Literature.PostLive, :root, route_opts)
 
             # Post routes
             live("/posts", Literature.PostLive, :list_posts, route_opts)
             live("/posts/new", Literature.PostLive, :new_post, route_opts)
             live("/posts/:id/edit", Literature.PostLive, :edit_post, route_opts)
+            live("/posts/page-layout", Literature.PostLive, :page_layout, route_opts)
 
             # Tag routes
             live("/tags", Literature.TagLive, :list_tags, route_opts)
@@ -59,8 +61,60 @@ defmodule Literature.Router do
             live("/authors", Literature.AuthorLive, :list_authors, route_opts)
             live("/authors/new", Literature.AuthorLive, :new_author, route_opts)
             live("/authors/:id/edit", Literature.AuthorLive, :edit_author, route_opts)
+            live("/authors/page-layout", Literature.AuthorLive, :page_layout, route_opts)
+          end
+        end
+      end
+    end
+  end
 
-            live("/*page", Literature.PageLive, :page, route_opts)
+  @doc """
+  Defines a Literature route.
+
+  It requires a path where to mount the public page at and allows options to customize routing.
+
+  ## Examples
+
+  Mount a `blog` at the path "/blog":
+
+      defmodule MyAppWeb.Router do
+        use Phoenix.Router
+
+        import Literature.Router
+
+        scope "/", MyAppWeb do
+          pipe_through [:browser]
+
+          literature "/blog"
+        end
+      end
+  """
+  defmacro literature(path, opts \\ []) do
+    opts = Keyword.put(opts, :application_router, __CALLER__.module)
+
+    quote bind_quoted: binding() do
+      scope path, alias: false, as: false do
+        import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
+
+        pipeline :literature_browser do
+          plug(:accepts, ["html"])
+          plug(:fetch_session)
+          plug(:protect_from_forgery)
+        end
+
+        scope path: "/" do
+          pipe_through(:literature_browser)
+
+          {session_name, session_opts, route_opts} =
+            Literature.Router.__options__(opts, :literature, :root)
+
+          live_session session_name, session_opts do
+            # Blog routes
+            live("/", Literature.BlogLive, :index, route_opts)
+            live("/tags", Literature.BlogLive, :tags, route_opts)
+            live("/tags/:slug", Literature.BlogLive, :tag, route_opts)
+            live("/authors/:slug", Literature.BlogLive, :author, route_opts)
+            live("/:slug", Literature.BlogLive, :post, route_opts)
           end
         end
       end
@@ -68,11 +122,11 @@ defmodule Literature.Router do
   end
 
   @doc false
-  def __options__(opts) do
-    session_name = Keyword.get(opts, :as, :literature_dashboard)
+  def __options__(opts, session_name, root_layout) do
+    session_name = Keyword.get(opts, :as, session_name)
 
     session_opts = [
-      root_layout: {Literature.LayoutView, :root}
+      root_layout: {Literature.LayoutView, root_layout}
     ]
 
     route_opts = [

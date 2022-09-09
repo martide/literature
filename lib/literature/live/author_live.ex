@@ -3,6 +3,7 @@ defmodule Literature.AuthorLive do
 
   alias Literature.Author
   alias Literature.AuthorFormComponent
+  alias Literature.AuthorPageComponent
   alias Literature.TableComponent
 
   @impl Phoenix.LiveView
@@ -43,6 +44,12 @@ defmodule Literature.AuthorLive do
           author={@author}
           action={@live_action}
           return_to={@return_to}
+        />
+      <% end %>
+      <%= if @live_action == :page_layout do %>
+        <.live_component
+          module={AuthorPageComponent}
+          id="author-page"
         />
       <% end %>
     </.container>
@@ -94,6 +101,11 @@ defmodule Literature.AuthorLive do
     socket
     |> assign(:page_title, "Edit Author")
     |> assign(:author, Literature.get_author!(id))
+  end
+
+  defp apply_action(socket, :page_layout, _params) do
+    socket
+    |> assign(:page_title, "Page Layout")
   end
 
   defp list_authors do

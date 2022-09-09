@@ -1,7 +1,9 @@
 defmodule Literature.LayoutComponent do
-  use Literature.Web, :live_component
+  use Phoenix.Component
 
-  @impl Phoenix.LiveComponent
+  import Literature.Helpers
+  import Phoenix.HTML.Link
+
   def header(assigns) do
     ~H"""
     <header>
