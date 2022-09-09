@@ -1,6 +1,7 @@
 defmodule Literature do
   @moduledoc false
 
+  import Literature.QueryHelpers
   alias Literature.{Author, Post, Tag, Repo}
 
   ## Author Context
@@ -32,7 +33,8 @@ defmodule Literature do
       ** (Ecto.NoResultsError)
 
   """
-  def get_author!(id), do: Repo.get(Author, id)
+  def get_author!(id) when is_binary(id), do: Repo.get(Author, id)
+  def get_author!(list), do: Repo.get_by(Author, list)
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking author changes.
@@ -110,8 +112,10 @@ defmodule Literature do
       [%Post{}, ...]
 
   """
-  def list_posts do
-    Repo.all(Post)
+  def list_posts(attrs \\ %{}) do
+    Post
+    |> where_preload(attrs)
+    |> Repo.all()
   end
 
   @doc """
@@ -128,7 +132,8 @@ defmodule Literature do
       ** (Ecto.NoResultsError)
 
   """
-  def get_post!(id), do: Repo.get(Post, id)
+  def get_post!(id) when is_binary(id), do: Repo.get(Post, id)
+  def get_post!(list), do: Repo.get_by(Post, list)
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking post changes.

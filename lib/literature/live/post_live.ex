@@ -78,7 +78,7 @@ defmodule Literature.PostLive do
     {:noreply, socket}
   end
 
-  defp apply_action(socket, :root, _params) do
+  defp apply_action(socket, :index, _params) do
     push_patch(socket, to: literature_dashboard_path(socket, :list_posts))
   end
 

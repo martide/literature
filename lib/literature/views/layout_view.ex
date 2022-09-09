@@ -12,10 +12,6 @@ defmodule Literature.LayoutView do
     literature_path(conn_or_socket, :index) <> "/assets/" <> asset_file_name(path, @env)
   end
 
-  defp asset_dashboard_path(conn_or_socket, path) do
-    literature_dashboard_path(conn_or_socket, :root) <> "/assets/" <> asset_file_name(path, @env)
-  end
-
   @manifest_path Path.expand("static/cache_manifest.json", :code.priv_dir(:literature))
   @external_resource @manifest_path
   @manifest AssetHelpers.parse_manifest(@manifest_path, @env)

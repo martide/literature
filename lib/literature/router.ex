@@ -44,7 +44,7 @@ defmodule Literature.Router do
             Literature.Router.__options__(opts, :literature_dashboard, :root_dashboard)
 
           live_session session_name, session_opts do
-            live("/", Literature.PostLive, :root, route_opts)
+            live("/", Literature.PostLive, :index, Keyword.put(route_opts, :as, :literature))
 
             # Post routes
             live("/posts", Literature.PostLive, :list_posts, route_opts)
