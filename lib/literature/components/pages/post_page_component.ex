@@ -2,6 +2,7 @@ defmodule Literature.PostPageComponent do
   use Phoenix.Component
 
   import Literature.Helpers
+  import Phoenix.HTML
   import Phoenix.HTML.Tag
 
   def post_page(assigns) do
@@ -23,8 +24,8 @@ defmodule Literature.PostPageComponent do
           </div>
           <%= img_tag @feature_image, alt: @feature_image_alt, class: "object-cover object-center w-full h-[32rem] my-14" %>
         </div>
-        <div class="max-w-3xl mx-auto">
-          <%= @excerpt %>
+        <div class="max-w-5xl mx-auto prose prose-sm sm:prose">
+          <%= raw @excerpt %>
         </div>
       </div>
     </section>

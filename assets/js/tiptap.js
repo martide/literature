@@ -1,63 +1,74 @@
-import Alpine from 'alpinejs'
 import { Editor } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 
-document.addEventListener('alpine:init', () => {
-  Alpine.data('editor', (content) => {
-    let editor
+const HTMLEditor = element => {
+  const editorMenu = document.querySelectorAll(".editor-menu button")
+  const textarea = document.querySelector(element.dataset.target)
 
-    return {
-      updatedAt: Date.now(), // force Alpine to rerender on selection change
-      init() {
-        const _this = this
+  const editor = new Editor({
+    element: document.getElementById(element.id),
+    extensions: [
+      StarterKit
+    ],
+    content: textarea.value,
+    onCreate({ editor }) {
+      textarea.value = editor.getHTML()
+      initMenus(editor)
+    },
+    onUpdate({ editor }) {
+      textarea.value = editor.getHTML()
+      initMenus(editor)
+    },
+    onSelectionUpdate({ editor }) {
+      textarea.value = editor.getHTML()
+      initMenus(editor)
+    }
+  })
 
-        editor = new Editor({
-          element: this.$refs.element,
-          extensions: [
-            StarterKit
-          ],
-          content: content,
-          onCreate({ editor }) {
-            _this.updatedAt = Date.now()
-          },
-          onUpdate({ editor }) {
-            _this.updatedAt = Date.now()
-          },
-          onSelectionUpdate({ editor }) {
-            _this.updatedAt = Date.now()
-          }
-        });
-      },
-      isLoaded() {
-        return editor
-      },
-      isActive(type, opts = {}) {
-        return editor.isActive(type, opts)
-      },
-      toggleHeading(opts) {
-        editor.chain().toggleHeading(opts).focus().run()
-      },
-      toggleBold() {
-        editor.chain().toggleBold().focus().run()
-      },
-      toggleItalic() {
-        editor.chain().toggleItalic().focus().run()
-      },
-      toggleBulletList() {
-        editor.chain().toggleBulletList().focus().run()
-      },
-      toggleOrderedList() {
-        editor.chain().toggleOrderedList().focus().run()
-      },
-      setBlockquote() {
-        editor.chain().toggleBlockquote().focus().run()
-      },
-      setHorizontalRule() {
-        editor.chain().setHorizontalRule().focus().run()
+  const initMenus = editor => {
+    const menus = Array.from(editorMenu)
+    menus.pop()
+    menus.map(menu => {
+      let opts = {}
+
+      if (menu.dataset.level) { opts.level = parseInt(menu.dataset.level) }
+
+      if (editor.isActive(menu.dataset.name, opts)) {
+        menu.className = "active"
+      } else {
+        menu.className = ""
       }
-    };
-  });
-});
+    })
+  }
 
-window.Alpine = Alpine
-Alpine.start()
+  element.addEventListener("heading", e => {
+    const level = parseInt(e.detail.dispatcher.dataset.level)
+    editor.chain().toggleHeading({ level }).focus().run()
+  })
+  
+  element.addEventListener("bold", e => {
+    editor.chain().toggleBold().focus().run()
+  })
+  
+  element.addEventListener("italic", e => {
+    editor.chain().toggleItalic().focus().run()
+  })
+  
+  element.addEventListener("bulletList", e => {
+    editor.chain().focus().toggleBulletList().run()
+  })
+  
+  element.addEventListener("orderedList", e => {
+    editor.chain().focus().toggleOrderedList().run()
+  })
+  
+  element.addEventListener("blockquote", e => {
+    editor.chain().focus().toggleBlockquote().run()
+  })
+  
+  element.addEventListener("horizontalRule", e => {
+    editor.chain().focus().setHorizontalRule().run()
+  })
+}
+
+export { HTMLEditor }

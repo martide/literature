@@ -15,7 +15,7 @@ defmodule Literature.FormComponent do
       end)
 
     ~H"""
-    <div class="mb-6">
+    <div class={@type == "text_editor" && "col-span-2 mb-10" || "mb-6"}>
       <%= case @type do %>
         <% "text_input" -> %>
           <.form_label form={@form} field={@field} label={@label} />
@@ -23,6 +23,9 @@ defmodule Literature.FormComponent do
         <% "textarea" -> %>
           <.form_label form={@form} field={@field} label={@label} />
           <.textarea form={@form} field={@field} {@input_opts} />
+        <% "text_editor" -> %>
+          <.form_label form={@form} field={@field} label={@label} />
+          <.text_editor form={@form} field={@field} {@input_opts} />
         <% "select" -> %>
           <.form_label form={@form} field={@field} label={@label} />
           <.select form={@form} field={@field} {@input_opts} />
@@ -79,7 +82,7 @@ defmodule Literature.FormComponent do
   end
 
   defp text_input(assigns) do
-    assigns = assign_defaults(assigns, text_input_classes(field_has_errors?(assigns)))
+    assigns = assign_defaults(assigns, text_input_classes(assigns))
 
     ~H"""
       <%= text_input @form, @field, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
@@ -87,7 +90,7 @@ defmodule Literature.FormComponent do
   end
 
   defp url_input(assigns) do
-    assigns = assign_defaults(assigns, text_input_classes(field_has_errors?(assigns)))
+    assigns = assign_defaults(assigns, text_input_classes(assigns))
 
     ~H"""
     <%= url_input @form, @field, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
@@ -95,15 +98,48 @@ defmodule Literature.FormComponent do
   end
 
   defp textarea(assigns) do
-    assigns = assign_defaults(assigns, text_input_classes(field_has_errors?(assigns)))
+    assigns = assign_defaults(assigns, text_input_classes(assigns))
 
     ~H"""
     <%= textarea @form, @field, [class: @classes, rows: "5", phx_feedback_for: input_name(@form, @field)] ++ @rest %>
     """
   end
 
+  defp text_editor(assigns) do
+    ~H"""
+    <div class="editor-menu">
+      <.menu_editor name="heading" to="#editor" data-level="1" label="H1" />
+      <.menu_editor name="heading" to="#editor" data-level="2" label="H2" />
+      <.menu_editor name="heading" to="#editor" data-level="3" label="H3" />
+      <.menu_editor name="bold" to="#editor" label="Bold" />
+      <.menu_editor name="italic" to="#editor" label="Italic" />
+      <.menu_editor name="bulletList" to="#editor" label="Bullet List" />
+      <.menu_editor name="orderedList" to="#editor" label="Ordered List" />
+      <.menu_editor name="blockquote" to="#editor" label="Blockquote" />
+      <.menu_editor name="horizontalRule" to="#editor" label="HR" />
+    </div>
+    <div id="editor" data-target={"##{input_id(@form, @field)}"} phx-hook="HTMLEditor"></div>
+    <.textarea form={@form} field={@field} hidden="true" />
+    """
+  end
+
+  defp menu_editor(assigns) do
+    assigns = assign_rest(assigns, ~w(label name to)a)
+
+    ~H"""
+    <button
+      type="button"
+      phx-click={JS.dispatch(@name, to: @to)}
+      data-name={@name}
+      {@rest}
+    >
+      <%= @label %>
+    </button>
+    """
+  end
+
   defp select(assigns) do
-    assigns = assign_defaults(assigns, text_input_classes(field_has_errors?(assigns)))
+    assigns = assign_defaults(assigns, text_input_classes(assigns))
 
     ~H"""
     <%= select @form, @field, @options, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
@@ -141,8 +177,10 @@ defmodule Literature.FormComponent do
     "#{if field_has_errors?(assigns), do: "text-red-900", else: "text-gray-900"} block mb-2 text-sm font-medium"
   end
 
-  defp text_input_classes(has_error) do
-    "#{if has_error, do: "bg-red-50 border-red-500 focus:border-red-500 focus:ring-red-500", else: "bg-gray-50 border-gray-300 focus:border-primary-500 focus:ring-primary-500"} focus:ring-1 border text-gray-900 text-sm rounded-lg focus:outline-none block w-full p-2.5"
+  defp text_input_classes(%{hidden: "true"}), do: "hidden"
+
+  defp text_input_classes(assigns) do
+    "#{if field_has_errors?(assigns), do: "bg-red-50 border-red-500 focus:border-red-500 focus:ring-red-500", else: "bg-gray-50 border-gray-300 focus:border-primary-500 focus:ring-primary-500"} focus:ring-1 border text-gray-900 text-sm rounded-lg focus:outline-none block w-full p-2.5"
   end
 
   defp field_has_errors?(%{form: form, field: field}) do
