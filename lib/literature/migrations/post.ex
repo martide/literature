@@ -7,7 +7,6 @@ defmodule Literature.Migrations.Post do
       add(:id, :binary_id, primary_key: true)
       add(:slug, :string, null: false)
       add(:title, :string, null: false)
-      add(:html, :text)
       add(:feature_image, :string)
       add(:feature_image_alt, :string)
       add(:feature_image_caption, :string)
@@ -22,7 +21,6 @@ defmodule Literature.Migrations.Post do
       add(:twitter_image, :string)
       add(:twitter_title, :string)
       add(:twitter_description, :string)
-      add(:url, :string)
       add(:excerpt, :text)
 
       add(

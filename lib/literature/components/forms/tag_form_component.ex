@@ -43,7 +43,6 @@ defmodule Literature.TagFormComponent do
           <.form_field form={f} type="text_input" field={:slug} label="Slug" />
           <.form_field form={f} type="textarea" field={:description} label="Description" />
           <.form_field form={f} type="url_input" field={:feature_image} label="Feature Image" />
-          <.form_field form={f} type="url_input" field={:url} label="Url" />
         </.form_group>
         <.button_group>
           <.back_button label="Cancel" return_to={@return_to} />

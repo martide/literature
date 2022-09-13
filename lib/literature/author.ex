@@ -18,7 +18,6 @@ defmodule Literature.Author do
     field(:twitter, :string)
     field(:meta_title, :string)
     field(:meta_description, :string)
-    field(:url, :string)
 
     timestamps()
   end
@@ -38,7 +37,6 @@ defmodule Literature.Author do
     twitter
     meta_title
     meta_description
-    url
   )a
 
   @doc false

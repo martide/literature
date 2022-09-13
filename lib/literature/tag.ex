@@ -22,7 +22,6 @@ defmodule Literature.Tag do
     field(:twitter_image, :string)
     field(:twitter_title, :string)
     field(:twitter_description, :string)
-    field(:url, :string)
 
     has_many(:posts, Post, foreign_key: :primary_tag_id)
 
@@ -46,7 +45,6 @@ defmodule Literature.Tag do
     twitter_image
     twitter_title
     twitter_description
-    url
   )a
 
   @doc false

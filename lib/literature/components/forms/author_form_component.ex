@@ -38,7 +38,6 @@ defmodule Literature.AuthorFormComponent do
           <.form_field form={f} type="text_input" field={:location} label="Location" />
           <.form_field form={f} type="url_input" field={:facebook} label="Facebook" />
           <.form_field form={f} type="url_input" field={:twitter} label="Twitter" />
-          <.form_field form={f} type="url_input" field={:url} label="Url" />
         </.form_group>
         <.button_group>
           <.back_button label="Cancel" return_to={@return_to} />

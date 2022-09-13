@@ -18,7 +18,6 @@ defmodule Literature.Migrations.Tag do
       add(:twitter_image, :string)
       add(:twitter_title, :string)
       add(:twitter_description, :string)
-      add(:url, :string)
 
       timestamps()
     end

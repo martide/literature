@@ -11,7 +11,6 @@ defmodule Literature.Post do
   schema "literature_posts" do
     field(:slug, :string)
     field(:title, :string)
-    field(:html, :string)
     field(:feature_image, :string)
     field(:feature_image_alt, :string)
     field(:feature_image_caption, :string)
@@ -26,7 +25,6 @@ defmodule Literature.Post do
     field(:twitter_image, :string)
     field(:twitter_title, :string)
     field(:twitter_description, :string)
-    field(:url, :string)
     field(:excerpt, :string)
 
     belongs_to(:primary_author, Author)
@@ -43,7 +41,6 @@ defmodule Literature.Post do
   @optional_params ~w(
     primary_author_id
     primary_tag_id
-    html
     feature_image
     feature_image_alt
     feature_image_caption
@@ -58,7 +55,6 @@ defmodule Literature.Post do
     twitter_image
     twitter_title
     twitter_description
-    url
     excerpt
   )a
 
