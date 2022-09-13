@@ -37,6 +37,11 @@ defmodule Literature.Repo do
     repo().delete(struct_or_changeset, opts)
   end
 
+  @doc "Wraps `c:Ecto.Repo.preload/2`."
+  def preload(struct_or_changeset, opts \\ []) do
+    repo().preload(struct_or_changeset, opts)
+  end
+
   @doc false
   defp repo do
     Application.fetch_env!(:literature, :repo)

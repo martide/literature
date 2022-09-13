@@ -6,8 +6,10 @@ defmodule Literature.QueryHelpers do
     Enum.map(list, &{&1.name, &1.id})
   end
 
-  def where_preload(query, %{preload: preload}),
-    do: preload(query, ^preload)
-
-  def where_preload(query, _), do: query
+  def where_preload(query, attrs) do
+    case Keyword.get(attrs, :preload, []) do
+      nil -> query
+      preloads -> preload(query, ^preloads)
+    end
+  end
 end

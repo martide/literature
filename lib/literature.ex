@@ -112,7 +112,7 @@ defmodule Literature do
       [%Post{}, ...]
 
   """
-  def list_posts(attrs \\ %{}) do
+  def list_posts(attrs \\ []) do
     Post
     |> where_preload(attrs)
     |> Repo.all()
@@ -211,8 +211,10 @@ defmodule Literature do
       [%Tag{}, ...]
 
   """
-  def list_tags do
-    Repo.all(Tag)
+  def list_tags(attrs \\ []) do
+    Tag
+    |> where_preload(attrs)
+    |> Repo.all()
   end
 
   @doc """

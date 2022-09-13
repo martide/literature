@@ -3,6 +3,8 @@ defmodule Literature.Tag do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Literature.Post
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
@@ -21,6 +23,8 @@ defmodule Literature.Tag do
     field(:twitter_title, :string)
     field(:twitter_description, :string)
     field(:url, :string)
+
+    has_many(:posts, Post, foreign_key: :primary_tag_id)
 
     timestamps()
   end
