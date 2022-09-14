@@ -58,7 +58,7 @@ defmodule Literature.HomePageComponent do
                   </div>
                   <div class="flex items-center">
                     <%= if post.primary_author do %>
-                      <%= img_tag post.primary_author.profile_image, class: "rounded-full h-7 w-7 mr-2", alt: post.primary_author.name %>
+                      <%= img_tag literature_image_url(post.primary_author, :profile_image), class: "rounded-full h-7 w-7 mr-2", alt: post.primary_author.name %>
                       <span class="mr-1 text-gray-400">By: </span>
                       <span class="text-gray-900">
                         <%= post.primary_author.name %>

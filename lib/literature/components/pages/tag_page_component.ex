@@ -18,7 +18,7 @@ defmodule Literature.TagPageComponent do
             <article class={"#{if i == 0, do: "row-span-3", else: "px-8 pb-10"} group"}>
               <%= if i == 0 do %>
                 <%= link to: literature_path(@socket, :show, post.slug) do %>
-                  <%= img_tag "https://flowbite.s3.amazonaws.com/blocks/marketing-ui/blog/google-hq.png", alt: "Blog Image", class: "rounded-lg mb-5" %>
+                  <%= img_tag literature_image_url(post, :feature_image), alt: post.title, class: "rounded-lg mb-5" %>
                 <% end %>
               <% end %>
               <h2 class="font-bold text-2xl mb-2 group-hover:text-primary-500 transition duration-300 ease-in-out">

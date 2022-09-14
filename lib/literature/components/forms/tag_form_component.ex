@@ -18,9 +18,9 @@ defmodule Literature.TagFormComponent do
 
   defp allow_upload(socket) do
     socket
-    |> allow_upload(:og_image, accept: @accept, max_entries: 1)
-    |> allow_upload(:twitter_image, accept: @accept, max_entries: 1)
-    |> allow_upload(:feature_image, accept: @accept, max_entries: 1)
+    |> allow_upload(:og_image, accept: @accept, max_entries: 1, auto_upload: true)
+    |> allow_upload(:twitter_image, accept: @accept, max_entries: 1, auto_upload: true)
+    |> allow_upload(:feature_image, accept: @accept, max_entries: 1, auto_upload: true)
   end
 
   @impl Phoenix.LiveComponent

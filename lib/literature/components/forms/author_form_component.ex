@@ -18,8 +18,8 @@ defmodule Literature.AuthorFormComponent do
 
   defp allow_upload(socket) do
     socket
-    |> allow_upload(:profile_image, accept: @accept, max_entries: 1)
-    |> allow_upload(:cover_image, accept: @accept, max_entries: 1)
+    |> allow_upload(:profile_image, accept: @accept, max_entries: 1, auto_upload: true)
+    |> allow_upload(:cover_image, accept: @accept, max_entries: 1, auto_upload: true)
   end
 
   @impl Phoenix.LiveComponent
