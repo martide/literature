@@ -73,6 +73,9 @@ defmodule Literature.AuthorFormComponent do
   end
 
   defp save_author(socket, :edit_author, author_params) do
+    images = build_uploaded_entries(socket, ~w(profile_image cover_image)a)
+    author_params = Map.merge(author_params, images)
+
     case Literature.update_author(socket.assigns.author, author_params) do
       {:ok, _author} ->
         {:noreply,
@@ -86,6 +89,9 @@ defmodule Literature.AuthorFormComponent do
   end
 
   defp save_author(socket, :new_author, author_params) do
+    images = build_uploaded_entries(socket, ~w(profile_image cover_image)a)
+    author_params = Map.merge(author_params, images)
+
     case Literature.create_author(author_params) do
       {:ok, _author} ->
         {:noreply,

@@ -88,7 +88,6 @@ defmodule Literature.PostFormComponent do
 
   defp save_post(socket, :edit_post, post_params) do
     images = build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a)
-
     post_params = Map.merge(post_params, images)
 
     case Literature.update_post(socket.assigns.post, post_params) do

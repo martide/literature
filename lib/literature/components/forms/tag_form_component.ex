@@ -79,6 +79,9 @@ defmodule Literature.TagFormComponent do
   end
 
   defp save_tag(socket, :edit_tag, tag_params) do
+    images = build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a)
+    tag_params = Map.merge(tag_params, images)
+
     case Literature.update_tag(socket.assigns.tag, tag_params) do
       {:ok, _tag} ->
         {:noreply,
@@ -92,6 +95,9 @@ defmodule Literature.TagFormComponent do
   end
 
   defp save_tag(socket, :new_tag, tag_params) do
+    images = build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a)
+    tag_params = Map.merge(tag_params, images)
+
     case Literature.create_tag(tag_params) do
       {:ok, _tag} ->
         {:noreply,
