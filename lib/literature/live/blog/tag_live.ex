@@ -5,7 +5,7 @@ defmodule Literature.Blog.TagLive do
   alias Literature.Tag
 
   @impl Phoenix.LiveView
-  def mount(params, _session, socket) do
+  def mount(_params, _session, socket) do
     {:ok, socket, layout: {Literature.LayoutView, "live.html"}}
   end
 
@@ -16,6 +16,7 @@ defmodule Literature.Blog.TagLive do
     """
   end
 
+  @impl Phoenix.LiveView
   def handle_params(_params, url, socket) do
     slug = get_tag_name_from_url(url)
 

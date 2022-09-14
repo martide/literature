@@ -35,7 +35,8 @@ defmodule Literature.BlogLive do
     """
   end
 
-  def handle_params(%{"slug" => slug}, url, socket) do
+  @impl Phoenix.LiveView
+  def handle_params(%{"slug" => slug}, _url, socket) do
     [&Literature.get_post!/1, &Literature.get_tag!/1, &Literature.get_author!/1]
     |> Enum.map(fn fun -> fun.(slug: slug) end)
     |> Enum.find(&is_struct/1)
@@ -47,6 +48,7 @@ defmodule Literature.BlogLive do
     |> then(&{:noreply, &1})
   end
 
+  @impl Phoenix.LiveView
   def handle_params(_, _, socket), do: {:noreply, socket}
 
   defp assign_to_socket(socket, name, struct),

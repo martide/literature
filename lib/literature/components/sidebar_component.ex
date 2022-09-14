@@ -1,5 +1,5 @@
 defmodule Literature.SidebarComponent do
-  use Literature.Web, :live_component
+  use Phoenix.Component
 
   @impl Phoenix.LiveComponent
   def sidebar(assigns) do

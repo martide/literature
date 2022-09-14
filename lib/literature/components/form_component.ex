@@ -1,5 +1,11 @@
 defmodule Literature.FormComponent do
-  use Literature.Web, :live_component
+  use Phoenix.Component
+
+  import Phoenix.HTML.Form
+  import Phoenix.HTML.Tag
+  import Literature.Helpers
+
+  alias Phoenix.LiveView.JS
 
   @impl Phoenix.LiveComponent
   def form_field(assigns) do
