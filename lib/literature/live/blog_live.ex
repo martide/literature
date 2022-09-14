@@ -28,7 +28,7 @@ defmodule Literature.BlogLive do
       <% :tags -> %>
         <.tags_page {assigns} />                 
       <% :show -> %>
-        <%= if @post do %><.post_page {@post} /><% end %>
+        <%= if @post do %><.post_page post={@post} /><% end %>
         <%= if @tag do %><.tag_page socket={@socket} {@tag} /><% end %>
         <%= if @author do %><.author_page {@author} /><% end %>
     <% end %>
