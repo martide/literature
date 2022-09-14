@@ -113,6 +113,7 @@ defmodule Literature.FormComponent do
         </div>
         <p class="uppercase font-semibold text-xs text-center">Drag & Drop or Click to upload</p>
       </div>
+      <%= img_tag literature_image_url(@form.data, @field), class: "object-cover object-center absolute top-0" %>
       <%= for entry <- @upload_field.entries do %>
         <%= live_img_preview entry, class: "object-cover object-center absolute top-0" %>
         <%= if entry.progress < 100 do %>

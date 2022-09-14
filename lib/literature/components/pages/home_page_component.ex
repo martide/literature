@@ -18,7 +18,9 @@ defmodule Literature.HomePageComponent do
         <div class="space-y-8 my-20 max-w-5xl px-6 mx-auto">
           <%= for post <- @posts do %>
             <article class="group">
-              <%= img_tag literature_image_url(post, :feature_image), alt: post.feature_image_alt, class: "object-cover object-center w-full h-[30rem]" %>
+              <div class="h-[30rem] overflow-hidden relative">
+                <%= img_tag literature_image_url(post, :feature_image), alt: post.feature_image_alt, class: "object-cover object-center absolute w-full" %>
+              </div>
               <div class="max-w-3xl mx-auto py-8">
                 <%= link to: literature_path(@socket, :show, post.slug) do %>
                   <h2 class="mb-3 font-extrabold text-3xl group-hover:text-primary-700 transition duration-300 ease-in-out">

@@ -64,10 +64,7 @@ defmodule Literature.Helpers do
   def literature_image_url(schema, field) do
     schema
     |> Map.get(field)
-    |> case do
-      nil -> nil
-      image -> Literature.Uploader.url(image)
-    end
+    |> Literature.Uploader.url()
   end
 
   # Uploaded Entries Helpers

@@ -4,7 +4,6 @@ defmodule Literature.Uploader do
 
   @versions ~w(original thumb)a
   @extension_whitelist ~w(.jpg .jpeg .png)
-  @acl :private
 
   # Whitelist file extensions:
   def validate({file, _}) do
