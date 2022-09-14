@@ -2,6 +2,7 @@ import { LiveSocket } from 'phoenix_live_view';
 import { Socket } from 'phoenix';
 
 let Hooks = {};
+
 Hooks.HTMLEditor = {
   loadHTMLEditor() {
     const element = this.el

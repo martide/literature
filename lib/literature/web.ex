@@ -2,6 +2,23 @@ defmodule Literature.Web do
   @moduledoc false
 
   @doc false
+  def model do
+    quote do
+      @moduledoc false
+
+      use Ecto.Schema
+      use Waffle.Ecto.Schema
+
+      import Ecto.Changeset
+
+      alias Literature.{Author, Post, Tag, Uploader}
+
+      @primary_key {:id, :binary_id, autogenerate: true}
+      @foreign_key_type :binary_id
+    end
+  end
+
+  @doc false
   def controller do
     quote do
       @moduledoc false

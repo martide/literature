@@ -1,16 +1,11 @@
 defmodule Literature.Author do
-  @moduledoc false
-  use Ecto.Schema
-  import Ecto.Changeset
-
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
+  use Literature.Web, :model
 
   schema "literature_authors" do
     field(:slug, :string)
     field(:name, :string)
-    field(:profile_image, :string)
-    field(:cover_image, :string)
+    field(:profile_image, Uploader.Type)
+    field(:cover_image, Uploader.Type)
     field(:bio, :string)
     field(:website, :string)
     field(:location, :string)
@@ -28,8 +23,6 @@ defmodule Literature.Author do
   )a
 
   @optional_params ~w(
-    profile_image
-    cover_image
     bio
     website
     location
@@ -39,10 +32,16 @@ defmodule Literature.Author do
     meta_description
   )a
 
+  @attachments ~w(
+    profile_image
+    cover_image
+  )a
+
   @doc false
   def changeset(post, params) do
     post
     |> cast(params, @required_params ++ @optional_params)
+    |> cast_attachments(params, @attachments)
     |> validate_required(@required_params, message: "This field is required")
     |> unique_constraint(:slug)
   end

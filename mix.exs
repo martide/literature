@@ -34,6 +34,9 @@ defmodule Literature.MixProject do
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_live_view, "~> 0.17.11"},
       {:postgrex, "~> 0.16.4"},
+      {:waffle, "~> 1.1"},
+      {:waffle_ecto, "~> 0.0.11"},
+      {:waffle_gcs, "~> 0.2.0"},
       {:floki, ">= 0.33.1", only: :test},
       {:credo, "~> 1.6", only: [:test, :dev], runtime: false},
       {:dialyxir, "~> 1.0", only: [:test, :dev], runtime: false}

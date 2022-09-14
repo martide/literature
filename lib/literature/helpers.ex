@@ -1,6 +1,9 @@
 defmodule Literature.Helpers do
   @moduledoc false
 
+  import Phoenix.LiveView, only: [uploaded_entries: 2]
+  alias Phoenix.LiveView.UploadConfig
+
   # Routing Helpers
 
   @doc """
@@ -54,5 +57,43 @@ defmodule Literature.Helpers do
 
   def routes(socket = %Phoenix.LiveView.Socket{}) do
     socket.router.__helpers__()
+  end
+
+  # Image Routing Helpers
+
+  def literature_image_url(schema, field) do
+    schema
+    |> Map.get(field)
+    |> case do
+      nil -> nil
+      image -> Literature.Uploader.url(image)
+    end
+  end
+
+  # Uploaded Entries Helpers
+  def build_uploaded_entries(socket, fields) do
+    fields
+    |> Enum.map(fn field ->
+      case uploaded_entries(socket, field) do
+        {[entry], _in_progress} ->
+          upload_config = socket.assigns.uploads[field]
+          pid = UploadConfig.entry_pid(upload_config, entry)
+
+          {:ok, %{path: path}} = GenServer.call(pid, :consume_start, :infinity)
+
+          file = %Plug.Upload{
+            path: path,
+            content_type: entry.client_type,
+            filename: entry.client_name
+          }
+
+          {Atom.to_string(field), file}
+
+        _ ->
+          []
+      end
+    end)
+    |> List.flatten()
+    |> Enum.into(%{})
   end
 end

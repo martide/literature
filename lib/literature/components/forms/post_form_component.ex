@@ -3,6 +3,8 @@ defmodule Literature.PostFormComponent do
 
   import Literature.FormComponent
 
+  @accept ~w(.jpg .jpeg .png)
+
   @impl Phoenix.LiveComponent
   def update(%{post: post} = assigns, socket) do
     socket =
@@ -11,8 +13,16 @@ defmodule Literature.PostFormComponent do
       |> assign(:changeset, Literature.change_post(post))
       |> assign(:authors, Literature.list_authors() |> select_options)
       |> assign(:tags, Literature.list_tags() |> select_options)
+      |> allow_upload()
 
     {:ok, socket}
+  end
+
+  defp allow_upload(socket) do
+    socket
+    |> allow_upload(:og_image, accept: @accept, max_entries: 1, auto_upload: true)
+    |> allow_upload(:twitter_image, accept: @accept, max_entries: 1, auto_upload: true)
+    |> allow_upload(:feature_image, accept: @accept, max_entries: 1, auto_upload: true)
   end
 
   @impl Phoenix.LiveComponent
@@ -23,6 +33,7 @@ defmodule Literature.PostFormComponent do
         let={f}
         for={@changeset}
         id="post-form"
+        multipart
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save">
@@ -31,12 +42,12 @@ defmodule Literature.PostFormComponent do
           <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" />
         </.form_group>
         <.form_group title="Facebook Tags">
-          <.form_field form={f} type="url_input" field={:og_image} label="Og Image" />
+          <.form_field form={f} type="image_upload" field={:og_image} label="Og Image" uploads={@uploads} />
           <.form_field form={f} type="text_input" field={:og_title} label="Og Title" />
           <.form_field form={f} type="textarea" field={:og_description} label="Og Description" />
         </.form_group>
         <.form_group title="Twitter Tags">
-          <.form_field form={f} type="url_input" field={:twitter_image} label="Twitter Image" />
+          <.form_field form={f} type="image_upload" field={:twitter_image} label="Twitter Image" uploads={@uploads} />
           <.form_field form={f} type="text_input" field={:twitter_title} label="Twitter Title" />
           <.form_field form={f} type="textarea" field={:twitter_description} label="Twitter Description" />
         </.form_group>
@@ -45,7 +56,7 @@ defmodule Literature.PostFormComponent do
           <.form_field form={f} type="text_input" field={:slug} label="Slug" />
           <.form_field form={f} type="select" field={:primary_author_id} options={@authors} label="Primary Author" prompt="Select author" />
           <.form_field form={f} type="select" field={:primary_tag_id} options={@tags} label="Primary Tag" prompt="Select tag" />
-          <.form_field form={f} type="url_input" field={:feature_image} label="Feature Image" />
+          <.form_field form={f} type="image_upload" field={:feature_image} label="Feature Image" uploads={@uploads} />
           <.form_field form={f} type="text_input" field={:feature_image_alt} label="Feature Image Alt" />
           <.form_field form={f} type="text_input" field={:feature_image_caption} label="Feature Image Caption" />
           <.form_field form={f} type="textarea" field={:custom_excerpt} label="Custom Excerpt" />
@@ -76,6 +87,10 @@ defmodule Literature.PostFormComponent do
   end
 
   defp save_post(socket, :edit_post, post_params) do
+    images = build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a)
+
+    post_params = Map.merge(post_params, images)
+
     case Literature.update_post(socket.assigns.post, post_params) do
       {:ok, _post} ->
         {:noreply,
@@ -89,6 +104,9 @@ defmodule Literature.PostFormComponent do
   end
 
   defp save_post(socket, :new_post, post_params) do
+    images = build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a)
+    post_params = Map.merge(post_params, images)
+
     case Literature.create_post(post_params) do
       {:ok, _post} ->
         {:noreply,

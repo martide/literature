@@ -3,14 +3,24 @@ defmodule Literature.TagFormComponent do
 
   import Literature.FormComponent
 
+  @accept ~w(.jpg .jpeg .png)
+
   @impl Phoenix.LiveComponent
   def update(%{tag: tag} = assigns, socket) do
-    changeset = Literature.change_tag(tag)
+    socket =
+      socket
+      |> assign(assigns)
+      |> assign(:changeset, Literature.change_tag(tag))
+      |> allow_upload()
 
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign(:changeset, changeset)}
+    {:ok, socket}
+  end
+
+  defp allow_upload(socket) do
+    socket
+    |> allow_upload(:og_image, accept: @accept, max_entries: 1)
+    |> allow_upload(:twitter_image, accept: @accept, max_entries: 1)
+    |> allow_upload(:feature_image, accept: @accept, max_entries: 1)
   end
 
   @impl Phoenix.LiveComponent
@@ -29,12 +39,12 @@ defmodule Literature.TagFormComponent do
           <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" />
         </.form_group>
         <.form_group title="Facebook Tags">
-          <.form_field form={f} type="url_input" field={:og_image} label="Og Image" />
+          <.form_field form={f} type="image_upload" field={:og_image} label="Og Image" uploads={@uploads} />
           <.form_field form={f} type="text_input" field={:og_title} label="Og Title" />
           <.form_field form={f} type="textarea" field={:og_description} label="Og Description" />
         </.form_group>
         <.form_group title="Twitter Tags">
-          <.form_field form={f} type="url_input" field={:twitter_image} label="Twitter Image" />
+          <.form_field form={f} type="image_upload" field={:twitter_image} label="Twitter Image" uploads={@uploads} />
           <.form_field form={f} type="text_input" field={:twitter_title} label="Twitter Title" />
           <.form_field form={f} type="textarea" field={:twitter_description} label="Twitter Description" />
         </.form_group>
@@ -42,7 +52,7 @@ defmodule Literature.TagFormComponent do
           <.form_field form={f} type="text_input" field={:name} label="Name" />
           <.form_field form={f} type="text_input" field={:slug} label="Slug" />
           <.form_field form={f} type="textarea" field={:description} label="Description" />
-          <.form_field form={f} type="url_input" field={:feature_image} label="Feature Image" />
+          <.form_field form={f} type="image_upload" field={:feature_image} label="Feature Image" uploads={@uploads} />
         </.form_group>
         <.button_group>
           <.back_button label="Cancel" return_to={@return_to} />

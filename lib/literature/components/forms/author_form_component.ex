@@ -3,14 +3,23 @@ defmodule Literature.AuthorFormComponent do
 
   import Literature.FormComponent
 
+  @accept ~w(.jpg .jpeg .png)
+
   @impl Phoenix.LiveComponent
   def update(%{author: author} = assigns, socket) do
-    changeset = Literature.change_author(author)
+    socket =
+      socket
+      |> assign(assigns)
+      |> assign(:changeset, Literature.change_author(author))
+      |> allow_upload()
 
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign(:changeset, changeset)}
+    {:ok, socket}
+  end
+
+  defp allow_upload(socket) do
+    socket
+    |> allow_upload(:profile_image, accept: @accept, max_entries: 1)
+    |> allow_upload(:cover_image, accept: @accept, max_entries: 1)
   end
 
   @impl Phoenix.LiveComponent
@@ -31,8 +40,8 @@ defmodule Literature.AuthorFormComponent do
         <.form_group title="Details">
           <.form_field form={f} type="text_input" field={:name} label="Name" />
           <.form_field form={f} type="text_input" field={:slug} label="Slug" />
-          <.form_field form={f} type="url_input" field={:profile_image} label="Profile Image" />
-          <.form_field form={f} type="url_input" field={:cover_image} label="Cover Image" />
+          <.form_field form={f} type="image_upload" field={:profile_image} label="Profile Image" uploads={@uploads} />
+          <.form_field form={f} type="image_upload" field={:cover_image} label="Cover Image" uploads={@uploads} />
           <.form_field form={f} type="textarea" field={:bio} label="Bio" />
           <.form_field form={f} type="url_input" field={:website} label="Website" />
           <.form_field form={f} type="text_input" field={:location} label="Location" />

@@ -7,7 +7,7 @@ defmodule Literature.LayoutComponent do
   def header(assigns) do
     ~H"""
     <header>
-      <nav class="bg-white px-2 sm:px-4 py-2.5 fixed w-full z-20 top-0 left-0 border-b border-gray-200 shadow shadow-slate-900/50">
+      <nav class="bg-white px-2 sm:px-4 py-2.5 fixed w-full z-50 top-0 left-0 border-b border-gray-200 shadow shadow-slate-900/50">
         <div class="max-w-screen-xl flex flex-wrap items-center mx-auto">
           <%= live_patch to: literature_dashboard_path(@socket, :list_posts), class: "flex items-center space-x-2 text-primary-700 w-64" do %>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">

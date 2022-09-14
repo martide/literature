@@ -32,6 +32,9 @@ defmodule Literature.FormComponent do
         <% "url_input" -> %>
           <.form_label form={@form} field={@field} label={@label} />
           <.url_input form={@form} field={@field} {@input_opts} />
+        <% "image_upload" -> %>
+          <.form_label form={@form} field={@field} label={@label} />
+          <.image_upload form={@form} field={@field} {@input_opts} />
       <% end %>
       <.form_field_error form={@form} field={@field} />
     </div>
@@ -96,6 +99,38 @@ defmodule Literature.FormComponent do
     <%= url_input @form, @field, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
     """
   end
+
+  defp image_upload(assigns) do
+    assigns = assign_new(assigns, :upload_field, fn -> image_field(assigns) end)
+
+    ~H"""
+    <div class="w-full border border-gray-300 rounded-lg group hover:border-primary-300 transition duration-300 ease-in-out cursor-pointer relative overflow-hidden" phx-drop-target={@upload_field.ref}>
+      <div class="relative z-30 py-20 bg-white bg-opacity-60" phx-click={JS.dispatch("click", to: "##{@upload_field.ref}")}>
+        <div class="rounded-full h-14 w-14 bg-primary-100 text-primary-600 flex items-center justify-center mb-3 mx-auto group-hover:scale-110 transition duration-300 ease-in-out">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-8 h-8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />
+          </svg>
+        </div>
+        <p class="uppercase font-semibold text-xs text-center">Drag & Drop or Click to upload</p>
+      </div>
+      <%= for entry <- @upload_field.entries do %>
+        <%= live_img_preview entry, class: "object-cover object-center absolute top-0" %>
+        <%= if entry.progress < 100 do %>
+          <div class="w-full bg-gray-200 h-2 absolute bottom-0">
+            <div class="bg-primary-600 h-2 rounded-full" style={"width: #{entry.progress}%"}></div>
+          </div>
+        <% end %>
+        <%= for err <- upload_errors(@upload_field, entry) do %>
+          <p class="absolute top-0"><%= err %></p>
+        <% end %>
+      <% end %>
+      <%= live_file_input @upload_field, class: "hidden" %>
+    </div>
+    """
+  end
+
+  defp image_field(%{field: field, uploads: uploads}),
+    do: Map.get(uploads, field)
 
   defp textarea(assigns) do
     assigns = assign_defaults(assigns, text_input_classes(assigns))
