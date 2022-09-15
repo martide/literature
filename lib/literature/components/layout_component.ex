@@ -18,7 +18,9 @@ defmodule Literature.LayoutComponent do
           <div class="flex md:order-2">
             <button data-collapse-toggle="navbar-sticky" type="button" class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200" aria-controls="navbar-sticky" aria-expanded="false">
               <span class="sr-only">Open main menu</span>
-              <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
+              <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+              </svg>
             </button>
           </div>
           <div class="hidden justify-between items-center w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
@@ -142,13 +144,12 @@ defmodule Literature.LayoutComponent do
     base_classes = "block py-2 pr-4 pl-3 rounded md:p-0"
 
     if live_action in actions do
-      live_patch(name,
+      live_redirect(name,
         to: path,
-        class: "#{base_classes} text-white bg-primary-700 md:bg-transparent md:text-primary-700",
-        "aria-current": "page"
+        class: "#{base_classes} text-white bg-primary-700 md:bg-transparent md:text-primary-700"
       )
     else
-      live_patch(name,
+      live_redirect(name,
         to: path,
         class:
           "#{base_classes} text-gray-700 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-primary-700"

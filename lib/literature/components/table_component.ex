@@ -54,6 +54,9 @@ defmodule Literature.TableComponent do
   end
 
   defp actions(assigns) do
+    assigns =
+      Map.put(assigns, :base_path, String.replace_suffix(assigns.base_path, "/page/1", ""))
+
     ~H"""
     <div class="flex items-center space-x-2">
       <%= live_patch to: "#{@base_path}/#{@item.id}/edit", id: "edit-#{@item.id}", class: "hover:text-primary-600 transition duration-300 ease-in-out" do %>

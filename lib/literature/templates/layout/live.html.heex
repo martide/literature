@@ -3,11 +3,13 @@
   <nav class="bg-white border-gray-200 px-2 sm:px-4 py-8 rounded">
     <div class="max-w-screen-xl flex flex-wrap items-center mx-auto px-16">
       <%= link to: "https://www.martide.com/" do %>
-        <%= img_tag "https://static.martide.com/images/martide-logo-blue.png", alt: "Martide logo", class: "h-7" %>
+        <%= img_tag logo(), alt: "#{title()} logo", class: "h-7" %>
       <% end %>
       <button type="button" class="inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200" aria-expanded="false">
         <span class="sr-only">Open main menu</span>
-        <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path></svg>
+        <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+        </svg>
       </button>
       <div class="hidden w-full md:block md:w-auto border-l border-gray-300 mx-8 px-6">
         <ul class="flex flex-col p-2 mt-4 bg-gray-50 rounded-lg border border-gray-100 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white">
@@ -31,7 +33,7 @@
 <!-- Start Footer -->
 <footer class="p-4 bg-white md:px-6 md:py-8">
   <p class="block text-sm text-gray-500 sm:text-center dark:text-gray-400">
-    &copy; 2022 Martide Blog. All Rights Reserved.
+    &copy; <%= Date.utc_today().year %> <%= title() %>. All Rights Reserved.
   </p>
 </footer>
 <!-- End Footer -->

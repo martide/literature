@@ -60,7 +60,6 @@ defmodule Literature.Helpers do
   end
 
   # Image Routing Helpers
-
   def literature_image_url(schema, field) do
     schema
     |> Map.get(field)
@@ -91,6 +90,15 @@ defmodule Literature.Helpers do
       end
     end)
     |> List.flatten()
+    |> Enum.into(%{})
+  end
+
+  @doc """
+  Convert a map atom to map string.
+  """
+  def atomize_keys_to_string(list) do
+    list
+    |> Enum.map(fn {key, val} -> {Atom.to_string(key), val} end)
     |> Enum.into(%{})
   end
 end
