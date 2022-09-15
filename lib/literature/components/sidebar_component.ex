@@ -1,7 +1,6 @@
 defmodule Literature.SidebarComponent do
   use Phoenix.Component
 
-  @impl Phoenix.LiveComponent
   def sidebar(assigns) do
     ~H"""
     <aside class="col-span-1" aria-label="Sidebar">

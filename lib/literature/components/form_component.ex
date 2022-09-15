@@ -7,7 +7,6 @@ defmodule Literature.FormComponent do
 
   alias Phoenix.LiveView.JS
 
-  @impl Phoenix.LiveComponent
   def form_field(assigns) do
     assigns =
       assigns

@@ -35,9 +35,6 @@ defmodule Literature.MetaTagHelpers do
     ]
   end
 
-  @doc """
-  Render default meta tags
-  """
   defp render_tag_default(tags) do
     [
       content_tag(:title, get_tag_value(tags, "title", "name")),
@@ -49,9 +46,6 @@ defmodule Literature.MetaTagHelpers do
     ]
   end
 
-  @doc """
-  Render meta tags for open graph
-  """
   defp render_tag_og(tags) do
     [
       tag(:meta, content: get_tag_value(tags, "og_type", "og_type"), property: "og:type"),
@@ -65,9 +59,6 @@ defmodule Literature.MetaTagHelpers do
     ]
   end
 
-  @doc """
-  Render meta tags for twitter
-  """
   defp render_tag_twitter(tags) do
     [
       tag(:meta,

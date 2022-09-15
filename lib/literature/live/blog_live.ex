@@ -6,7 +6,7 @@ defmodule Literature.BlogLive do
   import Literature.PostPageComponent
   import Literature.TagPageComponent
   import Literature.TagsPageComponent
-  import Literature.Helpers, only: [atomize_keys_to_string: 1]
+  import Literature.Helpers, only: [atomize_keys_to_string: 1, literature_image_url: 2]
 
   alias Literature.{Author, Tag, Post, Repo}
 
@@ -63,13 +63,20 @@ defmodule Literature.BlogLive do
   defp assign_meta_tags(socket, struct) do
     struct
     |> Map.from_struct()
-    |> assign_name_to_title()
+    |> convert_name_to_title()
+    |> convert_image_to_url()
     |> atomize_keys_to_string()
     |> then(&assign(socket, :meta_tags, &1))
   end
 
-  defp assign_name_to_title(author_or_tag),
+  defp convert_name_to_title(author_or_tag),
     do: Map.put_new(author_or_tag, :title, author_or_tag[:name])
+
+  defp convert_image_to_url(author_or_tag_or_post) do
+    author_or_tag_or_post
+    |> Map.put(:og_image, literature_image_url(author_or_tag_or_post, :og_image))
+    |> Map.put(:twitter_image, literature_image_url(author_or_tag_or_post, :twitter_image))
+  end
 
   defp preload_tag(tag),
     do: Repo.preload(tag, ~w(posts)a)
