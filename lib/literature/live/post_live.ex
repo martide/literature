@@ -6,13 +6,8 @@ defmodule Literature.PostLive do
   alias Literature.TableComponent
 
   @impl Phoenix.LiveView
-  def mount(_params, _session, socket) do
-    socket =
-      socket
-      |> assign(:posts, list_posts())
-      |> assign(:return_to, literature_dashboard_path(socket, :list_posts))
-
-    {:ok, socket}
+  def mount(params, _session, socket) do
+    {:ok, assign(socket, :return_to, literature_dashboard_path(socket, :list_posts))}
   end
 
   @impl Phoenix.LiveView
@@ -29,6 +24,8 @@ defmodule Literature.PostLive do
           module={TableComponent}
           id="posts-table"
           items={@posts}
+          page={@page}
+          live_action={@live_action}
           columns={columns()}
           base_path={@return_to}
         />
@@ -71,7 +68,7 @@ defmodule Literature.PostLive do
 
     socket =
       socket
-      |> assign(:posts, list_posts())
+      |> assign(:posts, paginate_posts())
       |> assign(:post, nil)
       |> put_flash(:success, "Post deleted successfully")
 
@@ -82,8 +79,9 @@ defmodule Literature.PostLive do
     push_patch(socket, to: literature_dashboard_path(socket, :list_posts))
   end
 
-  defp apply_action(socket, :list_posts, _params) do
+  defp apply_action(socket, :list_posts, params) do
     socket
+    |> assign(paginate_posts(params))
     |> assign(:page_title, "Posts")
     |> assign(:post, nil)
   end
@@ -100,8 +98,12 @@ defmodule Literature.PostLive do
     |> assign(:post, Literature.get_post!(id))
   end
 
-  defp list_posts do
-    Literature.list_posts()
+  defp paginate_posts(params \\ %{}) do
+    page = Literature.paginate_posts(params)
+
+    Map.new()
+    |> Map.put(:posts, page.entries)
+    |> Map.put(:page, page)
   end
 
   defp columns do

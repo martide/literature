@@ -65,8 +65,6 @@ defmodule Literature.Web do
 
       use Phoenix.LiveComponent
 
-      alias Phoenix.LiveView.JS
-
       unquote(view_helpers())
     end
   end

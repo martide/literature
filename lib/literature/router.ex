@@ -47,18 +47,21 @@ defmodule Literature.Router do
             live("/", Literature.PostLive, :index, Keyword.put(route_opts, :as, :literature))
 
             # Post routes
-            live("/posts", Literature.PostLive, :list_posts, route_opts)
+            live("/posts/page/1", Literature.PostLive, :list_posts, route_opts)
+            live("/posts/page/:page", Literature.PostLive, :list_posts, route_opts)
             live("/posts/new", Literature.PostLive, :new_post, route_opts)
             live("/posts/:id/edit", Literature.PostLive, :edit_post, route_opts)
             live("/posts/page-layout", Literature.PostLive, :page_layout, route_opts)
 
             # Tag routes
-            live("/tags", Literature.TagLive, :list_tags, route_opts)
+            live("/tags/page/1", Literature.TagLive, :list_tags, route_opts)
+            live("/tags/page/:page", Literature.TagLive, :list_tags, route_opts)
             live("/tags/new", Literature.TagLive, :new_tag, route_opts)
             live("/tags/:id/edit", Literature.TagLive, :edit_tag, route_opts)
 
             # Author routes
-            live("/authors", Literature.AuthorLive, :list_authors, route_opts)
+            live("/authors/page/1", Literature.AuthorLive, :list_authors, route_opts)
+            live("/authors/page/:page", Literature.AuthorLive, :list_authors, route_opts)
             live("/authors/new", Literature.AuthorLive, :new_author, route_opts)
             live("/authors/:id/edit", Literature.AuthorLive, :edit_author, route_opts)
             live("/authors/page-layout", Literature.AuthorLive, :page_layout, route_opts)

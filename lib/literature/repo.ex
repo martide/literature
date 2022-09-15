@@ -7,6 +7,11 @@ defmodule Literature.Repo do
   to the Literature configuration.
   """
 
+  @doc "Wraps `c:Ecto.Repo.paginate/2`."
+  def paginate(queryable, opts \\ []) do
+    repo().paginate(queryable, opts)
+  end
+
   @doc "Wraps `c:Ecto.Repo.all/2`."
   def all(queryable, opts \\ []) do
     repo().all(queryable, opts)

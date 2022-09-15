@@ -6,13 +6,8 @@ defmodule Literature.TagLive do
   alias Literature.TableComponent
 
   @impl Phoenix.LiveView
-  def mount(_params, _session, socket) do
-    socket =
-      socket
-      |> assign(:tags, list_tags())
-      |> assign(:return_to, literature_dashboard_path(socket, :list_tags))
-
-    {:ok, socket}
+  def mount(params, _session, socket) do
+    {:ok, assign(socket, :return_to, literature_dashboard_path(socket, :list_tags))}
   end
 
   @impl Phoenix.LiveView
@@ -29,6 +24,8 @@ defmodule Literature.TagLive do
           module={TableComponent}
           id="tags-table"
           items={@tags}
+          page={@page}
+          live_action={@live_action}
           columns={columns()}
           base_path={@return_to}
         />
@@ -71,15 +68,16 @@ defmodule Literature.TagLive do
 
     socket =
       socket
-      |> assign(:tags, list_tags())
+      |> assign(:tags, paginate_tags())
       |> assign(:tag, nil)
       |> put_flash(:success, "Tag deleted successfully")
 
     {:noreply, socket}
   end
 
-  defp apply_action(socket, :list_tags, _params) do
+  defp apply_action(socket, :list_tags, params) do
     socket
+    |> assign(paginate_tags(params))
     |> assign(:page_title, "Tags")
     |> assign(:tag, nil)
   end
@@ -96,8 +94,12 @@ defmodule Literature.TagLive do
     |> assign(:tag, Literature.get_tag!(id))
   end
 
-  defp list_tags do
-    Literature.list_tags()
+  defp paginate_tags(params \\ %{}) do
+    page = Literature.paginate_tags(params)
+
+    Map.new()
+    |> Map.put(:tags, page.entries)
+    |> Map.put(:page, page)
   end
 
   defp columns do

@@ -29,14 +29,21 @@ defmodule Literature.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ecto_sql, "~> 3.8"},
       {:jason, "~> 1.3", optional: true},
+
+      # Phoenix
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_live_view, "~> 0.17.11"},
-      {:postgrex, "~> 0.16.4"},
+
+      # Pagination
+      {:scrivener_phoenix, "~> 0.3.2"},
+
+      # Images
       {:waffle, "~> 1.1"},
       {:waffle_ecto, "~> 0.0.11"},
       {:waffle_gcs, "~> 0.2.0"},
+
+      # Test
       {:floki, ">= 0.33.1", only: :test},
       {:credo, "~> 1.6", only: [:test, :dev], runtime: false},
       {:dialyxir, "~> 1.0", only: [:test, :dev], runtime: false}

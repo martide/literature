@@ -7,6 +7,19 @@ defmodule Literature do
   ## Author Context
 
   @doc """
+  Returns the paginate list of authors.
+
+  ## Examples
+
+      iex> paginate_authors()
+      %Scrivener.Page{entries: [%Author{}, ...], ...}
+
+  """
+  def paginate_authors(attrs \\ []) do
+    Repo.paginate(Author, attrs)
+  end
+
+  @doc """
   Returns the list of authors.
 
   ## Examples
@@ -102,6 +115,19 @@ defmodule Literature do
   end
 
   ## Post Context
+
+  @doc """
+  Returns the paginate list of posts.
+
+  ## Examples
+
+      iex> paginate_posts()
+      %Scrivener.Page{entries: [%Post{}, ...], ...}
+
+  """
+  def paginate_posts(attrs \\ []) do
+    Repo.paginate(Post, attrs)
+  end
 
   @doc """
   Returns the list of posts.
@@ -201,6 +227,19 @@ defmodule Literature do
   end
 
   ## Tag Context
+
+  @doc """
+  Returns the paginate list of tags.
+
+  ## Examples
+
+      iex> paginate_tags()
+      %Scrivener.Page{entries: [%Tag{}, ...], ...}
+
+  """
+  def paginate_tags(attrs \\ []) do
+    Repo.paginate(Tag, attrs)
+  end
 
   @doc """
   Returns the list of tags.

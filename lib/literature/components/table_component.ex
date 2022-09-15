@@ -1,6 +1,8 @@
 defmodule Literature.TableComponent do
   use Literature.Web, :live_component
 
+  import Scrivener.PhoenixView
+
   @impl Phoenix.LiveComponent
   def update(assigns, socket) do
     {:ok, assign(socket, assigns)}
@@ -46,6 +48,7 @@ defmodule Literature.TableComponent do
           <% end %>
         </tbody>
       </table>
+      <%= paginate @socket, @page, &literature_dashboard_path/4, [@live_action] %>
     </div>
     """
   end

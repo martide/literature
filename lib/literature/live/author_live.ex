@@ -7,13 +7,8 @@ defmodule Literature.AuthorLive do
   alias Literature.TableComponent
 
   @impl Phoenix.LiveView
-  def mount(_params, _session, socket) do
-    socket =
-      socket
-      |> assign(:authors, list_authors())
-      |> assign(:return_to, literature_dashboard_path(socket, :list_authors))
-
-    {:ok, socket}
+  def mount(params, _session, socket) do
+    {:ok, assign(socket, :return_to, literature_dashboard_path(socket, :list_authors))}
   end
 
   @impl Phoenix.LiveView
@@ -30,6 +25,8 @@ defmodule Literature.AuthorLive do
           module={TableComponent}
           id="authors-table"
           items={@authors}
+          page={@page}
+          live_action={@live_action}
           columns={columns()}
           base_path={@return_to}
         />
@@ -78,15 +75,16 @@ defmodule Literature.AuthorLive do
 
     socket =
       socket
-      |> assign(:authors, list_authors())
+      |> assign(:authors, paginate_authors())
       |> assign(:author, nil)
       |> put_flash(:success, "Author deleted successfully")
 
     {:noreply, socket}
   end
 
-  defp apply_action(socket, :list_authors, _params) do
+  defp apply_action(socket, :list_authors, params) do
     socket
+    |> assign(paginate_authors(params))
     |> assign(:page_title, "Authors")
     |> assign(:author, nil)
   end
@@ -108,8 +106,12 @@ defmodule Literature.AuthorLive do
     |> assign(:page_title, "Page Layout")
   end
 
-  defp list_authors do
-    Literature.list_authors()
+  defp paginate_authors(params \\ %{}) do
+    page = Literature.paginate_authors(params)
+
+    Map.new()
+    |> Map.put(:authors, page.entries)
+    |> Map.put(:page, page)
   end
 
   defp columns do
