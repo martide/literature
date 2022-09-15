@@ -16,7 +16,9 @@ defmodule Literature do
 
   """
   def paginate_authors(attrs \\ []) do
-    Repo.paginate(Author, attrs)
+    Author
+    |> sort_by(attrs)
+    |> Repo.paginate(attrs)
   end
 
   @doc """
@@ -126,7 +128,9 @@ defmodule Literature do
 
   """
   def paginate_posts(attrs \\ []) do
-    Repo.paginate(Post, attrs)
+    Post
+    |> sort_by(attrs)
+    |> Repo.paginate(attrs)
   end
 
   @doc """
@@ -238,7 +242,9 @@ defmodule Literature do
 
   """
   def paginate_tags(attrs \\ []) do
-    Repo.paginate(Tag, attrs)
+    Tag
+    |> sort_by(attrs)
+    |> Repo.paginate(attrs)
   end
 
   @doc """

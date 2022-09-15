@@ -5,7 +5,10 @@ defmodule Literature.TableComponent do
 
   @impl Phoenix.LiveComponent
   def update(assigns, socket) do
-    {:ok, assign(socket, assigns)}
+    socket
+    |> assign(assigns)
+    |> assign_new(:params, fn -> Map.new() end)
+    |> then(&{:ok, &1})
   end
 
   @impl Phoenix.LiveComponent
@@ -15,9 +18,9 @@ defmodule Literature.TableComponent do
       <table class="w-full text-sm text-left text-gray-500">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50">
           <tr>
-            <%= for {_, column} <- @columns do %>
+            <%= for column <- @columns do %>
               <th scope="col" class="py-3 px-6">
-                <%= column %>
+                <%= table_sort(@base_path, @params, column) %>
               </th>
             <% end %>
             <th scope="col" class="py-3 px-6">
@@ -29,9 +32,9 @@ defmodule Literature.TableComponent do
           <%= if Enum.any?(@items) do %>
             <%= for item <- @items do %>
               <tr class="bg-white border-b hover:bg-gray-50">
-                <%= for {column, _} <- @columns do %>
+                <%= for {field, _} <- @columns do %>
                   <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">
-                    <%= Map.get(item, column) %>
+                    <%= Map.get(item, field) %>
                   </th>
                 <% end %>
                 <td class="py-4 px-6">
@@ -48,7 +51,7 @@ defmodule Literature.TableComponent do
           <% end %>
         </tbody>
       </table>
-      <%= paginate @socket, @page, &literature_dashboard_path/4, [@live_action] %>
+      <%= paginate @socket, @page, fn socket, [page: page] -> literature_dashboard_path(socket, @live_action, page, @params) end %>
     </div>
     """
   end
@@ -72,4 +75,38 @@ defmodule Literature.TableComponent do
     </div>
     """
   end
+
+  defp table_sort(base_path, params, {field, text}) do
+    base_path = String.replace_suffix(base_path, "/page/1", "/page/#{params["page"] || 1}")
+    direction = params["sort_direction"]
+
+    sort_direction =
+      if params["sort_field"] == to_string(field), do: reverse(direction), else: "desc"
+
+    opts = %{
+      sort_field: field,
+      sort_direction: sort_direction
+    }
+
+    live_patch(text, to: "#{base_path}?#{query_string(params, opts)}")
+  end
+
+  defp query_string(params, opts) do
+    params = params |> Plug.Conn.Query.encode() |> URI.decode_query()
+
+    opts = %{
+      "sort_field" => opts[:sort_field] || params["sort_field"] || nil,
+      "sort_direction" => opts[:sort_direction] || params["sort_direction"] || nil
+    }
+
+    params
+    |> Map.delete("page")
+    |> Map.merge(opts)
+    |> Enum.filter(fn {_, v} -> v != nil end)
+    |> Enum.into(%{})
+    |> URI.encode_query()
+  end
+
+  defp reverse("desc"), do: "asc"
+  defp reverse(_), do: "desc"
 end

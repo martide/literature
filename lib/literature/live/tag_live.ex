@@ -25,6 +25,7 @@ defmodule Literature.TagLive do
           id="tags-table"
           items={@tags}
           page={@page}
+          params={@params}
           live_action={@live_action}
           columns={columns()}
           base_path={@return_to}
@@ -78,6 +79,7 @@ defmodule Literature.TagLive do
   defp apply_action(socket, :list_tags, params) do
     socket
     |> assign(paginate_tags(params))
+    |> assign(:params, params)
     |> assign(:page_title, "Tags")
     |> assign(:tag, nil)
   end

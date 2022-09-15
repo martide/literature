@@ -25,6 +25,7 @@ defmodule Literature.PostLive do
           id="posts-table"
           items={@posts}
           page={@page}
+          params={@params}
           live_action={@live_action}
           columns={columns()}
           base_path={@return_to}
@@ -82,6 +83,7 @@ defmodule Literature.PostLive do
   defp apply_action(socket, :list_posts, params) do
     socket
     |> assign(paginate_posts(params))
+    |> assign(:params, params)
     |> assign(:page_title, "Posts")
     |> assign(:post, nil)
   end

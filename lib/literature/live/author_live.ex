@@ -26,6 +26,7 @@ defmodule Literature.AuthorLive do
           id="authors-table"
           items={@authors}
           page={@page}
+          params={@params}
           live_action={@live_action}
           columns={columns()}
           base_path={@return_to}
@@ -85,6 +86,7 @@ defmodule Literature.AuthorLive do
   defp apply_action(socket, :list_authors, params) do
     socket
     |> assign(paginate_authors(params))
+    |> assign(:params, params)
     |> assign(:page_title, "Authors")
     |> assign(:author, nil)
   end
