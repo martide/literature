@@ -59,7 +59,16 @@ defmodule Literature.Post do
     post
     |> cast(params, @required_params ++ @optional_params)
     |> cast_attachments(params, @attachments)
+    |> maybe_generate_slug(post)
     |> validate_required(@required_params, message: "This field is required")
     |> unique_constraint(:slug)
   end
+
+  defp maybe_generate_slug(changeset, %{title: title, slug: slug}) when title != slug,
+    do: changeset
+
+  defp maybe_generate_slug(changeset, %{slug: nil}),
+    do: slugify(changeset, :title)
+
+  defp maybe_generate_slug(changeset, _), do: changeset
 end

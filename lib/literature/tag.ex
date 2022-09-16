@@ -44,11 +44,20 @@ defmodule Literature.Tag do
   )a
 
   @doc false
-  def changeset(post, params) do
-    post
+  def changeset(tag, params) do
+    tag
     |> cast(params, @required_params ++ @optional_params)
     |> cast_attachments(params, @attachments)
+    |> maybe_generate_slug(tag)
     |> validate_required(@required_params, message: "This field is required")
     |> unique_constraint(:slug)
   end
+
+  defp maybe_generate_slug(changeset, %{name: name, slug: slug}) when name != slug,
+    do: changeset
+
+  defp maybe_generate_slug(changeset, %{slug: nil}),
+    do: slugify(changeset, :name)
+
+  defp maybe_generate_slug(changeset, _), do: changeset
 end

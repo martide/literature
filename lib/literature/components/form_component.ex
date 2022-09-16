@@ -221,7 +221,7 @@ defmodule Literature.FormComponent do
   defp text_input_classes(%{hidden: "true"}), do: "hidden"
 
   defp text_input_classes(assigns) do
-    "#{if field_has_errors?(assigns), do: "bg-red-50 border-red-500 focus:border-red-500 focus:ring-red-500", else: "bg-gray-50 border-gray-300 focus:border-primary-500 focus:ring-primary-500"} focus:ring-1 border text-gray-900 text-sm rounded-lg focus:outline-none block w-full p-2.5"
+    "#{if field_has_errors?(assigns), do: "bg-red-50 border-red-500 focus:border-red-500 focus:ring-red-500", else: "bg-gray-50 border-gray-300 focus:border-primary-500 focus:ring-primary-500"} focus:ring-1 border text-gray-900 text-sm rounded-lg focus:outline-none block w-full p-2.5 disabled:bg-primary-100"
   end
 
   defp field_has_errors?(%{form: form, field: field}) do

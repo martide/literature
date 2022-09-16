@@ -39,7 +39,7 @@ defmodule Literature.AuthorFormComponent do
         </.form_group>
         <.form_group title="Details">
           <.form_field form={f} type="text_input" field={:name} label="Name" />
-          <.form_field form={f} type="text_input" field={:slug} label="Slug" />
+          <.form_field form={f} type="text_input" field={:slug} label="Slug" disabled={@action == :new_author} placeholder={if @action == :new_author, do: "(auto-generate) you can change from edit page", else: ""} />
           <.form_field form={f} type="image_upload" field={:profile_image} label="Profile Image" uploads={@uploads} />
           <.form_field form={f} type="image_upload" field={:cover_image} label="Cover Image" uploads={@uploads} />
           <.form_field form={f} type="textarea" field={:bio} label="Bio" />

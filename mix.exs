@@ -31,6 +31,7 @@ defmodule Literature.MixProject do
     [
       {:ecto_sql, "~> 3.8"},
       {:jason, "~> 1.3", optional: true},
+      {:slugy, "~> 4.1"},
 
       # Phoenix
       {:phoenix_ecto, "~> 4.4"},

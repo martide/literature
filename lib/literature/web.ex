@@ -10,6 +10,7 @@ defmodule Literature.Web do
       use Waffle.Ecto.Schema
 
       import Ecto.Changeset
+      import Slugy
 
       alias Literature.{Author, Post, Tag, Uploader}
 

@@ -38,11 +38,20 @@ defmodule Literature.Author do
   )a
 
   @doc false
-  def changeset(post, params) do
-    post
+  def changeset(author, params) do
+    author
     |> cast(params, @required_params ++ @optional_params)
     |> cast_attachments(params, @attachments)
+    |> maybe_generate_slug(author)
     |> validate_required(@required_params, message: "This field is required")
     |> unique_constraint(:slug)
   end
+
+  defp maybe_generate_slug(changeset, %{name: name, slug: slug}) when name != slug,
+    do: changeset
+
+  defp maybe_generate_slug(changeset, %{slug: nil}),
+    do: slugify(changeset, :name)
+
+  defp maybe_generate_slug(changeset, _), do: changeset
 end

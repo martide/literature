@@ -53,7 +53,7 @@ defmodule Literature.PostFormComponent do
         </.form_group>
         <.form_group title="Contents">
           <.form_field form={f} type="text_input" field={:title} label="Title" />
-          <.form_field form={f} type="text_input" field={:slug} label="Slug" />
+          <.form_field form={f} type="text_input" field={:slug} label="Slug" disabled={@action == :new_post} placeholder={if @action == :new_post, do: "(auto-generate) you can change from edit page", else: ""} />
           <.form_field form={f} type="select" field={:primary_author_id} options={@authors} label="Primary Author" prompt="Select author" />
           <.form_field form={f} type="select" field={:primary_tag_id} options={@tags} label="Primary Tag" prompt="Select tag" />
           <.form_field form={f} type="image_upload" field={:feature_image} label="Feature Image" uploads={@uploads} />
