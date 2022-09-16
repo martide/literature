@@ -1,12 +1,10 @@
-defmodule Literature.Tag do
+defmodule Literature.Publication do
   use Literature.Web, :model
 
-  schema "literature_tags" do
+  schema "literature_publications" do
     field(:slug, :string)
     field(:name, :string)
     field(:description, :string)
-    field(:feature_image, Uploader.Type)
-    field(:visibility, :boolean)
     field(:meta_title, :string)
     field(:meta_description, :string)
     field(:og_image, Uploader.Type)
@@ -16,9 +14,9 @@ defmodule Literature.Tag do
     field(:twitter_title, :string)
     field(:twitter_description, :string)
 
-    belongs_to(:publication, Publication)
-
-    has_many(:posts, Post, foreign_key: :primary_tag_id)
+    has_many(:authors, Author)
+    has_many(:tags, Tag)
+    has_many(:posts, Post)
 
     timestamps()
   end
@@ -30,7 +28,6 @@ defmodule Literature.Tag do
 
   @optional_params ~w(
     description
-    visibility
     meta_title
     meta_description
     og_title
@@ -40,17 +37,16 @@ defmodule Literature.Tag do
   )a
 
   @attachments ~w(
-    feature_image
     og_image
     twitter_image
   )a
 
   @doc false
-  def changeset(tag, params) do
-    tag
+  def changeset(publication, params) do
+    publication
     |> cast(params, @required_params ++ @optional_params)
     |> cast_attachments(params, @attachments)
-    |> maybe_generate_slug(tag)
+    |> maybe_generate_slug(publication)
     |> validate_required(@required_params, message: "This field is required")
     |> unique_constraint(:slug)
   end

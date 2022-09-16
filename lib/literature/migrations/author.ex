@@ -17,6 +17,11 @@ defmodule Literature.Migrations.Author do
       add(:meta_title, :string)
       add(:meta_description, :string)
 
+      add(
+        :publication_id,
+        references(:literature_publications, on_delete: :nilify_all, type: :binary_id)
+      )
+
       timestamps()
     end
 

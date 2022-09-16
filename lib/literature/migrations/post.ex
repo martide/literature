@@ -30,6 +30,11 @@ defmodule Literature.Migrations.Post do
 
       add(:primary_tag_id, references(:literature_tags, on_delete: :nilify_all, type: :binary_id))
 
+      add(
+        :publication_id,
+        references(:literature_publications, on_delete: :nilify_all, type: :binary_id)
+      )
+
       timestamps()
     end
 

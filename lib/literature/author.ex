@@ -14,6 +14,8 @@ defmodule Literature.Author do
     field(:meta_title, :string)
     field(:meta_description, :string)
 
+    belongs_to(:publication, Publication)
+
     timestamps()
   end
 

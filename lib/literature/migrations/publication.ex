@@ -1,15 +1,13 @@
-defmodule Literature.Migrations.Tag do
+defmodule Literature.Migrations.Publication do
   @moduledoc false
   use Ecto.Migration
 
   def up do
-    create_if_not_exists table(:literature_tags, primary_key: false) do
+    create_if_not_exists table(:literature_publications, primary_key: false) do
       add(:id, :binary_id, primary_key: true)
       add(:slug, :string, null: false)
       add(:name, :string, null: false)
       add(:description, :text)
-      add(:feature_image, :string)
-      add(:visibility, :boolean)
       add(:meta_title, :string)
       add(:meta_description, :string)
       add(:og_image, :string)
@@ -19,18 +17,13 @@ defmodule Literature.Migrations.Tag do
       add(:twitter_title, :string)
       add(:twitter_description, :string)
 
-      add(
-        :publication_id,
-        references(:literature_publications, on_delete: :nilify_all, type: :binary_id)
-      )
-
       timestamps()
     end
 
-    create_if_not_exists(unique_index(:literature_tags, [:slug]))
+    create_if_not_exists(unique_index(:literature_publications, [:slug]))
   end
 
   def down do
-    drop_if_exists(table(:literature_tags))
+    drop_if_exists(table(:literature_publications))
   end
 end
