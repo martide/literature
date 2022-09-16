@@ -1,19 +1,18 @@
 defmodule Literature.Blog.TagLive do
   use Literature.Web, :live_view
 
-  import Literature.TagPageComponent
   alias Literature.Tag
 
+  @layout {Literature.LayoutView, "live.html"}
+
   @impl Phoenix.LiveView
-  def mount(_params, _session, socket) do
-    {:ok, socket, layout: {Literature.LayoutView, "live.html"}}
+  def mount(_params, %{"view_module" => view_module}, socket) do
+    {:ok, assign(socket, :view_module, view_module), layout: @layout}
   end
 
   @impl Phoenix.LiveView
-  def render(assigns) do
-    ~H"""
-      <.tag_page {@tag} />
-    """
+  def render(%{view_module: view_module, live_action: live_action} = assigns) do
+    raise live_action
   end
 
   @impl Phoenix.LiveView

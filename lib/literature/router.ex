@@ -173,13 +173,26 @@ defmodule Literature.Router do
   def __options__(opts, session_name, root_layout) do
     session_name = Keyword.get(opts, :as, session_name)
 
+    view_module =
+      if session_name == :literature do
+        Keyword.get_lazy(opts, :view_module, fn ->
+          raise "Missing mandatory :view_module option."
+        end)
+      else
+        ""
+      end
+
     session_opts = [
-      root_layout: {Literature.LayoutView, root_layout}
+      root_layout: {Literature.LayoutView, root_layout},
+      session: %{
+        "view_module" => view_module
+      }
     ]
 
     route_opts = [
       private: %{
-        application_router: Keyword.get(opts, :application_router)
+        application_router: Keyword.get(opts, :application_router),
+        view_module: view_module
       },
       as: session_name
     ]

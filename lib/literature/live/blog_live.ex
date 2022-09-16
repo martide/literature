@@ -1,19 +1,15 @@
 defmodule Literature.BlogLive do
   use Literature.Web, :live_view
 
-  import Literature.AuthorPageComponent
-  import Literature.HomePageComponent
-  import Literature.PostPageComponent
-  import Literature.TagPageComponent
-  import Literature.TagsPageComponent
-  import Literature.Helpers, only: [atomize_keys_to_string: 1, literature_image_url: 2]
+  import Literature.Helpers,
+    only: [atomize_keys_to_string: 1, literature_image_url: 2]
 
   alias Literature.{Author, Tag, Post, Repo}
 
   @layout {Literature.LayoutView, "live.html"}
 
   @impl Phoenix.LiveView
-  def mount(%{"slug" => slug}, _session, socket) do
+  def mount(%{"slug" => slug}, %{"view_module" => view_module}, socket) do
     [&Literature.get_post!/1, &Literature.get_tag!/1, &Literature.get_author!/1]
     |> Enum.map(fn fun -> fun.(slug: slug) end)
     |> Enum.find(&is_struct/1)
@@ -22,28 +18,34 @@ defmodule Literature.BlogLive do
       %Tag{} = tag -> assign_to_socket(socket, :tag, preload_tag(tag))
       %Author{} = author -> assign_to_socket(socket, :author, author)
     end
+    |> assign(:view_module, view_module)
     |> then(&{:ok, &1, layout: @layout})
   end
 
   @impl Phoenix.LiveView
-  def mount(_params, _session, socket) do
-    {:ok, socket, layout: @layout}
+  def mount(_params, %{"view_module" => view_module}, socket) do
+    {:ok, assign(socket, :view_module, view_module), layout: @layout}
   end
 
-  @impl Phoenix.LiveView
-  def render(assigns) do
-    ~H"""
-    <%= case @live_action do %>
-      <% :index -> %>
-        <.home_page {assigns} />                 
-      <% :tags -> %>
-        <.tags_page {assigns} />                 
-      <% :show -> %>
-        <%= if assigns[:post] do %><.post_page post={@post} /><% end %>
-        <%= if assigns[:tag] do %><.tag_page socket={@socket} {@tag} /><% end %>
-        <%= if assigns[:author] do %><.author_page {@author} /><% end %>
-    <% end %>
-    """
+  def render(%{view_module: view_module, live_action: live_action} = assigns) do
+    live_action
+    |> case do
+      :index ->
+        "index.html"
+
+      :tags ->
+        "tags.html"
+
+      :show ->
+        [
+          {assigns[:post], "post.html"},
+          {assigns[:tag], "tag.html"},
+          {assigns[:author], "author.html"}
+        ]
+        |> Enum.find(fn {assign, _} -> is_map(assign) end)
+        |> elem(1)
+    end
+    |> then(&Phoenix.View.render(view_module, &1, assigns))
   end
 
   @impl Phoenix.LiveView

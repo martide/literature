@@ -1658,6 +1658,10 @@ video {
   width: 1.25rem;
 }
 
+.w-1\/2 {
+  width: 50%;
+}
+
 .w-3 {
   width: 0.75rem;
 }
@@ -1668,18 +1672,6 @@ video {
 
 .w-4 {
   width: 1rem;
-}
-
-.w-60 {
-  width: 15rem;
-}
-
-.w-80 {
-  width: 20rem;
-}
-
-.w-1\/2 {
-  width: 50%;
 }
 
 .max-w-screen-xl {
@@ -2082,16 +2074,16 @@ video {
   padding-left: 0.75rem;
 }
 
+.pl-2\.5 {
+  padding-left: 0.625rem;
+}
+
 .pl-2 {
   padding-left: 0.5rem;
 }
 
 .pb-10 {
   padding-bottom: 2.5rem;
-}
-
-.pl-2\.5 {
-  padding-left: 0.625rem;
 }
 
 .text-left {
@@ -3802,24 +3794,9 @@ ul.pagination .page-item.active a {
   --tw-ring-color: rgb(248 113 113 / var(--tw-ring-opacity));
 }
 
-.disabled\:bg-primary-300:disabled {
-  --tw-bg-opacity: 1;
-  background-color: rgb(125 211 252 / var(--tw-bg-opacity));
-}
-
 .disabled\:bg-primary-100:disabled {
   --tw-bg-opacity: 1;
   background-color: rgb(224 242 254 / var(--tw-bg-opacity));
-}
-
-.disabled\:bg-primary-50:disabled {
-  --tw-bg-opacity: 1;
-  background-color: rgb(240 249 255 / var(--tw-bg-opacity));
-}
-
-.disabled\:text-primary-500:disabled {
-  --tw-text-opacity: 1;
-  color: rgb(14 165 233 / var(--tw-text-opacity));
 }
 
 .group:hover .group-hover\:scale-110 {
