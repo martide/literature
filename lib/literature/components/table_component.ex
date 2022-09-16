@@ -14,46 +14,64 @@ defmodule Literature.TableComponent do
   @impl Phoenix.LiveComponent
   def render(assigns) do
     ~H"""
-    <div class="col-span-4 overflow-x-auto relative sm:rounded-lg w-full">
-      <table class="w-full text-sm text-left text-gray-500">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-          <tr>
-            <%= for column <- @columns do %>
+    <div class="col-span-4 relative sm:rounded-lg w-full">
+      <form phx-target={@myself} phx-change="search" class="flex items-center w-1/2 border-gray-300 border rounded-lg text-gray-900 pl-2.5 mb-5">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+          <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z" clip-rule="evenodd" />
+        </svg>
+        <%= search_input :search, :q, value: @params["q"], class: "text-sm rounded-lg focus:outline-none block w-full p-2.5", placeholder: "Find", autofocus: true, phx_debounce: 300 %>
+      </form>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left text-gray-500">
+          <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+              <%= for column <- @columns do %>
+                <th scope="col" class="py-3 px-6">
+                  <%= table_sort(@base_path, @params, column) %>
+                </th>
+              <% end %>
               <th scope="col" class="py-3 px-6">
-                <%= table_sort(@base_path, @params, column) %>
+                Actions
               </th>
-            <% end %>
-            <th scope="col" class="py-3 px-6">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <%= if Enum.any?(@items) do %>
-            <%= for item <- @items do %>
-              <tr class="bg-white border-b hover:bg-gray-50">
-                <%= for {field, _} <- @columns do %>
-                  <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">
-                    <%= Map.get(item, field) %>
-                  </th>
-                <% end %>
-                <td class="py-4 px-6">
-                  <.actions item={item} base_path={@base_path} />
+            </tr>
+          </thead>
+          <tbody>
+            <%= if Enum.any?(@items) do %>
+              <%= for item <- @items do %>
+                <tr class="bg-white border-b hover:bg-gray-50">
+                  <%= for {field, _} <- @columns do %>
+                    <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">
+                      <%= Map.get(item, field) %>
+                    </th>
+                  <% end %>
+                  <td class="py-4 px-6">
+                    <.actions item={item} base_path={@base_path} />
+                  </td>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan={Enum.count(@columns) + 1}>
+                  <p class="py-5 text-center font-medium">No data found. Create a new one!</p>
                 </td>
               </tr>
             <% end %>
-          <% else %>
-            <tr>
-              <td colspan={Enum.count(@columns) + 1}>
-                <p class="py-5 text-center font-medium">No data found. Create a new one!</p>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
       <%= paginate @socket, @page, fn socket, [page: page] -> literature_dashboard_path(socket, @live_action, page, @params) end %>
     </div>
     """
+  end
+
+  @impl Phoenix.LiveComponent
+  def handle_event("search", %{"search" => search}, socket) do
+    socket.assigns.params
+    |> Map.merge(search)
+    |> then(
+      &push_patch(socket, to: literature_dashboard_path(socket, socket.assigns.live_action, &1))
+    )
+    |> then(&{:noreply, &1})
   end
 
   defp actions(assigns) do

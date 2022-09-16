@@ -13,6 +13,20 @@ defmodule Literature.QueryHelpers do
     end
   end
 
+  def search(query, :title, %{"q" => search}) do
+    or_where(query, [q], ilike(q.title, ^"#{search}%"))
+  end
+
+  def search(query, :name, %{"q" => search}) do
+    or_where(query, [q], ilike(q.name, ^"#{search}%"))
+  end
+
+  def search(query, :slug, %{"q" => search}) do
+    or_where(query, [q], ilike(q.slug, ^"#{search}%"))
+  end
+
+  def search(query, _, _), do: query
+
   def sort_by(query, attrs) do
     order_by(query, ^sort(attrs))
   end
