@@ -42,7 +42,7 @@ defmodule Literature.Migrations do
     
     Literature.Migrations.up()
   """
-  def up, do: change(:up)
+  def up, do: change(:up, ~w(publication author tag post))
 
   @doc """
   Run the `down` changes for all migrations
@@ -53,10 +53,10 @@ defmodule Literature.Migrations do
     
     Literature.Migrations.down()
   """
-  def down, do: change(:down)
+  def down, do: change(:down, ~w(post author tag publication))
 
-  defp change(direction) do
-    for name <- ~w(publication author tag post) do
+  defp change(direction, tables) do
+    for name <- tables do
       table_name = String.capitalize(name)
 
       [__MODULE__, table_name]

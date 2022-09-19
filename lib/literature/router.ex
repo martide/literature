@@ -142,7 +142,7 @@ defmodule Literature.Router do
 
           live_session session_name, session_opts do
             # Blog routes
-            scope publication_slug do
+            scope "/#{publication_slug}" do
               live("/", Literature.BlogLive, :index, route_opts)
               live("/tags", Literature.BlogLive, :tags, route_opts)
               live("/authors", Literature.BlogLive, :authors, route_opts)
