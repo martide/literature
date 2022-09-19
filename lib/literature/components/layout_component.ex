@@ -145,7 +145,7 @@ defmodule Literature.LayoutComponent do
     """
   end
 
-  defp render_tab(name, path, opts \\ []) do
+  defp render_tab(name, path, opts) do
     base_classes = "block py-2 pr-4 pl-3 rounded md:p-0 transition duration-300 ease-in-out"
 
     if String.contains?(opts[:path], opts[:slug]) do

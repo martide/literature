@@ -27,6 +27,7 @@ defmodule Literature.BlogLive do
     {:ok, assign(socket, :view_module, view_module), layout: @layout}
   end
 
+  @impl Phoenix.LiveView
   def render(%{view_module: view_module, live_action: live_action} = assigns) do
     live_action
     |> case do

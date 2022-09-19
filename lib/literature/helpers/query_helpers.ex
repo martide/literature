@@ -2,7 +2,7 @@ defmodule Literature.QueryHelpers do
   @moduledoc false
   import Ecto.Query, warn: false
 
-  def join_with_publication(query, %{"publication_slug" => slug}) do
+  def join_with_publication(query) do
     query
     |> join(:left, [q], p in assoc(q, :publication))
   end

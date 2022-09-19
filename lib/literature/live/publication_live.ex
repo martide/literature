@@ -77,7 +77,7 @@ defmodule Literature.PublicationLive do
     push_patch(socket, to: literature_dashboard_path(socket, :list_publications))
   end
 
-  defp apply_action(socket, :list_publications, params) do
+  defp apply_action(socket, :list_publications, _) do
     socket
     |> assign(:publications, list_publications())
     |> assign(:page_title, "Dashboard")
@@ -98,11 +98,4 @@ defmodule Literature.PublicationLive do
 
   defp list_publications,
     do: Literature.list_publications(preload: ~w(posts authors tags)a)
-
-  defp columns do
-    [
-      {:title, "Title"},
-      {:slug, "Slug"}
-    ]
-  end
 end

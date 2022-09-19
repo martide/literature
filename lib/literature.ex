@@ -17,7 +17,7 @@ defmodule Literature do
   """
   def paginate_authors(attrs \\ []) do
     Author
-    |> join_with_publication(attrs)
+    |> join_with_publication()
     |> search(:name, attrs)
     |> search(:slug, attrs)
     |> sort_by(attrs)
@@ -35,7 +35,7 @@ defmodule Literature do
   """
   def list_authors(attrs \\ []) do
     Author
-    |> join_with_publication(attrs)
+    |> join_with_publication()
     |> Repo.all()
   end
 
@@ -134,7 +134,7 @@ defmodule Literature do
   """
   def paginate_posts(attrs \\ []) do
     Post
-    |> join_with_publication(attrs)
+    |> join_with_publication()
     |> search(:title, attrs)
     |> search(:slug, attrs)
     |> sort_by(attrs)
@@ -152,7 +152,7 @@ defmodule Literature do
   """
   def list_posts(attrs \\ []) do
     Post
-    |> join_with_publication(attrs)
+    |> join_with_publication()
     |> where_preload(attrs)
     |> Repo.all()
   end
@@ -351,7 +351,7 @@ defmodule Literature do
   """
   def paginate_tags(attrs \\ []) do
     Tag
-    |> join_with_publication(attrs)
+    |> join_with_publication()
     |> search(:name, attrs)
     |> search(:slug, attrs)
     |> sort_by(attrs)
@@ -369,7 +369,7 @@ defmodule Literature do
   """
   def list_tags(attrs \\ []) do
     Tag
-    |> join_with_publication(attrs)
+    |> join_with_publication()
     |> where_preload(attrs)
     |> Repo.all()
   end
