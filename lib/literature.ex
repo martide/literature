@@ -2,7 +2,7 @@ defmodule Literature do
   @moduledoc false
 
   import Literature.QueryHelpers
-  alias Literature.{Author, Post, Tag, Repo}
+  alias Literature.{Author, Post, Publication, Tag, Repo}
 
   ## Author Context
 

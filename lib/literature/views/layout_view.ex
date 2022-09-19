@@ -25,10 +25,4 @@ defmodule Literature.LayoutView do
   end
 
   defp asset_file_name(path, _env), do: path
-
-  defp logo,
-    do: Application.fetch_env!(:literature, :image)
-
-  defp title,
-    do: Application.fetch_env!(:literature, :title)
 end
