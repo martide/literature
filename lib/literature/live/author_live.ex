@@ -28,6 +28,7 @@ defmodule Literature.AuthorLive do
         <.live_component
           module={TableComponent}
           id="authors-table"
+          slug={@slug}
           items={@authors}
           page={@page}
           params={@params}
@@ -106,10 +107,10 @@ defmodule Literature.AuthorLive do
     |> assign(:author, %Author{})
   end
 
-  defp apply_action(socket, :edit_author, %{"id" => id}) do
+  defp apply_action(socket, :edit_author, %{"slug" => slug}) do
     socket
     |> assign(:page_title, "Edit Author")
-    |> assign(:author, Literature.get_author!(id))
+    |> assign(:author, Literature.get_author!(slug: slug))
   end
 
   defp apply_action(socket, :page_layout, _params) do

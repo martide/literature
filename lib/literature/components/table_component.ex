@@ -73,12 +73,14 @@ defmodule Literature.TableComponent do
   end
 
   @impl Phoenix.LiveComponent
-  def handle_event("search", %{"search" => search}, socket) do
-    socket.assigns.params
+  def handle_event(
+        "search",
+        %{"search" => search},
+        %{assigns: %{params: params, live_action: live_action, slug: slug}} = socket
+      ) do
+    params
     |> Map.merge(search)
-    |> then(
-      &push_patch(socket, to: literature_dashboard_path(socket, socket.assigns.live_action, &1))
-    )
+    |> then(&push_patch(socket, to: literature_dashboard_path(socket, live_action, slug, &1)))
     |> then(&{:noreply, &1})
   end
 
@@ -88,7 +90,7 @@ defmodule Literature.TableComponent do
 
     ~H"""
     <div class="flex items-center space-x-2">
-      <%= live_patch to: "#{@base_path}/#{@item.id}/edit", id: "edit-#{@item.id}", class: "hover:text-primary-600 transition duration-300 ease-in-out" do %>
+      <%= live_patch to: "#{@base_path}/#{@item.slug}/edit", id: "edit-#{@item.id}", class: "hover:text-primary-600 transition duration-300 ease-in-out" do %>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
         </svg>

@@ -27,6 +27,7 @@ defmodule Literature.PostLive do
         <.live_component
           module={TableComponent}
           id="posts-table"
+          slug={@slug}
           items={@posts}
           page={@page}
           params={@params}
@@ -99,10 +100,10 @@ defmodule Literature.PostLive do
     |> assign(:post, %Post{})
   end
 
-  defp apply_action(socket, :edit_post, %{"id" => id}) do
+  defp apply_action(socket, :edit_post, %{"slug" => slug}) do
     socket
     |> assign(:page_title, "Edit Post")
-    |> assign(:post, Literature.get_post!(id))
+    |> assign(:post, Literature.get_post!(slug: slug))
   end
 
   defp paginate_posts(params \\ %{}) do

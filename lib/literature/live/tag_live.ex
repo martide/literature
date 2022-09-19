@@ -27,6 +27,7 @@ defmodule Literature.TagLive do
         <.live_component
           module={TableComponent}
           id="tags-table"
+          slug={@slug}
           items={@tags}
           page={@page}
           params={@params}
@@ -99,10 +100,10 @@ defmodule Literature.TagLive do
     |> assign(:tag, %Tag{})
   end
 
-  defp apply_action(socket, :edit_tag, %{"id" => id}) do
+  defp apply_action(socket, :edit_tag, %{"slug" => slug}) do
     socket
     |> assign(:page_title, "Edit Tag")
-    |> assign(:tag, Literature.get_tag!(id))
+    |> assign(:tag, Literature.get_tag!(slug: slug))
   end
 
   defp paginate_tags(params \\ %{}) do
