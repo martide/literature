@@ -17,14 +17,14 @@ jobs:
       with:
         otp-version: "25.x"
         elixir-version: "1.13.x"
-    - uses: actions/setup-node@v3
+    - uses: actions/cache@v3
       with:
-        node-version: "16.x"
-    - run: npm ci
-      working-directory: assets/
-    # https://help.github.com/en/actions/reference/workflow-commands-for-github-actions#adding-a-system-path
-    - run: echo "$GITHUB_WORKSPACE/assets/node_modules/.bin" >> $GITHUB_PATH
-    - run: which mjml
+        path: |
+          deps
+          _build
+        key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-mix-
     - run: mix deps.get
     - run: mix compile --warnings-as-errors
     - run: mix dialyzer
@@ -56,6 +56,14 @@ jobs:
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
+      - uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
       - run: mix do deps.get, compile --all-warnings --warnings-as-errors
       - run: mix deps.unlock --check-unused
       - run: mix hex.audit
@@ -94,6 +102,14 @@ jobs:
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
+      - uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
       - run: mix do deps.get, compile --all-warnings --warnings-as-errors
       - run: mix deps.unlock --check-unused
       - run: mix hex.audit
