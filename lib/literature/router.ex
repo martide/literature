@@ -112,8 +112,8 @@ defmodule Literature.Router do
     opts = Keyword.put(opts, :application_router, __CALLER__.module)
 
     publication_slug =
-      Keyword.get_lazy(opts, :slug, fn ->
-        raise "Missing mandatory :slug option."
+      Keyword.get_lazy(opts, :publication_slug, fn ->
+        raise "Missing mandatory :publication_slug option."
       end)
 
     view_module =
