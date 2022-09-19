@@ -1,0 +1,122 @@
+name: Elixir
+on: push
+
+env:
+  COVERALLS_PARALLEL: true
+  COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  MIX_ENV: test
+
+# https://github.com/elixir-lang/elixir/blob/master/lib/elixir/pages/compatibility-and-deprecations.md
+jobs:
+  dialyzer:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: erlef/setup-beam@v1
+      with:
+        otp-version: "25.x"
+        elixir-version: "1.13.x"
+    - uses: actions/cache@v3
+      with:
+        path: |
+          deps
+          _build
+        key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-mix-
+    - run: mix deps.get
+    - run: mix compile --warnings-as-errors
+    - run: mix dialyzer
+
+  elixir_1_14:
+    runs-on: ubuntu-latest
+    name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
+    strategy:
+      matrix:
+        otp: [23.x, 24.x, 25.x]
+        elixir: [1.14.x]
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_literature
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v2
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir}}
+      - uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
+      - run: mix do deps.get, compile --all-warnings --warnings-as-errors
+      - run: mix deps.unlock --check-unused
+      - run: mix hex.audit
+      # -run: mix doctor
+      - run: mix format --dry-run --check-formatted
+      - run: mix archive.install hex sobelow --force
+      # - run: mix sobelow --config
+      - run: mix format --dry-run --check-formatted
+      # - run: mix credo --strict
+      - run: mix coveralls.github
+
+  elixir_1_13:
+    runs-on: ubuntu-latest
+    name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
+    strategy:
+      matrix:
+        otp: [22.x, 23.x, 24.x]
+        elixir: [1.13.x]
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_literature
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v2
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir}}
+      - uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
+      - run: mix do deps.get, compile --all-warnings --warnings-as-errors
+      - run: mix deps.unlock --check-unused
+      - run: mix hex.audit
+      # -run: mix doctor
+      - run: mix format --dry-run --check-formatted
+      - run: mix archive.install hex sobelow --force
+      # - run: mix sobelow --config
+      - run: mix format --dry-run --check-formatted
+      # - run: mix credo --strict
+      - run: mix coveralls.github
