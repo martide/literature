@@ -23,8 +23,13 @@ defmodule Literature.BlogLive do
   end
 
   @impl Phoenix.LiveView
-  def mount(_params, %{"view_module" => view_module}, socket) do
-    {:ok, assign(socket, :view_module, view_module), layout: @layout}
+  def mount(_params, session, socket) do
+    assigns = %{
+      publication_slug: session["publication_slug"],
+      view_module: session["view_module"]
+    }
+
+    {:ok, assign(socket, assigns), layout: @layout}
   end
 
   @impl Phoenix.LiveView
@@ -50,11 +55,30 @@ defmodule Literature.BlogLive do
   end
 
   @impl Phoenix.LiveView
-  def handle_params(_params, _url, socket) do
-    socket
-    |> assign(:posts, Literature.list_posts(preload: ~w(primary_author primary_tag)a))
-    |> assign(:tags, Literature.list_tags(preload: ~w(posts)a))
-    |> then(&{:noreply, &1})
+  def handle_params(params, _url, socket) do
+    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  end
+
+  defp apply_action(socket, :index, _params) do
+    assign(socket, :posts, list_posts(socket))
+  end
+
+  defp apply_action(socket, :tags, _params) do
+    assign(socket, :tags, list_tags(socket))
+  end
+
+  defp apply_action(socket, _, _), do: socket
+
+  defp list_posts(%{assigns: %{publication_slug: slug}}) do
+    %{"publication_slug" => slug}
+    |> Literature.list_posts()
+    |> preload_post()
+  end
+
+  defp list_tags(%{assigns: %{publication_slug: slug}}) do
+    %{"publication_slug" => slug}
+    |> Literature.list_tags()
+    |> preload_tag()
   end
 
   defp assign_to_socket(socket, name, struct) do

@@ -22,6 +22,8 @@ defmodule Literature.QueryHelpers do
 
   def where_preload(query, _), do: query
 
+  def search(query, field \\ nil, attrs)
+
   def search(query, :title, %{"q" => search, "publication_slug" => slug}) do
     or_where(query, [q, p], ilike(q.title, ^"#{search}%") and p.slug == ^slug)
   end
@@ -46,7 +48,7 @@ defmodule Literature.QueryHelpers do
     or_where(query, [q], ilike(q.slug, ^"#{search}%"))
   end
 
-  def search(query, _, %{"publication_slug" => slug}) do
+  def search(query, _, %{"publication_slug" => slug}) when is_binary(slug) do
     where(query, [_, p], p.slug == ^slug)
   end
 

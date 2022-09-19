@@ -36,6 +36,8 @@ defmodule Literature do
   def list_authors(attrs \\ []) do
     Author
     |> join_with_publication()
+    |> search(attrs)
+    |> where_preload(attrs)
     |> Repo.all()
   end
 
@@ -153,6 +155,7 @@ defmodule Literature do
   def list_posts(attrs \\ []) do
     Post
     |> join_with_publication()
+    |> search(attrs)
     |> where_preload(attrs)
     |> Repo.all()
   end
@@ -370,6 +373,7 @@ defmodule Literature do
   def list_tags(attrs \\ []) do
     Tag
     |> join_with_publication()
+    |> search(attrs)
     |> where_preload(attrs)
     |> Repo.all()
   end
