@@ -111,6 +111,16 @@ defmodule Literature.Router do
   defmacro literature(path, opts \\ []) do
     opts = Keyword.put(opts, :application_router, __CALLER__.module)
 
+    publication_slug =
+      Keyword.get_lazy(opts, :slug, fn ->
+        raise "Missing mandatory :slug option."
+      end)
+
+    view_module =
+      Keyword.get_lazy(opts, :view_module, fn ->
+        raise "Missing mandatory :view_module option."
+      end)
+
     quote bind_quoted: binding() do
       scope path, alias: false, as: false do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
@@ -125,62 +135,19 @@ defmodule Literature.Router do
           pipe_through(:literature_browser)
 
           {session_name, session_opts, route_opts} =
-            Literature.Router.__options__(opts, :literature, :root)
+            Literature.Router.__options__(opts, :literature, :root,
+              publication_slug: publication_slug,
+              view_module: view_module
+            )
 
           live_session session_name, session_opts do
             # Blog routes
-            live("/", Literature.BlogLive, :index, route_opts)
-            live("/tags", Literature.BlogLive, :tags, route_opts)
-            live("/authors", Literature.BlogLive, :authors, route_opts)
-            live("/:slug", Literature.BlogLive, :show, route_opts)
-          end
-        end
-      end
-    end
-  end
-
-  @doc """
-  Defines a Literature tag route.
-
-  It requires a path where to mount the tag page at and allows options to customize routing.
-
-  ## Examples
-
-  Mount a `tag` at the path "/tag":
-
-      defmodule MyAppWeb.Router do
-        use Phoenix.Router
-
-        import Literature.Router
-
-        scope "/", MyAppWeb do
-          pipe_through [:browser]
-
-          literature_tag "/tag"
-        end
-      end
-  """
-  defmacro literature_tag(path, opts \\ []) do
-    opts = Keyword.put(opts, :application_router, __CALLER__.module)
-
-    quote bind_quoted: binding() do
-      scope path, alias: false, as: false do
-        import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
-
-        pipeline :literature_browser do
-          plug(:accepts, ["html"])
-          plug(:fetch_session)
-          plug(:protect_from_forgery)
-        end
-
-        scope path: "/" do
-          pipe_through(:literature_browser)
-
-          {session_name, session_opts, route_opts} =
-            Literature.Router.__options__(opts, :literature_tag, :root)
-
-          live_session session_name, session_opts do
-            live("/", Literature.Blog.TagLive, :tag, route_opts)
+            scope publication_slug do
+              live("/", Literature.BlogLive, :index, route_opts)
+              live("/tags", Literature.BlogLive, :tags, route_opts)
+              live("/authors", Literature.BlogLive, :authors, route_opts)
+              live("/:slug", Literature.BlogLive, :show, route_opts)
+            end
           end
         end
       end
@@ -188,29 +155,22 @@ defmodule Literature.Router do
   end
 
   @doc false
-  def __options__(opts, session_name, root_layout) do
+  def __options__(opts, session_name, root_layout, config \\ []) do
     session_name = Keyword.get(opts, :as, session_name)
-
-    view_module =
-      if session_name == :literature do
-        Keyword.get_lazy(opts, :view_module, fn ->
-          raise "Missing mandatory :view_module option."
-        end)
-      else
-        ""
-      end
 
     session_opts = [
       root_layout: {Literature.LayoutView, root_layout},
       session: %{
-        "view_module" => view_module
+        "publication_slug" => config[:publication_slug],
+        "view_module" => config[:view_module]
       }
     ]
 
     route_opts = [
       private: %{
         application_router: Keyword.get(opts, :application_router),
-        view_module: view_module
+        publication_slug: config[:publication_slug],
+        view_module: config[:view_module]
       },
       as: session_name
     ]

@@ -35,7 +35,7 @@ defmodule Literature.CardComponent do
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         <% end %>
-        <%= live_redirect "Create post", to: @show_path, class: "text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" %>
+        <%= live_redirect "Create new post", to: @show_path, class: "text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" %>
       </div>
     </div>
     """

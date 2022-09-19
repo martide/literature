@@ -12,7 +12,7 @@ defmodule Literature.PublicationLive do
   @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
-    <div class={"col-span-5 #{if @live_action != :list_publications, do: "bg-white p-10"}"}>
+    <div class={"col-span-5 #{if @live_action != :list_publications, do: "bg-white p-10 rounded-lg shadow-md"}"}>
       <.h1><%= @page_title %></.h1>
       <%= if @live_action == :list_publications do %>
         <.card_container>
@@ -22,6 +22,9 @@ defmodule Literature.PublicationLive do
               edit_path={literature_dashboard_path(@socket, :edit_publication, publication.slug)}
               show_path={literature_dashboard_path(@socket, :new_post, publication.slug)}
             />
+          <% end %>
+          <%= if Enum.empty?(@publications) do %>
+            <p class="font-semibold text-gray-500">No data found. Create a new one!</p>
           <% end %>
         </.card_container>
       <% end %>
