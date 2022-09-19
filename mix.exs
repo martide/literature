@@ -12,7 +12,14 @@ defmodule Literature.MixProject do
       aliases: aliases(),
       config_path: "./config/config.exs",
       elixirc_paths: elixirc_paths(Mix.env()),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ]
     ]
   end
 
@@ -46,9 +53,10 @@ defmodule Literature.MixProject do
       {:waffle_gcs, "~> 0.2.0"},
 
       # Test
-      {:floki, ">= 0.33.1", only: :test},
       {:credo, "~> 1.6", only: [:test, :dev], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:test, :dev], runtime: false}
+      {:dialyxir, "~> 1.0", only: [:test, :dev], runtime: false},
+      {:excoveralls, "~> 0.10", only: :test},
+      {:floki, ">= 0.33.1", only: :test}
     ]
   end
 
