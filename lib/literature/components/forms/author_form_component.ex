@@ -89,8 +89,10 @@ defmodule Literature.AuthorFormComponent do
   end
 
   defp save_author(socket, :new_author, author_params) do
-    images = build_uploaded_entries(socket, ~w(profile_image cover_image)a)
-    author_params = Map.merge(author_params, images)
+    author_params =
+      author_params
+      |> put_publication_id(socket)
+      |> Map.merge(build_uploaded_entries(socket, ~w(profile_image cover_image)a))
 
     case Literature.create_author(author_params) do
       {:ok, _author} ->
@@ -102,6 +104,12 @@ defmodule Literature.AuthorFormComponent do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
     end
+  end
+
+  defp put_publication_id(params, %{assigns: %{slug: slug}}) do
+    [slug: slug]
+    |> Literature.get_publication!()
+    |> then(&Map.put(params, "publication_id", &1.id))
   end
 
   defp put_validation(changeset, :new_author), do: changeset

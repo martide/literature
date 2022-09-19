@@ -51,6 +51,7 @@ defmodule Literature.Web do
 
       use Phoenix.LiveView, layout: {Literature.LayoutView, "live_dashboard.html"}
 
+      import Literature.CardComponent
       import Literature.FormComponent
       import Literature.LayoutComponent
       import Literature.SidebarComponent

@@ -6,16 +6,20 @@ defmodule Literature.PostLive do
   alias Literature.TableComponent
 
   @impl Phoenix.LiveView
-  def mount(_params, _session, socket) do
-    {:ok, assign(socket, :return_to, literature_dashboard_path(socket, :list_posts))}
+  def mount(%{"publication_slug" => slug}, _session, socket) do
+    socket
+    |> assign(:return_to, literature_dashboard_path(socket, :list_posts, slug))
+    |> assign(:slug, slug)
+    |> then(&{:ok, &1})
   end
 
   @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
     <.sidebar id="post-sidebar" live_action={@live_action}>
-      <:tab title="List Posts" path={literature_dashboard_path(@socket, :list_posts)} icon="table-cells" action={:list_posts} />
-      <:tab title="Create Post" path={literature_dashboard_path(@socket, :new_post)} icon="plus-circle" action={:new_post} />
+      <:tab title="Posts" path={literature_dashboard_path(@socket, :list_posts, @slug)} icon="pencil" actions={~w(list_posts new_post edit_post)a} />
+      <:tab title="Tags" path={literature_dashboard_path(@socket, :list_tags, @slug)} icon="tag" actions={~w(list_tags new_tag edit_tag)a} />
+      <:tab title="Authors" path={literature_dashboard_path(@socket, :list_authors, @slug)} icon="users" actions={~w(list_authors new_author edit_author)a} />
     </.sidebar>
     <.container>
       <.h1><%= @page_title %></.h1>
@@ -29,6 +33,7 @@ defmodule Literature.PostLive do
           live_action={@live_action}
           columns={columns()}
           base_path={@return_to}
+          new_path={literature_dashboard_path(@socket, :new_post, @slug)}
         />
         <%= if @post do %>
           <.delete_modal label={@post.title} item={@post} return_to={@return_to} />
@@ -39,6 +44,7 @@ defmodule Literature.PostLive do
           module={PostFormComponent}
           id={@post.id || :new_post}
           post={@post}
+          slug={@slug}
           action={@live_action}
           return_to={@return_to}
         />
@@ -48,8 +54,11 @@ defmodule Literature.PostLive do
   end
 
   @impl Phoenix.LiveView
-  def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  def handle_params(params, url, socket) do
+    socket
+    |> assign(:uri, URI.parse(url))
+    |> apply_action(socket.assigns.live_action, params)
+    |> then(&{:noreply, &1})
   end
 
   @impl Phoenix.LiveView
@@ -74,10 +83,6 @@ defmodule Literature.PostLive do
       |> put_flash(:success, "Post deleted successfully")
 
     {:noreply, socket}
-  end
-
-  defp apply_action(socket, :index, _params) do
-    push_patch(socket, to: literature_dashboard_path(socket, :list_posts))
   end
 
   defp apply_action(socket, :list_posts, params) do

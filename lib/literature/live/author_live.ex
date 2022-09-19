@@ -7,16 +7,20 @@ defmodule Literature.AuthorLive do
   alias Literature.TableComponent
 
   @impl Phoenix.LiveView
-  def mount(_params, _session, socket) do
-    {:ok, assign(socket, :return_to, literature_dashboard_path(socket, :list_authors))}
+  def mount(%{"publication_slug" => slug}, _session, socket) do
+    socket
+    |> assign(:return_to, literature_dashboard_path(socket, :list_authors, slug))
+    |> assign(:slug, slug)
+    |> then(&{:ok, &1})
   end
 
   @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
     <.sidebar id="author-sidebar" live_action={@live_action}>
-      <:tab title="List Authors" path={literature_dashboard_path(@socket, :list_authors)} icon="table-cells" action={:list_authors} />
-      <:tab title="Create Author" path={literature_dashboard_path(@socket, :new_author)} icon="plus-circle" action={:new_author} />
+      <:tab title="Posts" path={literature_dashboard_path(@socket, :list_posts, @slug)} icon="pencil" actions={~w(list_posts new_post edit_post)a} />
+      <:tab title="Tags" path={literature_dashboard_path(@socket, :list_tags, @slug)} icon="tag" actions={~w(list_tags new_tag edit_tag)a} />
+      <:tab title="Authors" path={literature_dashboard_path(@socket, :list_authors, @slug)} icon="users" actions={~w(list_authors new_author edit_author)a} />
     </.sidebar>
     <.container>
       <.h1><%= @page_title %></.h1>
@@ -30,6 +34,7 @@ defmodule Literature.AuthorLive do
           live_action={@live_action}
           columns={columns()}
           base_path={@return_to}
+          new_path={literature_dashboard_path(@socket, :new_author, @slug)}
         />
         <%= if @author do %>
           <.delete_modal label={@author.name} item={@author} return_to={@return_to} />
@@ -40,6 +45,7 @@ defmodule Literature.AuthorLive do
           module={AuthorFormComponent}
           id={@author.id || :new_author}
           author={@author}
+          slug={@slug}
           action={@live_action}
           return_to={@return_to}
         />
@@ -55,8 +61,11 @@ defmodule Literature.AuthorLive do
   end
 
   @impl Phoenix.LiveView
-  def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  def handle_params(params, url, socket) do
+    socket
+    |> assign(:uri, URI.parse(url))
+    |> apply_action(socket.assigns.live_action, params)
+    |> then(&{:noreply, &1})
   end
 
   @impl Phoenix.LiveView

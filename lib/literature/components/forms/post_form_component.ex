@@ -6,13 +6,13 @@ defmodule Literature.PostFormComponent do
   @accept ~w(.jpg .jpeg .png)
 
   @impl Phoenix.LiveComponent
-  def update(%{post: post} = assigns, socket) do
+  def update(%{post: post, slug: slug} = assigns, socket) do
     socket =
       socket
       |> assign(assigns)
       |> assign(:changeset, Literature.change_post(post))
-      |> assign(:authors, Literature.list_authors() |> select_options)
-      |> assign(:tags, Literature.list_tags() |> select_options)
+      |> assign(:authors, list_authors(slug))
+      |> assign(:tags, list_tags(slug))
       |> allow_upload()
 
     {:ok, socket}
@@ -103,8 +103,10 @@ defmodule Literature.PostFormComponent do
   end
 
   defp save_post(socket, :new_post, post_params) do
-    images = build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a)
-    post_params = Map.merge(post_params, images)
+    post_params =
+      post_params
+      |> put_publication_id(socket)
+      |> Map.merge(build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a))
 
     case Literature.create_post(post_params) do
       {:ok, _post} ->
@@ -116,6 +118,24 @@ defmodule Literature.PostFormComponent do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
     end
+  end
+
+  defp list_authors(slug) do
+    %{"publication_slug" => slug}
+    |> Literature.list_authors()
+    |> select_options()
+  end
+
+  defp list_tags(slug) do
+    %{"publication_slug" => slug}
+    |> Literature.list_tags()
+    |> select_options()
+  end
+
+  defp put_publication_id(params, %{assigns: %{slug: slug}}) do
+    [slug: slug]
+    |> Literature.get_publication!()
+    |> then(&Map.put(params, "publication_id", &1.id))
   end
 
   defp put_validation(changeset, :new_post), do: changeset

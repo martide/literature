@@ -44,25 +44,43 @@ defmodule Literature.Router do
             Literature.Router.__options__(opts, :literature_dashboard, :root_dashboard)
 
           live_session session_name, session_opts do
-            live("/", Literature.PostLive, :index, Keyword.put(route_opts, :as, :literature))
+            live(
+              "/",
+              Literature.PublicationLive,
+              :index,
+              Keyword.put(route_opts, :as, :literature)
+            )
 
-            # Post routes
-            live("/posts/page/1", Literature.PostLive, :list_posts, route_opts)
-            live("/posts/page/:page", Literature.PostLive, :list_posts, route_opts)
-            live("/posts/new", Literature.PostLive, :new_post, route_opts)
-            live("/posts/:id/edit", Literature.PostLive, :edit_post, route_opts)
+            # Publication routes
+            live("/publications", Literature.PublicationLive, :list_publications, route_opts)
+            live("/publications/new", Literature.PublicationLive, :new_publication, route_opts)
 
-            # Tag routes
-            live("/tags/page/1", Literature.TagLive, :list_tags, route_opts)
-            live("/tags/page/:page", Literature.TagLive, :list_tags, route_opts)
-            live("/tags/new", Literature.TagLive, :new_tag, route_opts)
-            live("/tags/:id/edit", Literature.TagLive, :edit_tag, route_opts)
+            live(
+              "/publications/:slug/edit",
+              Literature.PublicationLive,
+              :edit_publication,
+              route_opts
+            )
 
-            # Author routes
-            live("/authors/page/1", Literature.AuthorLive, :list_authors, route_opts)
-            live("/authors/page/:page", Literature.AuthorLive, :list_authors, route_opts)
-            live("/authors/new", Literature.AuthorLive, :new_author, route_opts)
-            live("/authors/:id/edit", Literature.AuthorLive, :edit_author, route_opts)
+            scope "/:publication_slug", Literature do
+              # Post routes
+              live("/posts/page/1", PostLive, :list_posts, route_opts)
+              live("/posts/page/:page", PostLive, :list_posts, route_opts)
+              live("/posts/new", PostLive, :new_post, route_opts)
+              live("/posts/:slug/edit", PostLive, :edit_post, route_opts)
+
+              # Tag routes
+              live("/tags/page/1", TagLive, :list_tags, route_opts)
+              live("/tags/page/:page", TagLive, :list_tags, route_opts)
+              live("/tags/new", TagLive, :new_tag, route_opts)
+              live("/tags/:slug/edit", TagLive, :edit_tag, route_opts)
+
+              # Author routes
+              live("/authors/page/1", AuthorLive, :list_authors, route_opts)
+              live("/authors/page/:page", AuthorLive, :list_authors, route_opts)
+              live("/authors/new", AuthorLive, :new_author, route_opts)
+              live("/authors/:slug/edit", AuthorLive, :edit_author, route_opts)
+            end
           end
         end
       end

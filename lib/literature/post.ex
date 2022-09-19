@@ -20,6 +20,7 @@ defmodule Literature.Post do
     field(:twitter_description, :string)
     field(:excerpt, :string)
 
+    belongs_to(:publication, Publication)
     belongs_to(:primary_author, Author)
     belongs_to(:primary_tag, Tag)
 
@@ -27,6 +28,7 @@ defmodule Literature.Post do
   end
 
   @required_params ~w(
+    publication_id
     slug
     title
   )a

@@ -20,6 +20,7 @@ defmodule Literature.Author do
   end
 
   @required_params ~w(
+    publication_id
     slug
     name
   )a

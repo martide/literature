@@ -15,12 +15,20 @@ defmodule Literature.TableComponent do
   def render(assigns) do
     ~H"""
     <div class="col-span-4 relative sm:rounded-lg w-full">
-      <form phx-target={@myself} phx-change="search" class="flex items-center w-1/2 border-gray-300 border rounded-lg text-gray-900 pl-2.5 mb-5">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-          <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z" clip-rule="evenodd" />
-        </svg>
-        <%= search_input :search, :q, value: @params["q"], class: "text-sm rounded-lg focus:outline-none block w-full p-2.5", placeholder: "Find", autofocus: true, phx_debounce: 300 %>
-      </form>
+      <div class="flex items-center justify-between mb-5">
+        <form phx-target={@myself} phx-change="search" class="flex items-center w-1/2 border-gray-300 border rounded-lg text-gray-900 pl-2.5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+            <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z" clip-rule="evenodd" />
+          </svg>
+          <%= search_input :search, :q, value: @params["q"], class: "text-sm rounded-lg focus:outline-none block w-full p-2.5", placeholder: "Find", autofocus: true, phx_debounce: 300 %>
+        </form>
+        <%= live_patch to: @new_path, class: "text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z" clip-rule="evenodd" />
+          </svg>
+          <span class="flex-1 ml-2 whitespace-nowrap">Create new</span>
+        <% end %>
+      </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-left text-gray-500">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50">
