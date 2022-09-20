@@ -117,7 +117,8 @@ defmodule Literature.PostLive do
   defp columns do
     [
       {:title, "Title"},
-      {:slug, "Slug"}
+      {:slug, "Slug"},
+      {:published_at, "Status"}
     ]
   end
 end

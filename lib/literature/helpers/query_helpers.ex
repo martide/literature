@@ -9,6 +9,16 @@ defmodule Literature.QueryHelpers do
 
   def join_with_publication(query, _), do: query
 
+  def filter(query, %{"status" => "drafts", "publication_slug" => slug}) do
+    where(query, [q, p], is_nil(q.published_at) and p.slug == ^slug)
+  end
+
+  def filter(query, %{"status" => "published", "publication_slug" => slug}) do
+    where(query, [q, p], not is_nil(q.published_at) and p.slug == ^slug)
+  end
+
+  def filter(query, _), do: query
+
   def select_options(list) when is_list(list) do
     Enum.map(list, &{&1.name, &1.id})
   end

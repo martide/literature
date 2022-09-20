@@ -40,6 +40,10 @@ defmodule Literature.Helpers do
     routes(socket).literature_dashboard_path(socket, action, params, opts)
   end
 
+  def literature_dashboard_path(socket = %Phoenix.LiveView.Socket{}, action, slug, params, opts) do
+    routes(socket).literature_dashboard_path(socket, action, slug, params, opts)
+  end
+
   def routes(conn = %Plug.Conn{}) do
     conn.private.application_router.__helpers__()
   end

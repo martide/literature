@@ -61,6 +61,7 @@ defmodule Literature.PostFormComponent do
           <.form_field form={f} type="text_input" field={:feature_image_caption} label="Feature Image Caption" />
           <.form_field form={f} type="textarea" field={:custom_excerpt} label="Custom Excerpt" />
           <.form_field form={f} type="text_editor" field={:excerpt} label="Excerpt" />
+          <.form_field form={f} type="radio_group" field={:status} label="Status" options={[draft: "Draft", publish: "Publish"]} />
         </.form_group>
         <.button_group>
           <.back_button label="Cancel" return_to={@return_to} />

@@ -117,7 +117,8 @@ defmodule Literature.TagLive do
   defp columns do
     [
       {:name, "Name"},
-      {:slug, "Slug"}
+      {:slug, "Slug"},
+      {:visibility, "Status"}
     ]
   end
 end

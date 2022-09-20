@@ -19,6 +19,7 @@ defmodule Literature.Post do
     field(:twitter_title, :string)
     field(:twitter_description, :string)
     field(:excerpt, :string)
+    field(:status, :string, virtual: true)
 
     belongs_to(:publication, Publication)
     belongs_to(:primary_author, Author)
@@ -31,6 +32,7 @@ defmodule Literature.Post do
     publication_id
     slug
     title
+    status
   )a
 
   @optional_params ~w(
@@ -39,7 +41,6 @@ defmodule Literature.Post do
     feature_image_alt
     feature_image_caption
     featured
-    published_at
     meta_title
     meta_description
     custom_excerpt
@@ -62,8 +63,14 @@ defmodule Literature.Post do
     |> cast(params, @required_params ++ @optional_params)
     |> cast_attachments(params, @attachments)
     |> maybe_generate_slug(post)
+    |> put_published_at()
     |> validate_required(@required_params, message: "This field is required")
     |> unique_constraint(:slug)
+  end
+
+  def resolve_status(post) do
+    status = (post.published_at && "publish") || "draft"
+    Map.put(post, :status, status)
   end
 
   defp maybe_generate_slug(changeset, %{title: title, slug: slug}) when title != slug,
@@ -73,4 +80,18 @@ defmodule Literature.Post do
     do: slugify(changeset, :title)
 
   defp maybe_generate_slug(changeset, _), do: changeset
+
+  defp put_published_at(changeset) do
+    case changeset do
+      %Ecto.Changeset{changes: %{status: "draft"}, valid?: true} ->
+        put_change(changeset, :published_at, nil)
+
+      %Ecto.Changeset{changes: %{status: "publish"}, valid?: true} ->
+        datetime = DateTime.utc_now() |> DateTime.truncate(:second)
+        put_change(changeset, :published_at, datetime)
+
+      changeset ->
+        changeset
+    end
+  end
 end

@@ -16,12 +16,15 @@ defmodule Literature.TableComponent do
     ~H"""
     <div class="col-span-4 relative sm:rounded-lg w-full">
       <div class="flex items-center justify-between mb-5">
-        <form phx-target={@myself} phx-change="search" class="flex items-center w-1/2 border-gray-300 border rounded-lg text-gray-900 pl-2.5">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-            <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z" clip-rule="evenodd" />
-          </svg>
-          <%= search_input :search, :q, value: @params["q"], class: "text-sm rounded-lg focus:outline-none block w-full p-2.5", placeholder: "Find", autofocus: true, phx_debounce: 300 %>
-        </form>
+        <div class="w-1/2 space-y-3">
+          <form phx-target={@myself} phx-change="search" class="flex items-center border-gray-300 border rounded-lg text-gray-900 pl-2.5">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+              <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z" clip-rule="evenodd" />
+            </svg>
+            <%= search_input :search, :q, value: @params["q"], class: "text-sm rounded-lg focus:outline-none block w-full p-2.5", placeholder: "Find", autofocus: true, phx_debounce: 300 %>
+          </form>
+          <%= filter_status Keyword.get(@columns, :published_at, false), assigns %>
+        </div>
         <%= live_patch to: @new_path, class: "text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center" do %>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
             <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z" clip-rule="evenodd" />
@@ -48,9 +51,9 @@ defmodule Literature.TableComponent do
               <%= for item <- @items do %>
                 <tr class="bg-white border-b hover:bg-gray-50">
                   <%= for {field, _} <- @columns do %>
-                    <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">
-                      <%= Map.get(item, field) %>
-                    </th>
+                    <td scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">
+                      <%= render_item item, field %>
+                    </td>
                   <% end %>
                   <td class="py-4 px-6">
                     <.actions item={item} base_path={@base_path} />
@@ -67,7 +70,7 @@ defmodule Literature.TableComponent do
           </tbody>
         </table>
       </div>
-      <%= paginate @socket, @page, fn socket, [page: page] -> literature_dashboard_path(socket, @live_action, page, @params) end %>
+      <%= paginate @socket, @page, fn socket, [page: page] -> literature_dashboard_path(socket, @live_action, @slug, page, @params) end %>
     </div>
     """
   end
@@ -79,7 +82,21 @@ defmodule Literature.TableComponent do
         %{assigns: %{params: params, live_action: live_action, slug: slug}} = socket
       ) do
     params
+    |> Map.delete("page")
     |> Map.merge(search)
+    |> then(&push_patch(socket, to: literature_dashboard_path(socket, live_action, slug, &1)))
+    |> then(&{:noreply, &1})
+  end
+
+  @impl Phoenix.LiveComponent
+  def handle_event(
+        "filter",
+        %{"filter" => filter},
+        %{assigns: %{params: params, live_action: live_action, slug: slug}} = socket
+      ) do
+    params
+    |> Map.delete("page")
+    |> Map.merge(filter)
     |> then(&push_patch(socket, to: literature_dashboard_path(socket, live_action, slug, &1)))
     |> then(&{:noreply, &1})
   end
@@ -101,6 +118,57 @@ defmodule Literature.TableComponent do
         </svg>
       <% end %>
     </div>
+    """
+  end
+
+  defp render_item(item, :published_at = field) do
+    has_value? = Map.get(item, field)
+    label = (has_value? && "Published") || "Draft"
+    classes = (has_value? && "bg-primary-100 text-primary-800") || "bg-gray-100 text-gray-800"
+
+    content_tag(:span, label,
+      class: "text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg #{classes}"
+    )
+  end
+
+  defp render_item(item, :visibility = field) do
+    visible? = Map.get(item, field)
+    label = (visible? && "Public") || "Private"
+    classes = (visible? && "bg-green-100 text-green-800") || "bg-red-100 text-red-800"
+
+    content_tag(:span, label,
+      class: "text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg #{classes}"
+    )
+  end
+
+  defp render_item(item, field), do: Map.get(item, field)
+
+  defp filter_status(false, _), do: nil
+
+  defp filter_status(_, %{params: params} = assigns) do
+    params = Map.put_new(params, "status", "all")
+    assigns = Map.put(assigns, :params, params)
+
+    ~H"""
+    <form phx-target={@myself} phx-change="filter">
+      <ul class="flex items-center text-gray-600 text-sm font-semibold">
+        <.radio_button label="All" value="all" status={@params["status"]} />
+        <.radio_button label="Drafts" value="drafts" status={@params["status"]} />
+        <.radio_button label="Scheduled" value="scheduled" status={@params["status"]} />
+        <.radio_button label="Published" value="published" status={@params["status"]} />
+      </ul>
+    </form>
+    """
+  end
+
+  defp radio_button(assigns) do
+    ~H"""
+    <li class="hover:bg-gray-100 w-full rounded transition duration-300 ease-in-out">
+      <%= label class: "flex items-center cursor-pointer p-3" do %>
+        <%= radio_button :filter, :status, @value, class: "w-4 h-4 border-gray-300 text-primary-700 bg-primary-700", checked: @status == @value %>
+        <span class="px-2"><%= @label %></span>
+      <% end %>
+    </li>
     """
   end
 

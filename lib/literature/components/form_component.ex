@@ -31,6 +31,9 @@ defmodule Literature.FormComponent do
         <% "text_editor" -> %>
           <.form_label form={@form} field={@field} label={@label} />
           <.text_editor form={@form} field={@field} {@input_opts} />
+        <% "radio_group" -> %>
+          <.form_label form={@form} field={@field} label={@label} />
+          <.radio_group form={@form} field={@field} {@input_opts} />
         <% "select" -> %>
           <.form_label form={@form} field={@field} label={@label} />
           <.select form={@form} field={@field} {@input_opts} />
@@ -60,6 +63,21 @@ defmodule Literature.FormComponent do
     <p class="text-primary-700 font-semibold uppercase mb-3"><%= @title %></p>
     <div class="grid grid-cols-2 gap-5">
       <%= render_block(@inner_block) %>
+    </div>
+    """
+  end
+
+  def radio_group(assigns) do
+    assigns = assign_defaults(assigns, text_input_classes(assigns))
+
+    ~H"""
+    <div class="flex items-center border border-gray-300 rounded-md divide-x divide-gray-300">
+      <%= for {value, label} <- @options do %>
+        <label class="flex items-center justify-center w-full cursor-pointer">
+          <.radio form={@form} field={@field} value={value} {@rest} />
+          <div class={label_classes(%{form: @form, field: @field, type: "radio"})}><%= label %></div>
+        </label>
+      <% end %>
     </div>
     """
   end
@@ -102,6 +120,14 @@ defmodule Literature.FormComponent do
 
     ~H"""
     <%= url_input @form, @field, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
+    """
+  end
+
+  def radio(assigns) do
+    assigns = assign_defaults(assigns, radio_classes(assigns))
+
+    ~H"""
+    <%= radio_button @form, @field, @value, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
     """
   end
 
@@ -215,8 +241,10 @@ defmodule Literature.FormComponent do
   end
 
   defp label_classes(assigns) do
-    "#{if field_has_errors?(assigns), do: "text-red-900", else: "text-gray-900"} block mb-2 text-sm font-medium"
+    "#{if field_has_errors?(assigns), do: "text-red-900", else: "text-gray-900"} block #{(assigns[:type] && "peer-checked:bg-primary-700 peer-checked:text-white w-full py-3 text-center transition duration-300 ease-in-out") || "mb-2 text-sm"} font-medium"
   end
+
+  defp radio_classes(_assigns), do: "sr-only peer"
 
   defp text_input_classes(%{hidden: "true"}), do: "hidden"
 

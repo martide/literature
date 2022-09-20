@@ -139,6 +139,7 @@ defmodule Literature do
     |> join_with_publication()
     |> search(:title, attrs)
     |> search(:slug, attrs)
+    |> filter(attrs)
     |> sort_by(attrs)
     |> Repo.paginate(attrs)
   end
@@ -175,7 +176,12 @@ defmodule Literature do
 
   """
   def get_post!(id) when is_binary(id), do: Repo.get(Post, id)
-  def get_post!(list), do: Repo.get_by(Post, list)
+
+  def get_post!(list) do
+    Post
+    |> Repo.get_by(list)
+    |> Post.resolve_status()
+  end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking post changes.
