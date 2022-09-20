@@ -1,10 +1,8 @@
 <section>
   <div class="my-10">
     <div class="text-center space-y-3 max-w-2xl mx-auto">
-      <h2 class="text-4xl font-bold">Our Martide Blog</h2>
-      <p class="text-gray-500 text-xl font-light tracking-wide">
-        We use an agile approach to test assumptions and connect with the needs of your audience early and often.
-      </p>
+      <h2 class="text-4xl font-bold"><%= @publication.name %></h2>
+      <p class="text-gray-500 text-xl font-light tracking-wide"><%= @publication.description %></p>
     </div> 
     <div class="space-y-8 my-20 max-w-5xl px-6 mx-auto">
       <%= for post <- @posts do %>

@@ -9,7 +9,7 @@ defmodule Literature.BlogLive do
   @layout {Literature.LayoutView, "live.html"}
 
   @impl Phoenix.LiveView
-  def mount(%{"slug" => slug}, %{"view_module" => view_module}, socket) do
+  def mount(%{"slug" => slug}, session, socket) do
     [&Literature.get_post!/1, &Literature.get_tag!/1, &Literature.get_author!/1]
     |> Enum.map(fn fun -> fun.(slug: slug) end)
     |> Enum.find(&is_struct/1)
@@ -18,18 +18,21 @@ defmodule Literature.BlogLive do
       %Tag{} = tag -> assign_to_socket(socket, :tag, preload_tag(tag))
       %Author{} = author -> assign_to_socket(socket, :author, author)
     end
-    |> assign(:view_module, view_module)
+    |> assign(%{
+      publication_slug: session["publication_slug"],
+      view_module: session["view_module"]
+    })
     |> then(&{:ok, &1, layout: @layout})
   end
 
   @impl Phoenix.LiveView
   def mount(_params, session, socket) do
-    assigns = %{
+    socket
+    |> assign(%{
       publication_slug: session["publication_slug"],
       view_module: session["view_module"]
-    }
-
-    {:ok, assign(socket, assigns), layout: @layout}
+    })
+    |> then(&{:ok, &1, layout: @layout})
   end
 
   @impl Phoenix.LiveView
@@ -55,12 +58,17 @@ defmodule Literature.BlogLive do
   end
 
   @impl Phoenix.LiveView
-  def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  def handle_params(_params, _url, socket) do
+    {:noreply, apply_action(socket, socket.assigns.live_action, socket.assigns.publication_slug)}
   end
 
-  defp apply_action(socket, :index, _params) do
-    assign(socket, :posts, list_posts(socket))
+  defp apply_action(socket, :index, slug) do
+    publication = Literature.get_publication!(slug: slug)
+
+    socket
+    |> assign_meta_tags(publication)
+    |> assign(:publication, publication)
+    |> assign(:posts, list_posts(socket))
   end
 
   defp apply_action(socket, :tags, _params) do

@@ -9,7 +9,16 @@ defmodule Literature.LayoutView do
 
   @env Application.compile_env(:literature, :env)
 
-  defp asset_path(conn_or_socket, path) do
+  defp application_favicon_path(conn_or_socket, view_module),
+    do: view_module.favicon_path(conn_or_socket)
+
+  defp application_css_path(conn_or_socket, view_module),
+    do: view_module.css_path(conn_or_socket)
+
+  defp application_js_path(conn_or_socket, view_module),
+    do: view_module.js_path(conn_or_socket)
+
+  def asset_path(conn_or_socket, path) do
     literature_path(conn_or_socket, :index) <> "/assets/" <> asset_file_name(path, @env)
   end
 

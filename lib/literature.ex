@@ -255,6 +255,7 @@ defmodule Literature do
   """
   def list_publications(attrs \\ []) do
     Publication
+    |> sort_by(attrs)
     |> where_preload(attrs)
     |> Repo.all()
   end

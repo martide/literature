@@ -2,9 +2,9 @@
 <%= Phoenix.View.render(@view_module, "header.html", assigns) %>
 <!-- End Header -->
 
-<main class="max-w-6xl mx-auto">
-  <%= @inner_content %>
-</main>
+<!-- Start Main -->
+<%= Phoenix.View.render(@view_module, "main.html", assigns) %>
+<!-- End Main -->
 
 <!-- Start Footer -->
 <%= Phoenix.View.render(@view_module, "footer.html", assigns) %>

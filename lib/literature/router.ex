@@ -44,6 +44,7 @@ defmodule Literature.Router do
             Literature.Router.__options__(opts, :literature_dashboard, :root_dashboard)
 
           live_session session_name, session_opts do
+            # Publication routes
             live(
               "/",
               Literature.PublicationLive,
@@ -51,7 +52,6 @@ defmodule Literature.Router do
               Keyword.put(route_opts, :as, :literature)
             )
 
-            # Publication routes
             live("/publications", Literature.PublicationLive, :list_publications, route_opts)
             live("/publications/new", Literature.PublicationLive, :new_publication, route_opts)
 
@@ -135,18 +135,15 @@ defmodule Literature.Router do
           pipe_through(:literature_browser)
 
           {session_name, session_opts, route_opts} =
-            Literature.Router.__options__(opts, :literature, :root,
-              publication_slug: publication_slug,
-              view_module: view_module
-            )
+            Literature.Router.__options__(opts, :literature, :root)
 
           live_session session_name, session_opts do
             # Blog routes
-            scope "/#{publication_slug}" do
-              live("/", Literature.BlogLive, :index, route_opts)
-              live("/tags", Literature.BlogLive, :tags, route_opts)
-              live("/authors", Literature.BlogLive, :authors, route_opts)
-              live("/:slug", Literature.BlogLive, :show, route_opts)
+            scope "/#{publication_slug}", Literature do
+              live("/", BlogLive, :index, route_opts)
+              live("/tags", BlogLive, :tags, route_opts)
+              live("/authors", BlogLive, :authors, route_opts)
+              live("/:slug", BlogLive, :show, route_opts)
             end
           end
         end
@@ -155,31 +152,28 @@ defmodule Literature.Router do
   end
 
   @doc false
-  def __options__(opts, session_name, root_layout, config \\ []) do
+  def __options__(opts, session_name, root_layout) do
     session_name = Keyword.get(opts, :as, session_name)
 
     session_opts = [
       root_layout: {Literature.LayoutView, root_layout},
       session: %{
-        "publication_slug" => config[:publication_slug],
-        "view_module" => config[:view_module]
+        "publication_slug" => Keyword.get(opts, :publication_slug),
+        "view_module" => Keyword.get(opts, :view_module)
       }
     ]
 
     route_opts = [
       private: %{
         application_router: Keyword.get(opts, :application_router),
-        publication_slug: config[:publication_slug],
-        view_module: config[:view_module]
+        publication_slug: Keyword.get(opts, :publication_slug),
+        view_module: Keyword.get(opts, :view_module)
       },
       as: session_name
     ]
 
     {session_name, session_opts, route_opts}
   end
-
-  @default_assets_path "/literature/assets"
-  @gzip_assets Application.compile_env(:literature, :gzip_assets, false)
 
   @doc """
   Defines routes for Literature static assets.
@@ -188,7 +182,6 @@ defmodule Literature.Router do
   router in a different pipeline.
 
   It can take the `path` the literature assets will be mounted at.
-  Default path is `"/literature/assets"`.
 
   ## Usage
 
@@ -199,27 +192,31 @@ defmodule Literature.Router do
   ...
 
   scope "/" do
-    literature_assets()
+    literature_assets("/")
   end
   ```
   """
-  defmacro literature_assets(path \\ @default_assets_path) do
+
+  @gzip_assets Application.compile_env(:literature, :gzip_assets, false)
+
+  defmacro literature_assets(path) do
     gzip_assets? = @gzip_assets
 
     quote bind_quoted: binding() do
-      scope "/", Literature do
-        pipeline :literature_assets do
-          plug(Plug.Static,
-            at: path,
-            from: :literature,
-            only: ~w(css js favicon),
-            gzip: gzip_assets?
-          )
-        end
-
-        pipe_through(:literature_assets)
-        get("#{path}/*asset", AssetNotFoundController, :asset, as: :literature_asset)
+      pipeline :literature_assets do
+        plug(Plug.Static,
+          at: "#{path}/assets",
+          from: :literature,
+          only: ~w(css js favicon),
+          gzip: gzip_assets?
+        )
       end
+
+      pipe_through(:literature_assets)
+
+      get("#{path}/assets/*asset", Literature.AssetNotFoundController, :asset,
+        as: :literature_asset
+      )
     end
   end
 end
