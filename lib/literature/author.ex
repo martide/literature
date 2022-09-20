@@ -16,6 +16,8 @@ defmodule Literature.Author do
 
     belongs_to(:publication, Publication)
 
+    has_many(:posts, Post, foreign_key: :primary_author_id)
+
     timestamps()
   end
 

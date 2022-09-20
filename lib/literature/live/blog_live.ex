@@ -16,7 +16,7 @@ defmodule Literature.BlogLive do
     |> case do
       %Post{} = post -> assign_to_socket(socket, :post, preload_post(post))
       %Tag{} = tag -> assign_to_socket(socket, :tag, preload_tag(tag))
-      %Author{} = author -> assign_to_socket(socket, :author, author)
+      %Author{} = author -> assign_to_socket(socket, :author, preload_author(author))
     end
     |> assign(%{
       publication_slug: session["publication_slug"],
@@ -39,12 +39,6 @@ defmodule Literature.BlogLive do
   def render(%{view_module: view_module, live_action: live_action} = assigns) do
     live_action
     |> case do
-      :index ->
-        "index.html"
-
-      :tags ->
-        "tags.html"
-
       :show ->
         [
           {assigns[:post], "post.html"},
@@ -53,6 +47,9 @@ defmodule Literature.BlogLive do
         ]
         |> Enum.find(fn {assign, _} -> is_map(assign) end)
         |> elem(1)
+
+      action ->
+        "#{to_string(action)}.html"
     end
     |> then(&Phoenix.View.render(view_module, &1, assigns))
   end
@@ -75,6 +72,10 @@ defmodule Literature.BlogLive do
     assign(socket, :tags, list_tags(socket))
   end
 
+  defp apply_action(socket, :authors, _params) do
+    assign(socket, :authors, list_authors(socket))
+  end
+
   defp apply_action(socket, _, _), do: socket
 
   defp list_posts(%{assigns: %{publication_slug: slug}}) do
@@ -88,6 +89,21 @@ defmodule Literature.BlogLive do
     |> Literature.list_tags()
     |> preload_tag()
   end
+
+  defp list_authors(%{assigns: %{publication_slug: slug}}) do
+    %{"publication_slug" => slug}
+    |> Literature.list_authors()
+    |> preload_author()
+  end
+
+  defp preload_post(post),
+    do: Repo.preload(post, ~w(primary_author primary_tag)a)
+
+  defp preload_tag(tag),
+    do: Repo.preload(tag, ~w(posts)a)
+
+  defp preload_author(tag),
+    do: Repo.preload(tag, ~w(posts)a)
 
   defp assign_to_socket(socket, name, struct) do
     socket
@@ -112,10 +128,4 @@ defmodule Literature.BlogLive do
     |> Map.put(:og_image, literature_image_url(author_or_tag_or_post, :og_image))
     |> Map.put(:twitter_image, literature_image_url(author_or_tag_or_post, :twitter_image))
   end
-
-  defp preload_tag(tag),
-    do: Repo.preload(tag, ~w(posts)a)
-
-  defp preload_post(post),
-    do: Repo.preload(post, ~w(primary_author primary_tag)a)
 end
