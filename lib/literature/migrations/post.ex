@@ -38,7 +38,7 @@ defmodule Literature.Migrations.Post do
       timestamps()
     end
 
-    create_if_not_exists(unique_index(:literature_posts, [:slug]))
+    create_if_not_exists(unique_index(:literature_posts, [:publication_id, :slug]))
   end
 
   def down do

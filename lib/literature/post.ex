@@ -30,14 +30,14 @@ defmodule Literature.Post do
 
   @required_params ~w(
     publication_id
+    primary_author_id
+    primary_tag_id
     slug
     title
     status
   )a
 
   @optional_params ~w(
-    primary_author_id
-    primary_tag_id
     feature_image_alt
     feature_image_caption
     featured

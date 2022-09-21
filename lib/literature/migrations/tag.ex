@@ -27,7 +27,7 @@ defmodule Literature.Migrations.Tag do
       timestamps()
     end
 
-    create_if_not_exists(unique_index(:literature_tags, [:slug]))
+    create_if_not_exists(unique_index(:literature_tags, [:publication_id, :slug]))
   end
 
   def down do

@@ -97,5 +97,5 @@ defmodule Literature.PublicationLive do
   end
 
   defp list_publications,
-    do: Literature.list_publications(preload: ~w(posts authors tags)a)
+    do: Literature.list_publications(%{"preload" => ~w(posts authors tags)a})
 end

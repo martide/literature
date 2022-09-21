@@ -25,7 +25,7 @@ defmodule Literature.Migrations.Author do
       timestamps()
     end
 
-    create_if_not_exists(unique_index(:literature_authors, [:slug]))
+    create_if_not_exists(unique_index(:literature_authors, [:publication_id, :slug]))
   end
 
   def down do

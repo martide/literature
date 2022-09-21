@@ -55,6 +55,7 @@ defmodule Literature.MixProject do
       {:waffle_gcs, "~> 0.2.0"},
 
       # Others
+      {:atomex, "~> 0.5.1"},
       {:sitemapper, "~> 0.6.0"},
       {:slugy, "~> 4.1"},
 

@@ -155,6 +155,7 @@ defmodule Literature do
   def list_posts(attrs \\ []) do
     Post
     |> where_preload(attrs)
+    |> where_status(attrs)
     |> where_publication(attrs)
     |> Repo.all()
   end

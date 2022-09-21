@@ -145,14 +145,16 @@ defmodule Literature.Router do
           {session_name, session_opts, route_opts} =
             Literature.Router.__options__(opts, session_name, :root)
 
-          live_session session_name, session_opts do
-            # Blog routes
-            scope "/#{publication_slug}", Literature do
+          scope "/#{publication_slug}", Literature do
+            live_session session_name, session_opts do
+              # Blog routes
               live("/", BlogLive, :index, route_opts)
               live("/tags", BlogLive, :tags, route_opts)
               live("/authors", BlogLive, :authors, route_opts)
               live("/:slug", BlogLive, :show, route_opts)
             end
+
+            get("/posts/rss.xml", RSSController, :index)
           end
         end
       end

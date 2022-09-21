@@ -35,4 +35,12 @@ defmodule Literature.Config do
 
   defp sitemap_config,
     do: Application.get_env(:literature, :sitemap)
+
+  # RSS Config
+  def feed_author, do: feed_config()[:author]
+  def feed_email, do: feed_config()[:email]
+  def feed_url, do: feed_config()[:url]
+
+  defp feed_config,
+    do: Application.get_env(:literature, :rss)
 end

@@ -24,11 +24,8 @@ defmodule Literature.QueryHelpers do
     order_by(query, ^sort(attrs))
   end
 
-  def where_preload(query, attrs) when is_list(attrs) do
-    case Keyword.get(attrs, :preload, []) do
-      nil -> query
-      preloads -> preload(query, ^preloads)
-    end
+  def where_preload(query, %{"preload" => preloads}) do
+    preload(query, ^preloads)
   end
 
   def where_preload(query, _), do: query
