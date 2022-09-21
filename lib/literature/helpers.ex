@@ -53,10 +53,10 @@ defmodule Literature.Helpers do
   end
 
   # Image Routing Helpers
-  def literature_image_url(schema, field) do
+  def literature_image_url(schema, field, size \\ :original) do
     schema
     |> Map.get(field)
-    |> Literature.Uploader.url()
+    |> Literature.Uploader.url(size)
   end
 
   # Uploaded Entries Helpers
