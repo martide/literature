@@ -121,7 +121,7 @@ defmodule Literature.AuthorLive do
     |> assign(:page_title, "Page Layout")
   end
 
-  defp paginate_authors(params \\ %{}) do
+  defp paginate_authors(params) do
     page = Literature.paginate_authors(params)
 
     Map.new()

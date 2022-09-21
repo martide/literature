@@ -27,21 +27,25 @@ defmodule Literature.Router do
   defmacro literature_dashboard(path, opts \\ []) do
     opts = Keyword.put(opts, :application_router, __CALLER__.module)
 
+    session_name = Keyword.get(opts, :as, :literature_dashboard)
+
     quote bind_quoted: binding() do
       scope path, alias: false, as: false do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
 
-        pipeline :literature_browser do
+        pipename = String.to_atom("#{session_name}_browser")
+
+        pipeline pipename do
           plug(:accepts, ["html"])
           plug(:fetch_session)
           plug(:protect_from_forgery)
         end
 
         scope path: "/" do
-          pipe_through(:literature_browser)
+          pipe_through(pipename)
 
           {session_name, session_opts, route_opts} =
-            Literature.Router.__options__(opts, :literature_dashboard, :root_dashboard)
+            Literature.Router.__options__(opts, session_name, :root_dashboard)
 
           live_session session_name, session_opts do
             # Publication routes
@@ -111,6 +115,8 @@ defmodule Literature.Router do
   defmacro literature(path, opts \\ []) do
     opts = Keyword.put(opts, :application_router, __CALLER__.module)
 
+    session_name = Keyword.get(opts, :as, :literature)
+
     publication_slug =
       Keyword.get_lazy(opts, :publication_slug, fn ->
         raise "Missing mandatory :publication_slug option."
@@ -125,17 +131,19 @@ defmodule Literature.Router do
       scope path, alias: false, as: false do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
 
-        pipeline :literature_browser do
+        pipename = String.to_atom("#{session_name}_browser")
+
+        pipeline pipename do
           plug(:accepts, ["html"])
           plug(:fetch_session)
           plug(:protect_from_forgery)
         end
 
         scope path: "/" do
-          pipe_through(:literature_browser)
+          pipe_through(pipename)
 
           {session_name, session_opts, route_opts} =
-            Literature.Router.__options__(opts, :literature, :root)
+            Literature.Router.__options__(opts, session_name, :root)
 
           live_session session_name, session_opts do
             # Blog routes
@@ -153,8 +161,6 @@ defmodule Literature.Router do
 
   @doc false
   def __options__(opts, session_name, root_layout) do
-    session_name = Keyword.get(opts, :as, session_name)
-
     session_opts = [
       root_layout: {Literature.LayoutView, root_layout},
       session: %{

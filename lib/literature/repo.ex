@@ -7,48 +7,45 @@ defmodule Literature.Repo do
   to the Literature configuration.
   """
 
+  alias Literature.Config
+
   @doc "Wraps `c:Ecto.Repo.paginate/2`."
   def paginate(queryable, opts \\ []) do
-    repo().paginate(queryable, opts)
+    Config.repo().paginate(queryable, opts)
   end
 
   @doc "Wraps `c:Ecto.Repo.all/2`."
   def all(queryable, opts \\ []) do
-    repo().all(queryable, opts)
+    Config.repo().all(queryable, opts)
   end
 
   @doc "Wraps `c:Ecto.Repo.get/2`."
   def get(struct, opts \\ []) do
-    repo().get(struct, opts)
+    Config.repo().get(struct, opts)
   end
 
   @doc "Wraps `c:Ecto.Repo.get_by/2`."
   def get_by(struct, opts \\ []) do
-    repo().get_by(struct, opts)
+    Config.repo().get_by(struct, opts)
   end
 
   @doc "Wraps `c:Ecto.Repo.insert/2`."
   def insert(struct_or_changeset, opts \\ []) do
-    repo().insert(struct_or_changeset, opts)
+    Config.repo().insert(struct_or_changeset, opts)
   end
 
   @doc "Wraps `c:Ecto.Repo.update/2`."
   def update(changeset, opts \\ []) do
-    repo().update(changeset, opts)
+    Config.repo().update(changeset, opts)
   end
 
   @doc "Wraps `c:Ecto.Repo.delete/2`."
   def delete(struct_or_changeset, opts \\ []) do
-    repo().delete(struct_or_changeset, opts)
+    Config.repo().delete(struct_or_changeset, opts)
   end
 
   @doc "Wraps `c:Ecto.Repo.preload/2`."
   def preload(struct_or_changeset, opts \\ []) do
-    repo().preload(struct_or_changeset, opts)
-  end
-
-  @doc false
-  defp repo do
-    Application.fetch_env!(:literature, :repo)
+    Config.repo().preload(struct_or_changeset, opts)
   end
 end

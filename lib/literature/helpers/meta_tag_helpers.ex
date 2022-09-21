@@ -4,25 +4,20 @@ defmodule Literature.MetaTagHelpers do
 
   import Literature.Helpers, only: [atomize_keys_to_string: 1]
 
-  @default_tags %{
-    "og_type" => "website",
-    "og_locale" => "en",
-    "twitter_card" => "summary_large_image"
-  }
+  alias Literature.Config
 
-  @acceptable_tags ~w{
-    title
-    description
-    image
-    url
-    og_type
-    og_locale
-    twitter_card
-  }a
+  @default_og_type "website"
+  @default_og_locale "en"
+  @default_twitter_card "summary_large_image"
 
-  @config Application.get_all_env(:literature)
-          |> Keyword.take(@acceptable_tags)
-          |> atomize_keys_to_string()
+  @metatags [
+              title: Config.meta_title(),
+              description: Config.meta_description(),
+              og_type: Config.meta_og_type() || @default_og_type,
+              og_locale: Config.meta_og_locale() || @default_og_locale,
+              twitter_card: Config.meta_og_locale() || @default_twitter_card
+            ]
+            |> atomize_keys_to_string()
 
   @doc """
   Render default meta tags
@@ -82,6 +77,6 @@ defmodule Literature.MetaTagHelpers do
   end
 
   defp get_tag_value(tags, default_key, key) do
-    tags[key] || tags[default_key] || @default_tags[key] || @config[default_key]
+    tags[key] || tags[default_key] || @metatags[default_key]
   end
 end

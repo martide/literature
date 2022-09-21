@@ -109,7 +109,7 @@ defmodule Literature.TagLive do
     |> assign(:tag, Literature.get_tag!(slug: slug))
   end
 
-  defp paginate_tags(params \\ %{}) do
+  defp paginate_tags(params) do
     page = Literature.paginate_tags(params)
 
     Map.new()

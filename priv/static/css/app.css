@@ -2424,6 +2424,36 @@ video {
   --tw-shadow: var(--tw-shadow-colored);
 }
 
+.shadow-slate-600\/50 {
+  --tw-shadow-color: rgb(71 85 105 / 0.5);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
+.shadow-slate-100\/50 {
+  --tw-shadow-color: rgb(241 245 249 / 0.5);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
+.shadow-slate-200\/50 {
+  --tw-shadow-color: rgb(226 232 240 / 0.5);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
+.shadow-slate-500\/50 {
+  --tw-shadow-color: rgb(100 116 139 / 0.5);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
+.shadow-slate-300\/50 {
+  --tw-shadow-color: rgb(203 213 225 / 0.5);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
+.shadow-slate-400\/50 {
+  --tw-shadow-color: rgb(148 163 184 / 0.5);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
 .drop-shadow {
   --tw-drop-shadow: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06));
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);

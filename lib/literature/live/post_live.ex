@@ -109,7 +109,7 @@ defmodule Literature.PostLive do
     |> assign(:post, Literature.get_post!(slug: slug))
   end
 
-  defp paginate_posts(params \\ %{}) do
+  defp paginate_posts(params) do
     page = Literature.paginate_posts(params)
 
     Map.new()

@@ -36,9 +36,11 @@ defmodule Literature.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      # Ecto SQL
       {:ecto_sql, "~> 3.8"},
+
+      # JSON
       {:jason, "~> 1.3", optional: true},
-      {:slugy, "~> 4.1"},
 
       # Phoenix
       {:phoenix_ecto, "~> 4.4"},
@@ -51,6 +53,10 @@ defmodule Literature.MixProject do
       {:waffle, "~> 1.1"},
       {:waffle_ecto, "~> 0.0.11"},
       {:waffle_gcs, "~> 0.2.0"},
+
+      # Others
+      {:sitemapper, "~> 0.6.0"},
+      {:slugy, "~> 4.1"},
 
       # Test
       {:credo, "~> 1.6", only: [:test, :dev], runtime: false},
