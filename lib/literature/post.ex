@@ -65,7 +65,7 @@ defmodule Literature.Post do
     |> maybe_generate_slug(post)
     |> put_published_at()
     |> validate_required(@required_params, message: "This field is required")
-    |> unique_constraint(:slug)
+    |> unique_constraint(:slug, name: :literature_posts_publication_id_slug_index)
   end
 
   def resolve_status(post) do

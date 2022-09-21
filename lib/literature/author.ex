@@ -49,7 +49,7 @@ defmodule Literature.Author do
     |> cast_attachments(params, @attachments)
     |> maybe_generate_slug(author)
     |> validate_required(@required_params, message: "This field is required")
-    |> unique_constraint(:slug)
+    |> unique_constraint(:slug, name: :literature_authors_publication_id_slug_index)
   end
 
   defp maybe_generate_slug(changeset, %{name: name, slug: slug}) when name != slug,
