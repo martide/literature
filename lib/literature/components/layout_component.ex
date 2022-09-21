@@ -145,6 +145,46 @@ defmodule Literature.LayoutComponent do
     """
   end
 
+  def loading_page(assigns) do
+    ~H"""
+    <div class="px-3 py-4 space-y-3 animate-pulse">
+      <div class="bg-slate-200 h-12 w-full rounded-lg"></div>
+      <div class="bg-slate-200 h-12 w-full rounded-lg"></div>
+      <div class="bg-slate-200 h-12 w-full rounded-lg"></div>
+    </div>
+    <div class="col-span-4 bg-white shadow-md rounded-lg p-10">
+      <div class="animate-pulse">
+        <div class="bg-slate-200 h-8 w-40 rounded-lg mb-5"></div>
+        <div class="w-1/2">
+          <div class="bg-slate-200 h-10 w-full rounded-lg"></div>
+          <div class="flex items-center my-5 space-x-5">
+            <div class="bg-slate-200 h-2 w-full rounded-lg"></div>
+            <div class="bg-slate-200 h-2 w-full rounded-lg"></div>
+            <div class="bg-slate-200 h-2 w-full rounded-lg"></div>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-5">
+          <div class="col-span-3 bg-slate-200 h-10 w-full rounded-lg"></div>
+          <div class="bg-slate-200 h-3 w-full rounded-lg"></div>
+          <div class="col-span-3 bg-slate-200 h-3 w-full rounded-lg"></div>
+          <div class="bg-slate-200 h-3 w-full rounded-lg"></div>
+          <div class="bg-slate-200 h-3 w-full rounded-lg"></div>
+          <div class="col-span-3 bg-slate-200 h-3 w-full rounded-lg"></div>
+          <div class="bg-slate-200 h-3 w-full rounded-lg"></div>
+          <div class="bg-slate-200 h-3 w-full rounded-lg"></div>
+          <div class="bg-slate-200 h-3 w-full rounded-lg"></div>
+          <div class="col-span-3 bg-slate-200 h-3 w-full rounded-lg"></div>
+          <div class="bg-slate-200 h-3 w-full rounded-lg"></div>
+          <div class="bg-slate-200 h-3 w-full rounded-lg"></div>
+          <div class="col-span-3 bg-slate-200 h-3 w-full rounded-lg"></div>
+          <div class="bg-slate-200 h-3 w-full rounded-lg"></div>
+          <div class="col-span-3 bg-slate-200 h-2 w-full rounded-lg"></div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
   defp render_tab(name, path, opts) do
     base_classes = "block py-2 pr-4 pl-3 rounded md:p-0 transition duration-300 ease-in-out"
 

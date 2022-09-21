@@ -14,6 +14,9 @@ defmodule Literature.PostLive do
   end
 
   @impl Phoenix.LiveView
+  def render(%{socket: %{transport_pid: nil}} = assigns), do: ~H"<.loading_page />"
+
+  @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
     <.sidebar id="post-sidebar" live_action={@live_action}>
@@ -79,7 +82,7 @@ defmodule Literature.PostLive do
 
     socket =
       socket
-      |> assign(:posts, paginate_posts())
+      |> assign(paginate_posts(socket.assigns.params))
       |> assign(:post, nil)
       |> put_flash(:success, "Post deleted successfully")
 

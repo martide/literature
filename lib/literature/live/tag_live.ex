@@ -14,6 +14,9 @@ defmodule Literature.TagLive do
   end
 
   @impl Phoenix.LiveView
+  def render(%{socket: %{transport_pid: nil}} = assigns), do: ~H"<.loading_page />"
+
+  @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
     <.sidebar id="tag-sidebar" live_action={@live_action}>
@@ -79,7 +82,7 @@ defmodule Literature.TagLive do
 
     socket =
       socket
-      |> assign(:tags, paginate_tags())
+      |> assign(paginate_tags(socket.assigns.params))
       |> assign(:tag, nil)
       |> put_flash(:success, "Tag deleted successfully")
 
@@ -118,7 +121,7 @@ defmodule Literature.TagLive do
     [
       {:name, "Name"},
       {:slug, "Slug"},
-      {:visibility, "Status"}
+      {:visibility, "Visibility"}
     ]
   end
 end

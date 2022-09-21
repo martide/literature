@@ -23,9 +23,9 @@ defmodule Literature.TableComponent do
             </svg>
             <%= search_input :search, :q, value: @params["q"], class: "text-sm rounded-lg focus:outline-none block w-full p-2.5", placeholder: "Find", autofocus: true, phx_debounce: 300 %>
           </form>
-          <%= filter_status Keyword.get(@columns, :published_at, false), assigns %>
+          <%= filter_status Enum.into(@columns, %{}), assigns %>
         </div>
-        <%= live_patch to: @new_path, class: "text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center" do %>
+        <%= live_redirect to: @new_path, class: "text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center" do %>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
             <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z" clip-rule="evenodd" />
           </svg>
@@ -143,9 +143,7 @@ defmodule Literature.TableComponent do
 
   defp render_item(item, field), do: Map.get(item, field)
 
-  defp filter_status(false, _), do: nil
-
-  defp filter_status(_, %{params: params} = assigns) do
+  defp filter_status(%{published_at: _}, %{params: params} = assigns) do
     params = Map.put_new(params, "status", "all")
     assigns = Map.put(assigns, :params, params)
 
@@ -160,6 +158,23 @@ defmodule Literature.TableComponent do
     </form>
     """
   end
+
+  defp filter_status(%{visibility: _}, %{params: params} = assigns) do
+    params = Map.put_new(params, "status", "all")
+    assigns = Map.put(assigns, :params, params)
+
+    ~H"""
+    <form phx-target={@myself} phx-change="filter">
+      <ul class="flex items-center text-gray-600 text-sm font-semibold">
+        <.radio_button label="All" value="all" status={@params["status"]} />
+        <.radio_button label="Public" value="public" status={@params["status"]} />
+        <.radio_button label="Private" value="private" status={@params["status"]} />
+      </ul>
+    </form>
+    """
+  end
+
+  defp filter_status(_, _), do: nil
 
   defp radio_button(assigns) do
     ~H"""

@@ -2,25 +2,26 @@ defmodule Literature.QueryHelpers do
   @moduledoc false
   import Ecto.Query, warn: false
 
-  def join_with_publication(query) do
-    query
-    |> join(:left, [q], p in assoc(q, :publication))
+  def search(query, :title, %{"q" => search}) do
+    or_where(query, [q], ilike(q.title, ^"#{search}%"))
   end
 
-  def join_with_publication(query, _), do: query
-
-  def filter(query, %{"status" => "drafts", "publication_slug" => slug}) do
-    where(query, [q, p], is_nil(q.published_at) and p.slug == ^slug)
+  def search(query, :name, %{"q" => search}) do
+    or_where(query, [q], ilike(q.name, ^"#{search}%"))
   end
 
-  def filter(query, %{"status" => "published", "publication_slug" => slug}) do
-    where(query, [q, p], not is_nil(q.published_at) and p.slug == ^slug)
+  def search(query, :slug, %{"q" => search}) do
+    or_where(query, [q], ilike(q.slug, ^"#{search}%"))
   end
 
-  def filter(query, _), do: query
+  def search(query, _, _), do: query
 
   def select_options(list) when is_list(list) do
     Enum.map(list, &{&1.name, &1.id})
+  end
+
+  def sort_by(query, attrs) do
+    order_by(query, ^sort(attrs))
   end
 
   def where_preload(query, attrs) when is_list(attrs) do
@@ -32,41 +33,33 @@ defmodule Literature.QueryHelpers do
 
   def where_preload(query, _), do: query
 
-  def search(query, field \\ nil, attrs)
-
-  def search(query, :title, %{"q" => search, "publication_slug" => slug}) do
-    or_where(query, [q, p], ilike(q.title, ^"#{search}%") and p.slug == ^slug)
+  def where_status(query, %{"status" => "drafts"}) do
+    where(query, [q], is_nil(q.published_at))
   end
 
-  def search(query, :title, %{"q" => search}) do
-    or_where(query, [q], ilike(q.title, ^"#{search}%"))
+  def where_status(query, %{"status" => "published"}) do
+    where(query, [q], not is_nil(q.published_at))
   end
 
-  def search(query, :name, %{"q" => search, "publication_slug" => slug}) do
-    or_where(query, [q, p], ilike(q.name, ^"#{search}%") and p.slug == ^slug)
+  def where_status(query, %{"status" => "public"}) do
+    where(query, [q], q.visibility)
   end
 
-  def search(query, :name, %{"q" => search}) do
-    or_where(query, [q], ilike(q.name, ^"#{search}%"))
+  def where_status(query, %{"status" => "private"}) do
+    where(query, [q], not q.visibility)
   end
 
-  def search(query, :slug, %{"q" => search, "publication_slug" => slug}) do
-    or_where(query, [q, p], ilike(q.slug, ^"#{search}%") and p.slug == ^slug)
+  def where_status(query, _), do: query
+
+  def where_publication(query, %{"publication_slug" => slug}) do
+    query
+    |> join(:left, [q], p in assoc(q, :publication))
+    |> where([_, p], p.slug == ^slug)
   end
 
-  def search(query, :slug, %{"q" => search}) do
-    or_where(query, [q], ilike(q.slug, ^"#{search}%"))
-  end
+  def where_publication(query, _), do: query
 
-  def search(query, _, %{"publication_slug" => slug}) when is_binary(slug) do
-    where(query, [_, p], p.slug == ^slug)
-  end
-
-  def search(query, _, _), do: query
-
-  def sort_by(query, attrs) do
-    order_by(query, ^sort(attrs))
-  end
+  ### Private Methods
 
   defp sort(%{"sort_field" => field, "sort_direction" => direction})
        when direction in ~w(asc desc) do

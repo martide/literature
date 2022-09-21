@@ -15,6 +15,9 @@ defmodule Literature.AuthorLive do
   end
 
   @impl Phoenix.LiveView
+  def render(%{socket: %{transport_pid: nil}} = assigns), do: ~H"<.loading_page />"
+
+  @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
     <.sidebar id="author-sidebar" live_action={@live_action}>
@@ -86,7 +89,7 @@ defmodule Literature.AuthorLive do
 
     socket =
       socket
-      |> assign(:authors, paginate_authors())
+      |> assign(paginate_authors(socket.assigns.params))
       |> assign(:author, nil)
       |> put_flash(:success, "Author deleted successfully")
 

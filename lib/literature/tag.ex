@@ -27,11 +27,11 @@ defmodule Literature.Tag do
     publication_id
     slug
     name
+    visibility
   )a
 
   @optional_params ~w(
     description
-    visibility
     meta_title
     meta_description
     og_title
