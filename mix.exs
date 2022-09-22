@@ -37,15 +37,14 @@ defmodule Literature.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # Ecto SQL
-      {:ecto_sql, "~> 3.8"},
-
       # JSON
       {:jason, "~> 1.3", optional: true},
 
       # Phoenix
+      {:ecto_sql, "~> 3.8"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_live_view, "~> 0.17.11"},
+      {:postgrex, ">= 0.0.0", only: :test},
 
       # Pagination
       {:scrivener_ecto, "~> 2.7"},
@@ -66,7 +65,7 @@ defmodule Literature.MixProject do
       {:dialyxir, "~> 1.0", only: [:test, :dev], runtime: false},
       {:excoveralls, "~> 0.10", only: :test},
       {:floki, ">= 0.33.1", only: :test},
-      {:postgrex, ">= 0.0.0", only: :test}
+      {:sobelow, "~> 0.8", only: [:test, :dev], runtime: false}
     ]
   end
 
