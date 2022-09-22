@@ -20,10 +20,7 @@ defmodule Literature.MixProject do
         "coveralls.post": :test,
         "coveralls.html": :test
       ],
-      dialyzer: [
-        plt_add_apps: [:mix, :ex_unit],
-        ignore_warnings: ".dialyzer_ignore.exs"
-      ]
+      dialyzer: [plt_add_apps: [:mix, :ex_unit]]
     ]
   end
 
