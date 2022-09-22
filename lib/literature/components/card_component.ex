@@ -1,4 +1,5 @@
 defmodule Literature.CardComponent do
+  @moduledoc false
   use Phoenix.Component
 
   def card_container(assigns) do

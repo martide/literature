@@ -4,7 +4,7 @@ defmodule Literature.BlogLive do
   import Literature.Helpers,
     only: [atomize_keys_to_string: 1, literature_image_url: 2]
 
-  alias Literature.{Author, Tag, Post, Repo}
+  alias Literature.{Author, Post, Repo, Tag}
 
   @layout {Literature.LayoutView, "live.html"}
 

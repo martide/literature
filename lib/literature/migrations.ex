@@ -62,6 +62,8 @@ defmodule Literature.Migrations do
       [__MODULE__, table_name]
       |> Module.concat()
       |> apply(direction, [])
+
+      # credo:disable-for-previous-line
     end
   end
 end

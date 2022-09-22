@@ -1,4 +1,7 @@
 defmodule Literature.Tag do
+  @moduledoc """
+    Literature Tag Model
+  """
   use Literature.Web, :model
 
   schema "literature_tags" do

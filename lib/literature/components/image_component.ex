@@ -1,4 +1,5 @@
 defmodule Literature.ImageComponent do
+  @moduledoc false
   use Phoenix.Component
 
   import Literature.Helpers

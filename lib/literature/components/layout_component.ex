@@ -1,4 +1,5 @@
 defmodule Literature.LayoutComponent do
+  @moduledoc false
   use Phoenix.Component
 
   import Literature.Helpers

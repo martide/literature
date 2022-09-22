@@ -1,4 +1,7 @@
 defmodule Literature.Uploader do
+  @moduledoc """
+    Literature Uploader
+  """
   use Waffle.Definition
   use Waffle.Ecto.Definition
 

@@ -11,15 +11,15 @@ defmodule Literature.Helpers do
   """
   def literature_path(conn_or_socket, action, params \\ %{})
 
-  def literature_path(conn = %Plug.Conn{}, action, params) do
+  def literature_path(%Plug.Conn{} = conn, action, params) do
     routes(conn).literature_path(conn, action, params)
   end
 
-  def literature_path(socket = %Phoenix.LiveView.Socket{}, action, params) do
+  def literature_path(%Phoenix.LiveView.Socket{} = socket, action, params) do
     routes(socket).literature_path(socket, action, params)
   end
 
-  def literature_path(socket = %Phoenix.LiveView.Socket{}, action, params, opts) do
+  def literature_path(%Phoenix.LiveView.Socket{} = socket, action, params, opts) do
     routes(socket).literature_path(socket, action, params, opts)
   end
 
@@ -28,27 +28,27 @@ defmodule Literature.Helpers do
   """
   def literature_dashboard_path(conn_or_socket, action, params \\ %{})
 
-  def literature_dashboard_path(conn = %Plug.Conn{}, action, params) do
+  def literature_dashboard_path(%Plug.Conn{} = conn, action, params) do
     routes(conn).literature_dashboard_path(conn, action, params)
   end
 
-  def literature_dashboard_path(socket = %Phoenix.LiveView.Socket{}, action, params) do
+  def literature_dashboard_path(%Phoenix.LiveView.Socket{} = socket, action, params) do
     routes(socket).literature_dashboard_path(socket, action, params)
   end
 
-  def literature_dashboard_path(socket = %Phoenix.LiveView.Socket{}, action, params, opts) do
+  def literature_dashboard_path(%Phoenix.LiveView.Socket{} = socket, action, params, opts) do
     routes(socket).literature_dashboard_path(socket, action, params, opts)
   end
 
-  def literature_dashboard_path(socket = %Phoenix.LiveView.Socket{}, action, slug, params, opts) do
+  def literature_dashboard_path(%Phoenix.LiveView.Socket{} = socket, action, slug, params, opts) do
     routes(socket).literature_dashboard_path(socket, action, slug, params, opts)
   end
 
-  def routes(conn = %Plug.Conn{}) do
+  def routes(%Plug.Conn{} = conn) do
     conn.private.application_router.__helpers__()
   end
 
-  def routes(socket = %Phoenix.LiveView.Socket{}) do
+  def routes(%Phoenix.LiveView.Socket{} = socket) do
     socket.router.__helpers__()
   end
 

@@ -1,9 +1,9 @@
 defmodule Literature.TagLive do
   use Literature.Web, :live_view
 
+  alias Literature.TableComponent
   alias Literature.Tag
   alias Literature.TagFormComponent
-  alias Literature.TableComponent
 
   @impl Phoenix.LiveView
   def mount(%{"publication_slug" => slug}, _session, socket) do

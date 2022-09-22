@@ -1,4 +1,5 @@
 defmodule Literature.FormComponent do
+  @moduledoc false
   use Phoenix.Component
 
   import Phoenix.HTML.Form

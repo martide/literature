@@ -1,4 +1,7 @@
 defmodule Literature.Post do
+  @moduledoc """
+    Literature Post Model
+  """
   use Literature.Web, :model
 
   schema "literature_posts" do

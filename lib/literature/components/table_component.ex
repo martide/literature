@@ -1,7 +1,10 @@
 defmodule Literature.TableComponent do
+  @moduledoc false
   use Literature.Web, :live_component
 
   import Scrivener.PhoenixView
+
+  alias Plug.Conn.Query
 
   @impl Phoenix.LiveComponent
   def update(assigns, socket) do
@@ -203,7 +206,7 @@ defmodule Literature.TableComponent do
   end
 
   defp query_string(params, opts) do
-    params = params |> Plug.Conn.Query.encode() |> URI.decode_query()
+    params = params |> Query.encode() |> URI.decode_query()
 
     opts = %{
       "sort_field" => opts[:sort_field] || params["sort_field"] || nil,

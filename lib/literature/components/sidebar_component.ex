@@ -1,4 +1,5 @@
 defmodule Literature.SidebarComponent do
+  @moduledoc false
   use Phoenix.Component
 
   def sidebar(assigns) do

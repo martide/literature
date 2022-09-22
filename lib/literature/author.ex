@@ -1,4 +1,7 @@
 defmodule Literature.Author do
+  @moduledoc """
+    Literature Author Model
+  """
   use Literature.Web, :model
 
   schema "literature_authors" do

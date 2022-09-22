@@ -1,7 +1,7 @@
 defmodule Literature.Sitemap do
   @moduledoc false
 
-  alias Literature.{Author, Config, Tag, Post}
+  alias Literature.{Author, Config, Post, Tag}
   alias Sitemapper.URL
 
   defdelegate where_publication(schema, attrs), to: Literature.QueryHelpers

@@ -1,4 +1,5 @@
 defmodule Literature.PublicationFormComponent do
+  @moduledoc false
   use Literature.Web, :live_component
 
   import Literature.FormComponent

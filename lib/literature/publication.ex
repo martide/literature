@@ -1,4 +1,7 @@
 defmodule Literature.Publication do
+  @moduledoc """
+    Literature Publication Model
+  """
   use Literature.Web, :model
 
   schema "literature_publications" do
