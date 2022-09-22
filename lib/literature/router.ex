@@ -154,7 +154,7 @@ defmodule Literature.Router do
               live("/:slug", BlogLive, :show, route_opts)
             end
 
-            get("/posts/rss.xml", RSSController, :index)
+            get("/posts/rss.xml", RSSController, :rss, as: session_name)
           end
         end
       end

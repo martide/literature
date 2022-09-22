@@ -1,91 +1,159 @@
 defmodule Literature.RouterTest do
-  use ExUnit.Case, async: true
+  use Literature.ConnCase
 
-  import Phoenix.ConnTest, only: [build_conn: 0]
+  import Literature.Test.Fixtures
 
-  alias Literature.Test.Router.Helpers, as: Routes
   alias Literature.Test.DynamicPathRouter.Helpers, as: DynamicPathRoutes
 
-  test "literature_assets/0 generates helper for literature assets with default path" do
-    assert Routes.literature_asset_path(build_conn(), :asset, ["css", "app.css"]) ==
-             "/literature/assets/css/app.css"
+  test "literature_assets/0 generates helper for literature assets with default path", %{
+    conn: conn
+  } do
+    assert Routes.literature_asset_path(conn, :asset, ["css", "app.css"]) ==
+             "/blog/assets/css/app.css"
 
-    assert Routes.literature_asset_path(build_conn(), :asset, ["js", "app.js"]) ==
-             "/literature/assets/js/app.js"
+    assert Routes.literature_asset_path(conn, :asset, ["js", "app.js"]) ==
+             "/blog/assets/js/app.js"
   end
 
-  test "literature_assets/1 generates helper for literature assets with dynamic path" do
-    assert DynamicPathRoutes.literature_asset_path(build_conn(), :asset, ["css", "app.css"]) ==
-             "/path/to/assets/css/app.css"
+  test "literature_assets/1 generates helper for literature assets with dynamic path", %{
+    conn: conn
+  } do
+    assert DynamicPathRoutes.literature_asset_path(conn, :asset, ["css", "app.css"]) ==
+             "/foo/bar/assets/css/app.css"
 
-    assert DynamicPathRoutes.literature_asset_path(build_conn(), :asset, ["js", "app.js"]) ==
-             "/path/to/assets/js/app.js"
+    assert DynamicPathRoutes.literature_asset_path(conn, :asset, ["js", "app.js"]) ==
+             "/foo/bar/assets/js/app.js"
+  end
+
+  describe "literature_path/2 for default path" do
+    test "generates helper for blog pages", %{conn: conn} do
+      assert Routes.literature_path(conn, :index) == "/blog"
+      assert Routes.literature_path(conn, :authors) == "/blog/authors"
+      assert Routes.literature_path(conn, :tags) == "/blog/tags"
+
+      assert Routes.literature_path(conn, :show, "author_or_tag_or_post") ==
+               "/blog/author_or_tag_or_post"
+    end
+  end
+
+  describe "literature_path/2 for dynamic path" do
+    test "generates helper for blog pages", %{conn: conn} do
+      assert DynamicPathRoutes.literature_path(conn, :index) == "/foo/bar/blog"
+      assert DynamicPathRoutes.literature_path(conn, :authors) == "/foo/bar/blog/authors"
+      assert DynamicPathRoutes.literature_path(conn, :tags) == "/foo/bar/blog/tags"
+
+      assert DynamicPathRoutes.literature_path(conn, :show, "author_or_tag_or_post") ==
+               "/foo/bar/blog/author_or_tag_or_post"
+    end
   end
 
   describe "literature_dashboard_path/2 for default path" do
-    test "generates helper for dashboard" do
-      assert Routes.literature_dashboard_path(build_conn(), :root) == "/"
+    setup do
+      %{publication: publication_fixture()}
     end
 
-    test "generates helper for posts" do
-      assert Routes.literature_dashboard_path(build_conn(), :list_posts) == "/posts"
-      assert Routes.literature_dashboard_path(build_conn(), :new_post) == "/posts/new"
+    test "generates helper for publications", %{conn: conn} do
+      assert Routes.literature_dashboard_path(conn, :list_publications) ==
+               "/literature/publications"
 
-      assert Routes.literature_dashboard_path(build_conn(), :edit_post, "123") ==
-               "/posts/123/edit"
+      assert Routes.literature_dashboard_path(conn, :new_publication) ==
+               "/literature/publications/new"
+
+      assert Routes.literature_dashboard_path(conn, :edit_publication, "123") ==
+               "/literature/publications/123/edit"
     end
 
-    test "generates helper for tags" do
-      assert Routes.literature_dashboard_path(build_conn(), :list_tags) == "/tags"
-      assert Routes.literature_dashboard_path(build_conn(), :new_tag) == "/tags/new"
-      assert Routes.literature_dashboard_path(build_conn(), :edit_tag, "123") == "/tags/123/edit"
+    test "generates helper for posts", %{conn: conn, publication: publication} do
+      assert Routes.literature_dashboard_path(conn, :list_posts, publication.slug) ==
+               "/literature/#{publication.slug}/posts/page/1"
+
+      assert Routes.literature_dashboard_path(conn, :new_post, publication.slug) ==
+               "/literature/#{publication.slug}/posts/new"
+
+      assert Routes.literature_dashboard_path(conn, :edit_post, publication.slug, "123") ==
+               "/literature/#{publication.slug}/posts/123/edit"
     end
 
-    test "generates helper for authors" do
-      assert Routes.literature_dashboard_path(build_conn(), :list_authors) == "/authors"
-      assert Routes.literature_dashboard_path(build_conn(), :new_author) == "/authors/new"
+    test "generates helper for tags", %{conn: conn, publication: publication} do
+      assert Routes.literature_dashboard_path(conn, :list_tags, publication.slug) ==
+               "/literature/#{publication.slug}/tags/page/1"
 
-      assert Routes.literature_dashboard_path(build_conn(), :edit_author, "123") ==
-               "/authors/123/edit"
+      assert Routes.literature_dashboard_path(conn, :new_tag, publication.slug) ==
+               "/literature/#{publication.slug}/tags/new"
+
+      assert Routes.literature_dashboard_path(conn, :edit_tag, publication.slug, "123") ==
+               "/literature/#{publication.slug}/tags/123/edit"
+    end
+
+    test "generates helper for authors", %{conn: conn, publication: publication} do
+      assert Routes.literature_dashboard_path(conn, :list_authors, publication.slug) ==
+               "/literature/#{publication.slug}/authors/page/1"
+
+      assert Routes.literature_dashboard_path(conn, :new_author, publication.slug) ==
+               "/literature/#{publication.slug}/authors/new"
+
+      assert Routes.literature_dashboard_path(conn, :edit_author, publication.slug, "123") ==
+               "/literature/#{publication.slug}/authors/123/edit"
     end
   end
 
   describe "literature_dashboard_path/2 for dynamic path" do
-    test "generates helper for dashboard" do
-      assert DynamicPathRoutes.literature_dashboard_path(build_conn(), :root) == "/literature"
+    setup do
+      %{publication: publication_fixture()}
     end
 
-    test "generates helper for posts" do
-      assert DynamicPathRoutes.literature_dashboard_path(build_conn(), :list_posts) ==
-               "/literature/posts"
+    test "generates helper for publications", %{conn: conn} do
+      assert DynamicPathRoutes.literature_dashboard_path(conn, :list_publications) ==
+               "/foo/bar/publications"
 
-      assert DynamicPathRoutes.literature_dashboard_path(build_conn(), :new_post) ==
-               "/literature/posts/new"
+      assert DynamicPathRoutes.literature_dashboard_path(conn, :new_publication) ==
+               "/foo/bar/publications/new"
 
-      assert DynamicPathRoutes.literature_dashboard_path(build_conn(), :edit_post, "123") ==
-               "/literature/posts/123/edit"
+      assert DynamicPathRoutes.literature_dashboard_path(conn, :edit_publication, "123") ==
+               "/foo/bar/publications/123/edit"
     end
 
-    test "generates helper for tags" do
-      assert DynamicPathRoutes.literature_dashboard_path(build_conn(), :list_tags) ==
-               "/literature/tags"
+    test "generates helper for posts", %{conn: conn, publication: publication} do
+      assert DynamicPathRoutes.literature_dashboard_path(conn, :list_posts, publication.slug) ==
+               "/foo/bar/#{publication.slug}/posts/page/1"
 
-      assert DynamicPathRoutes.literature_dashboard_path(build_conn(), :new_tag) ==
-               "/literature/tags/new"
+      assert DynamicPathRoutes.literature_dashboard_path(conn, :new_post, publication.slug) ==
+               "/foo/bar/#{publication.slug}/posts/new"
 
-      assert DynamicPathRoutes.literature_dashboard_path(build_conn(), :edit_tag, "123") ==
-               "/literature/tags/123/edit"
+      assert DynamicPathRoutes.literature_dashboard_path(
+               conn,
+               :edit_post,
+               publication.slug,
+               "123"
+             ) ==
+               "/foo/bar/#{publication.slug}/posts/123/edit"
     end
 
-    test "generates helper for authors" do
-      assert DynamicPathRoutes.literature_dashboard_path(build_conn(), :list_authors) ==
-               "/literature/authors"
+    test "generates helper for tags", %{conn: conn, publication: publication} do
+      assert DynamicPathRoutes.literature_dashboard_path(conn, :list_tags, publication.slug) ==
+               "/foo/bar/#{publication.slug}/tags/page/1"
 
-      assert DynamicPathRoutes.literature_dashboard_path(build_conn(), :new_author) ==
-               "/literature/authors/new"
+      assert DynamicPathRoutes.literature_dashboard_path(conn, :new_tag, publication.slug) ==
+               "/foo/bar/#{publication.slug}/tags/new"
 
-      assert DynamicPathRoutes.literature_dashboard_path(build_conn(), :edit_author, "123") ==
-               "/literature/authors/123/edit"
+      assert DynamicPathRoutes.literature_dashboard_path(conn, :edit_tag, publication.slug, "123") ==
+               "/foo/bar/#{publication.slug}/tags/123/edit"
+    end
+
+    test "generates helper for authors", %{conn: conn, publication: publication} do
+      assert DynamicPathRoutes.literature_dashboard_path(conn, :list_authors, publication.slug) ==
+               "/foo/bar/#{publication.slug}/authors/page/1"
+
+      assert DynamicPathRoutes.literature_dashboard_path(conn, :new_author, publication.slug) ==
+               "/foo/bar/#{publication.slug}/authors/new"
+
+      assert DynamicPathRoutes.literature_dashboard_path(
+               conn,
+               :edit_author,
+               publication.slug,
+               "123"
+             ) ==
+               "/foo/bar/#{publication.slug}/authors/123/edit"
     end
   end
 end

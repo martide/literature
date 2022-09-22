@@ -165,6 +165,7 @@ defmodule Literature do
     |> where_status(attrs)
     |> where_publication(attrs)
     |> Repo.all()
+    |> Enum.map(&Post.resolve_status/1)
   end
 
   @doc """
@@ -181,7 +182,11 @@ defmodule Literature do
       ** (Ecto.NoResultsError)
 
   """
-  def get_post!(id) when is_binary(id), do: Repo.get(Post, id)
+  def get_post!(id) when is_binary(id) do
+    Post
+    |> Repo.get(id)
+    |> Post.resolve_status()
+  end
 
   def get_post!(list) do
     attrs = Keyword.delete(list, :publication_slug)

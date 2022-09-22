@@ -4,65 +4,90 @@ defmodule Literature.AuthorLiveTest do
   import Phoenix.LiveViewTest
   import Literature.Test.Fixtures
 
-  @create_attrs %{name: "some new name", slug: "some-new-name"}
-  @update_attrs %{name: "some updated name", slug: "some-updated-name"}
-  @invalid_attrs %{name: nil, slug: nil}
+  @create_attrs %{name: "some new name"}
+  @update_attrs %{name: "some updated name"}
+  @invalid_attrs %{name: nil}
 
   defp create_author(_) do
-    author = author_fixture()
-    %{author: author}
+    publication = publication_fixture()
+    author = author_fixture(publication_id: publication.id)
+    %{publication: publication, author: author}
   end
 
   describe "Index" do
     setup [:create_author]
 
-    test "lists all authors", %{conn: conn, author: author} do
-      {:ok, _index_live, html} = live(conn, Routes.literature_dashboard_path(conn, :list_authors))
+    test "lists all authors", %{conn: conn, publication: publication, author: author} do
+      {:ok, _view, html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_authors, publication.slug))
 
-      assert html =~ "List Authors"
+      assert html =~ "Authors"
       assert html =~ author.name
     end
 
-    test "saves new author", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, Routes.literature_dashboard_path(conn, :new_author))
+    test "saves new author", %{conn: conn, publication: publication} do
+      {:ok, index_live, html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_authors, publication.slug))
 
-      assert index_live |> element("a", "Create Author") |> render_click() =~
-               "New Author"
+      assert html =~ "Authors"
 
-      assert_patch(index_live, Routes.literature_dashboard_path(conn, :new_author))
-
-      {:ok, _, html} =
+      {:ok, new_live, html} =
         index_live
+        |> element("a", "Create new")
+        |> render_click()
+        |> follow_redirect(
+          conn,
+          Routes.literature_dashboard_path(conn, :new_author, publication.slug)
+        )
+
+      assert html =~ "New Author"
+
+      result =
+        new_live
         |> form("#author-form", author: @create_attrs)
         |> render_submit()
-        |> follow_redirect(conn, Routes.literature_dashboard_path(conn, :list_authors))
 
-      assert html =~ "some name"
+      {path, flash} = assert_redirect(new_live)
+      assert path == Routes.literature_dashboard_path(conn, :list_authors, publication.slug)
+      assert flash["success"] == "Author created successfully"
+
+      {:ok, _, html} = follow_redirect(result, conn, path)
+      assert html =~ @create_attrs.name
     end
 
-    test "updates author in listing", %{conn: conn, author: author} do
-      {:ok, index_live, _html} = live(conn, Routes.literature_dashboard_path(conn, :list_authors))
+    test "updates author in listing", %{conn: conn, publication: publication, author: author} do
+      {:ok, view, html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_authors, publication.slug))
 
-      assert index_live |> element("#edit-#{author.id}") |> render_click() =~
-               "Edit Author"
+      assert html =~ "Authors"
 
-      assert_patch(index_live, Routes.literature_dashboard_path(conn, :edit_author, author))
+      assert view |> element("#edit-#{author.id}") |> render_click() =~ "Edit Author"
 
-      assert index_live
+      assert_patch(
+        view,
+        Routes.literature_dashboard_path(conn, :edit_author, publication.slug, author.slug)
+      )
+
+      assert view
              |> form("#author-form", author: @invalid_attrs)
              |> render_change() =~ "This field is required"
 
-      {:ok, _, html} =
-        index_live
+      result =
+        view
         |> form("#author-form", author: @update_attrs)
         |> render_submit()
-        |> follow_redirect(conn, Routes.literature_dashboard_path(conn, :list_authors))
 
-      assert html =~ "some updated name"
+      {path, flash} = assert_redirect(view)
+      assert path == Routes.literature_dashboard_path(conn, :list_authors, publication.slug)
+      assert flash["success"] == "Author updated successfully"
+
+      {:ok, _, html} = follow_redirect(result, conn, path)
+      assert html =~ @update_attrs.name
     end
 
-    test "deletes author in listing", %{conn: conn, author: author} do
-      {:ok, index_live, _html} = live(conn, Routes.literature_dashboard_path(conn, :list_authors))
+    test "deletes author in listing", %{conn: conn, publication: publication, author: author} do
+      {:ok, index_live, _html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_authors, publication.slug))
 
       assert index_live |> element("#delete-#{author.id}") |> render_click()
       assert index_live |> element("#delete-modal a", "Yes, I'm sure") |> render_click()

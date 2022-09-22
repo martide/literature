@@ -4,65 +4,90 @@ defmodule Literature.TagLiveTest do
   import Phoenix.LiveViewTest
   import Literature.Test.Fixtures
 
-  @create_attrs %{name: "some new name", slug: "some-new-name"}
-  @update_attrs %{name: "some updated name", slug: "some-updated-name"}
-  @invalid_attrs %{name: nil, slug: nil}
+  @create_attrs %{name: "some new name", visibility: true}
+  @update_attrs %{name: "some updated name"}
+  @invalid_attrs %{name: nil}
 
   defp create_tag(_) do
-    tag = tag_fixture()
-    %{tag: tag}
+    publication = publication_fixture()
+    tag = tag_fixture(publication_id: publication.id)
+    %{publication: publication, tag: tag}
   end
 
   describe "Index" do
     setup [:create_tag]
 
-    test "lists all tags", %{conn: conn, tag: tag} do
-      {:ok, _index_live, html} = live(conn, Routes.literature_dashboard_path(conn, :list_tags))
+    test "lists all tags", %{conn: conn, publication: publication, tag: tag} do
+      {:ok, _view, html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_tags, publication.slug))
 
-      assert html =~ "List Tags"
+      assert html =~ "Tags"
       assert html =~ tag.name
     end
 
-    test "saves new tag", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, Routes.literature_dashboard_path(conn, :new_tag))
+    test "saves new tag", %{conn: conn, publication: publication} do
+      {:ok, index_live, html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_tags, publication.slug))
 
-      assert index_live |> element("a", "Create Tag") |> render_click() =~
-               "New Tag"
+      assert html =~ "Tags"
 
-      assert_patch(index_live, Routes.literature_dashboard_path(conn, :new_tag))
-
-      {:ok, _, html} =
+      {:ok, new_live, html} =
         index_live
+        |> element("a", "Create new")
+        |> render_click()
+        |> follow_redirect(
+          conn,
+          Routes.literature_dashboard_path(conn, :new_tag, publication.slug)
+        )
+
+      assert html =~ "New Tag"
+
+      result =
+        new_live
         |> form("#tag-form", tag: @create_attrs)
         |> render_submit()
-        |> follow_redirect(conn, Routes.literature_dashboard_path(conn, :list_tags))
 
-      assert html =~ "some name"
+      {path, flash} = assert_redirect(new_live)
+      assert path == Routes.literature_dashboard_path(conn, :list_tags, publication.slug)
+      assert flash["success"] == "Tag created successfully"
+
+      {:ok, _, html} = follow_redirect(result, conn, path)
+      assert html =~ @create_attrs.name
     end
 
-    test "updates tag in listing", %{conn: conn, tag: tag} do
-      {:ok, index_live, _html} = live(conn, Routes.literature_dashboard_path(conn, :list_tags))
+    test "updates tag in listing", %{conn: conn, publication: publication, tag: tag} do
+      {:ok, view, html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_tags, publication.slug))
 
-      assert index_live |> element("#edit-#{tag.id}") |> render_click() =~
-               "Edit Tag"
+      assert html =~ "Tags"
 
-      assert_patch(index_live, Routes.literature_dashboard_path(conn, :edit_tag, tag))
+      assert view |> element("#edit-#{tag.id}") |> render_click() =~ "Edit Tag"
 
-      assert index_live
+      assert_patch(
+        view,
+        Routes.literature_dashboard_path(conn, :edit_tag, publication.slug, tag.slug)
+      )
+
+      assert view
              |> form("#tag-form", tag: @invalid_attrs)
              |> render_change() =~ "This field is required"
 
-      {:ok, _, html} =
-        index_live
+      result =
+        view
         |> form("#tag-form", tag: @update_attrs)
         |> render_submit()
-        |> follow_redirect(conn, Routes.literature_dashboard_path(conn, :list_tags))
 
-      assert html =~ "some updated name"
+      {path, flash} = assert_redirect(view)
+      assert path == Routes.literature_dashboard_path(conn, :list_tags, publication.slug)
+      assert flash["success"] == "Tag updated successfully"
+
+      {:ok, _, html} = follow_redirect(result, conn, path)
+      assert html =~ @update_attrs.name
     end
 
-    test "deletes tag in listing", %{conn: conn, tag: tag} do
-      {:ok, index_live, _html} = live(conn, Routes.literature_dashboard_path(conn, :list_tags))
+    test "deletes tag in listing", %{conn: conn, publication: publication, tag: tag} do
+      {:ok, index_live, _html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_tags, publication.slug))
 
       assert index_live |> element("#delete-#{tag.id}") |> render_click()
       assert index_live |> element("#delete-modal a", "Yes, I'm sure") |> render_click()

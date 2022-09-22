@@ -5,48 +5,57 @@ defmodule Literature.Test.Fixtures do
   """
 
   @doc """
+  Generate an author.
+  """
+  def author_fixture(attrs \\ []) do
+    {:ok, author} =
+      attrs
+      |> Keyword.put_new(:name, "some name")
+      |> Enum.into(%{})
+      |> Literature.create_author()
+
+    author
+  end
+
+  @doc """
   Generate a post.
   """
-  def post_fixture(attrs \\ %{}) do
+  def post_fixture(attrs \\ []) do
     {:ok, post} =
       attrs
-      |> Enum.into(%{
-        title: "some title",
-        slug: "some-title",
-        featured: false
-      })
+      |> Keyword.put_new(:title, "some title")
+      |> Keyword.put_new(:featured, false)
+      |> Keyword.put_new(:status, "publish")
+      |> Enum.into(%{})
       |> Literature.create_post()
 
     post
   end
 
   @doc """
-  Generate a tag.
+  Generate a publication.
   """
-  def tag_fixture(attrs \\ %{}) do
-    {:ok, tag} =
+  def publication_fixture(attrs \\ []) do
+    {:ok, publication} =
       attrs
-      |> Enum.into(%{
-        name: "some name",
-        slug: "some-name"
-      })
-      |> Literature.create_tag()
+      |> Keyword.put_new(:name, "some name")
+      |> Enum.into(%{})
+      |> Literature.create_publication()
 
-    tag
+    publication
   end
 
   @doc """
-  Generate an author.
+  Generate a tag.
   """
-  def author_fixture(attrs \\ %{}) do
-    {:ok, author} =
+  def tag_fixture(attrs \\ []) do
+    {:ok, tag} =
       attrs
-      |> Enum.into(%{
-        name: "some name",
-        slug: "some-name"
-      })
-      |> Literature.create_author()
+      |> Keyword.put_new(:name, "some name")
+      |> Keyword.put_new(:visibility, true)
+      |> Enum.into(%{})
+      |> Literature.create_tag()
 
-    author
+    tag
   end
 end

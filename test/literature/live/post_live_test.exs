@@ -4,65 +4,106 @@ defmodule Literature.PostLiveTest do
   import Phoenix.LiveViewTest
   import Literature.Test.Fixtures
 
-  @create_attrs %{title: "some new title", slug: "some-new-title"}
-  @update_attrs %{title: "some updated title", slug: "some-updated-title"}
-  @invalid_attrs %{title: nil, slug: nil}
+  @create_attrs %{
+    title: "some new title",
+    status: "draft",
+    primary_author_id: nil,
+    primary_tag_id: nil
+  }
+  @update_attrs %{title: "some updated title", status: "publish"}
+  @invalid_attrs %{title: nil}
 
   defp create_post(_) do
-    post = post_fixture()
-    %{post: post}
+    publication = publication_fixture()
+    author = author_fixture(publication_id: publication.id)
+    tag = tag_fixture(publication_id: publication.id)
+
+    post =
+      post_fixture(
+        publication_id: publication.id,
+        primary_author_id: author.id,
+        primary_tag_id: tag.id
+      )
+
+    %{publication: publication, author: author, tag: tag, post: post}
   end
 
   describe "Index" do
     setup [:create_post]
 
-    test "lists all posts", %{conn: conn, post: post} do
-      {:ok, _index_live, html} = live(conn, Routes.literature_dashboard_path(conn, :list_posts))
+    test "lists all posts", %{conn: conn, publication: publication, post: post} do
+      {:ok, _view, html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_posts, publication.slug))
 
-      assert html =~ "List Posts"
+      assert html =~ "Posts"
       assert html =~ post.title
     end
 
-    test "saves new post", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, Routes.literature_dashboard_path(conn, :new_post))
+    test "saves new post", %{conn: conn, publication: publication, author: author, tag: tag} do
+      {:ok, index_live, html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_posts, publication.slug))
 
-      assert index_live |> element("a", "Create Post") |> render_click() =~
-               "New Post"
+      assert html =~ "Posts"
 
-      assert_patch(index_live, Routes.literature_dashboard_path(conn, :new_post))
-
-      {:ok, _, html} =
+      {:ok, new_live, html} =
         index_live
-        |> form("#post-form", post: @create_attrs)
-        |> render_submit()
-        |> follow_redirect(conn, Routes.literature_dashboard_path(conn, :list_posts))
+        |> element("a", "Create new")
+        |> render_click()
+        |> follow_redirect(
+          conn,
+          Routes.literature_dashboard_path(conn, :new_post, publication.slug)
+        )
 
-      assert html =~ "some title"
+      assert html =~ "New Post"
+
+      result =
+        new_live
+        |> form("#post-form",
+          post: %{@create_attrs | primary_author_id: author.id, primary_tag_id: tag.id}
+        )
+        |> render_submit()
+
+      {path, flash} = assert_redirect(new_live)
+      assert path == Routes.literature_dashboard_path(conn, :list_posts, publication.slug)
+      assert flash["success"] == "Post created successfully"
+
+      {:ok, _, html} = follow_redirect(result, conn, path)
+      assert html =~ @create_attrs.title
     end
 
-    test "updates post in listing", %{conn: conn, post: post} do
-      {:ok, index_live, _html} = live(conn, Routes.literature_dashboard_path(conn, :list_posts))
+    test "updates post in listing", %{conn: conn, publication: publication, post: post} do
+      {:ok, view, html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_posts, publication.slug))
 
-      assert index_live |> element("#edit-#{post.id}") |> render_click() =~
-               "Edit Post"
+      assert html =~ "Posts"
 
-      assert_patch(index_live, Routes.literature_dashboard_path(conn, :edit_post, post))
+      assert view |> element("#edit-#{post.id}") |> render_click() =~ "Edit Post"
 
-      assert index_live
+      assert_patch(
+        view,
+        Routes.literature_dashboard_path(conn, :edit_post, publication.slug, post.slug)
+      )
+
+      assert view
              |> form("#post-form", post: @invalid_attrs)
              |> render_change() =~ "This field is required"
 
-      {:ok, _, html} =
-        index_live
+      result =
+        view
         |> form("#post-form", post: @update_attrs)
         |> render_submit()
-        |> follow_redirect(conn, Routes.literature_dashboard_path(conn, :list_posts))
 
-      assert html =~ "some updated title"
+      {path, flash} = assert_redirect(view)
+      assert path == Routes.literature_dashboard_path(conn, :list_posts, publication.slug)
+      assert flash["success"] == "Post updated successfully"
+
+      {:ok, _, html} = follow_redirect(result, conn, path)
+      assert html =~ @update_attrs.title
     end
 
-    test "deletes post in listing", %{conn: conn, post: post} do
-      {:ok, index_live, _html} = live(conn, Routes.literature_dashboard_path(conn, :list_posts))
+    test "deletes post in listing", %{conn: conn, publication: publication, post: post} do
+      {:ok, index_live, _html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_posts, publication.slug))
 
       assert index_live |> element("#delete-#{post.id}") |> render_click()
       assert index_live |> element("#delete-modal a", "Yes, I'm sure") |> render_click()
