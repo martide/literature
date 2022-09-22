@@ -23,6 +23,8 @@ import Config
 # Can't build without this and it looks for Poison by default
 config :phoenix, :json_library, Jason
 
+config :literature, :env, config_env()
+
 if config_env() == :test do
   import_config "#{config_env()}.exs"
 end
