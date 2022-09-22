@@ -60,7 +60,6 @@ defmodule Literature.MixProject do
       {:atomex, "~> 0.5.1"},
       {:sitemapper, "~> 0.6.0"},
       {:slugy, "~> 4.1"},
-      {:telemetry, "~> 1.1"},
 
       # Test
       {:credo, "~> 1.6", only: [:test, :dev], runtime: false},
