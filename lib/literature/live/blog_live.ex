@@ -11,7 +11,7 @@ defmodule Literature.BlogLive do
   @impl Phoenix.LiveView
   def mount(%{"slug" => slug}, session, socket) do
     [&Literature.get_post!/1, &Literature.get_tag!/1, &Literature.get_author!/1]
-    |> Enum.map(fn fun -> fun.(slug: slug) end)
+    |> Enum.map(fn fun -> fun.(slug: slug, publication_slug: session["publication_slug"]) end)
     |> Enum.find(&is_struct/1)
     |> case do
       %Post{} = post -> assign_to_socket(socket, :post, preload_post(post))
@@ -79,13 +79,13 @@ defmodule Literature.BlogLive do
   defp apply_action(socket, _, _), do: socket
 
   defp list_posts(%{assigns: %{publication_slug: slug}}) do
-    %{"publication_slug" => slug}
+    %{"publication_slug" => slug, "status" => "published"}
     |> Literature.list_posts()
     |> preload_post()
   end
 
   defp list_tags(%{assigns: %{publication_slug: slug}}) do
-    %{"publication_slug" => slug}
+    %{"publication_slug" => slug, "status" => "public"}
     |> Literature.list_tags()
     |> preload_tag()
   end
@@ -100,10 +100,10 @@ defmodule Literature.BlogLive do
     do: Repo.preload(post, ~w(primary_author primary_tag)a)
 
   defp preload_tag(tag),
-    do: Repo.preload(tag, ~w(posts)a)
+    do: Repo.preload(tag, ~w(published_posts)a)
 
   defp preload_author(tag),
-    do: Repo.preload(tag, ~w(posts)a)
+    do: Repo.preload(tag, ~w(published_posts)a)
 
   defp assign_to_socket(socket, name, struct) do
     socket

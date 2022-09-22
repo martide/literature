@@ -106,7 +106,7 @@ defmodule Literature.TagLive do
   defp apply_action(socket, :edit_tag, %{"slug" => slug}) do
     socket
     |> assign(:page_title, "Edit Tag")
-    |> assign(:tag, Literature.get_tag!(slug: slug))
+    |> assign(:tag, Literature.get_tag!(slug: slug, publication_slug: socket.assigns.slug))
   end
 
   defp paginate_tags(params) do

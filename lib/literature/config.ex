@@ -10,6 +10,11 @@ defmodule Literature.Config do
   def repo,
     do: Application.get_env(:literature, :repo)
 
+  # Waffle Config
+
+  def waffle_asset_host,
+    do: Application.get_env(:literature, :asset_host)
+
   def waffle_bucket,
     do: Application.get_env(:literature, :bucket)
 

@@ -2,6 +2,8 @@ defmodule Literature.QueryHelpers do
   @moduledoc false
   import Ecto.Query, warn: false
 
+  import Literature.Helpers, only: [atomize_keys_to_string: 1]
+
   def search(query, :title, %{"q" => search}) do
     or_where(query, [q], ilike(q.title, ^"#{search}%"))
   end
@@ -47,6 +49,12 @@ defmodule Literature.QueryHelpers do
   end
 
   def where_status(query, _), do: query
+
+  def where_publication(query, attrs) when is_list(attrs) do
+    attrs
+    |> atomize_keys_to_string()
+    |> then(&where_publication(query, &1))
+  end
 
   def where_publication(query, %{"publication_slug" => slug}) do
     query

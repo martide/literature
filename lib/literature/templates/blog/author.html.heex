@@ -6,7 +6,7 @@
       <p class="text-gray-500 text-xl font-light tracking-wide"><%= @author.bio %></p>
     </div> 
     <div class="grid grid-cols-3 grid-rows-3 grid-flow-row gap-x-8 divide-x divide-gray-200 my-20 overflow-hidden">
-      <%= for {post, i} <- Enum.with_index(@author.posts) do %>
+      <%= for {post, i} <- Enum.with_index(@author.published_posts) do %>
         <article class={"#{if i == 0, do: "row-span-3", else: "px-8 pb-10"} group"}>
           <%= if i == 0 do %>
             <%= link to: literature_path(@socket, :show, post.slug) do %>

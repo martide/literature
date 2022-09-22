@@ -55,7 +55,14 @@ defmodule Literature do
 
   """
   def get_author!(id) when is_binary(id), do: Repo.get(Author, id)
-  def get_author!(list), do: Repo.get_by(Author, list)
+
+  def get_author!(list) do
+    attrs = Keyword.delete(list, :publication_slug)
+
+    Author
+    |> where_publication(list)
+    |> Repo.get_by(attrs)
+  end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking author changes.
@@ -177,8 +184,11 @@ defmodule Literature do
   def get_post!(id) when is_binary(id), do: Repo.get(Post, id)
 
   def get_post!(list) do
+    attrs = Keyword.delete(list, :publication_slug)
+
     Post
-    |> Repo.get_by(list)
+    |> where_publication(list)
+    |> Repo.get_by(attrs)
     |> Post.resolve_status()
   end
 
@@ -399,7 +409,14 @@ defmodule Literature do
 
   """
   def get_tag!(id) when is_binary(id), do: Repo.get(Tag, id)
-  def get_tag!(list), do: Repo.get_by(Tag, list)
+
+  def get_tag!(list) do
+    attrs = Keyword.delete(list, :publication_slug)
+
+    Tag
+    |> where_publication(list)
+    |> Repo.get_by(attrs)
+  end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking tag changes.

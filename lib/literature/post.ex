@@ -68,10 +68,12 @@ defmodule Literature.Post do
     |> unique_constraint(:slug, name: :literature_posts_publication_id_slug_index)
   end
 
-  def resolve_status(post) do
+  def resolve_status(post) when is_struct(post) do
     status = (post.published_at && "publish") || "draft"
     Map.put(post, :status, status)
   end
+
+  def resolve_status(post), do: post
 
   defp maybe_generate_slug(changeset, %{title: title, slug: slug}) when title != slug,
     do: changeset

@@ -20,6 +20,11 @@ defmodule Literature.Tag do
 
     has_many(:posts, Post, foreign_key: :primary_tag_id)
 
+    has_many(:published_posts, Post,
+      foreign_key: :primary_tag_id,
+      where: [published_at: {:not, nil}]
+    )
+
     timestamps()
   end
 

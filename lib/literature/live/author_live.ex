@@ -113,7 +113,7 @@ defmodule Literature.AuthorLive do
   defp apply_action(socket, :edit_author, %{"slug" => slug}) do
     socket
     |> assign(:page_title, "Edit Author")
-    |> assign(:author, Literature.get_author!(slug: slug))
+    |> assign(:author, Literature.get_author!(slug: slug, publication_slug: socket.assigns.slug))
   end
 
   defp apply_action(socket, :page_layout, _params) do
