@@ -31,7 +31,6 @@ jobs:
     - run: mix hex.audit
     # -run: mix doctor
     - run: mix format --dry-run --check-formatted
-    - run: mix archive.install hex sobelow --force
     - run: mix sobelow --config
     - run: mix format --dry-run --check-formatted
     - run: mix credo --strict
