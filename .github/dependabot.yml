@@ -1,42 +1,21 @@
 version: 2
 updates:
-- package-ecosystem: docker
-  directory: "/"
-  schedule:
-    interval: "weekly"
-  open-pull-requests-limit: 99
-  assignees:
-  - samhamilton
 - package-ecosystem: "github-actions"
   directory: "/"
   schedule:
-    interval: "weekly"
+    interval: "monthly"
   open-pull-requests-limit: 99
   assignees:
   - samhamilton
 - package-ecosystem: mix
   directory: "/"
   schedule:
-    interval: "weekly"
-  open-pull-requests-limit: 99
-  assignees:
-  - samhamilton
-- package-ecosystem: npm
-  directory: "/apps/admin_web/assets"
-  schedule:
     interval: "monthly"
   open-pull-requests-limit: 99
   assignees:
   - samhamilton
 - package-ecosystem: npm
-  directory: "/apps/martide_web/assets"
-  schedule:
-    interval: "monthly"
-  open-pull-requests-limit: 99
-  assignees:
-  - samhamilton
-- package-ecosystem: npm
-  directory: "/apps/public_web/assets"
+  directory: "/assets"
   schedule:
     interval: "monthly"
   open-pull-requests-limit: 99
