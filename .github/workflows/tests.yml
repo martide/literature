@@ -16,7 +16,7 @@ jobs:
     - uses: erlef/setup-beam@v1
       with:
         otp-version: "25.x"
-        elixir-version: "1.13.x"
+        elixir-version: "1.14.x"
     - uses: actions/cache@v3
       with:
         path: |
@@ -56,14 +56,6 @@ jobs:
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
-      - uses: actions/cache@v3
-        with:
-          path: |
-            deps
-            _build
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-mix-
       - run: mix do deps.get, compile --all-warnings --warnings-as-errors
       - run: mix deps.unlock --check-unused
       - run: mix hex.audit
@@ -102,14 +94,6 @@ jobs:
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
-      - uses: actions/cache@v3
-        with:
-          path: |
-            deps
-            _build
-          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-mix-
       - run: mix do deps.get, compile --all-warnings --warnings-as-errors
       - run: mix deps.unlock --check-unused
       - run: mix hex.audit
