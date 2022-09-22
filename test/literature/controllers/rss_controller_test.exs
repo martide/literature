@@ -1,4 +1,4 @@
-defmodule Literature.AssetNotFoundControllerTest do
+defmodule Literature.RSSControllerTest do
   use Literature.ConnCase
 
   import Literature.Config
