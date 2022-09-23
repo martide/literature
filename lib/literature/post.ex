@@ -12,29 +12,28 @@ defmodule Literature.Post do
     field(:feature_image_caption, :string)
     field(:featured, :boolean)
     field(:published_at, :utc_datetime)
+    field(:excerpt, :string)
+    field(:html, :string)
     field(:meta_title, :string)
     field(:meta_description, :string)
-    field(:custom_excerpt, :string)
     field(:og_image, Uploader.Type)
     field(:og_title, :string)
     field(:og_description, :string)
     field(:twitter_image, Uploader.Type)
     field(:twitter_title, :string)
     field(:twitter_description, :string)
-    field(:excerpt, :string)
     field(:status, :string, virtual: true)
 
     belongs_to(:publication, Publication)
-    belongs_to(:primary_author, Author)
-    belongs_to(:primary_tag, Tag)
+
+    many_to_many(:authors, Author, join_through: "literature_authors_posts")
+    many_to_many(:tags, Tag, join_through: "literature_tags_posts")
 
     timestamps()
   end
 
   @required_params ~w(
     publication_id
-    primary_author_id
-    primary_tag_id
     slug
     title
     status
@@ -44,14 +43,14 @@ defmodule Literature.Post do
     feature_image_alt
     feature_image_caption
     featured
+    excerpt
+    html
     meta_title
     meta_description
-    custom_excerpt
     og_title
     og_description
     twitter_title
     twitter_description
-    excerpt
   )a
 
   @attachments ~w(
@@ -65,11 +64,19 @@ defmodule Literature.Post do
     post
     |> cast(params, @required_params ++ @optional_params)
     |> cast_attachments(params, @attachments)
+    |> put_assoc(:authors, parse_authors(params))
+    |> put_assoc(:tags, parse_tags(params))
     |> maybe_generate_slug(post)
     |> put_published_at()
     |> validate_required(@required_params, message: "This field is required")
     |> unique_constraint(:slug, name: :literature_posts_publication_id_slug_index)
   end
+
+  def parse_authors(params),
+    do: Enum.map(params["authors"] || [], &Literature.get_author!/1)
+
+  def parse_tags(params),
+    do: Enum.map(params["tags"] || [], &Literature.get_tag!/1)
 
   def resolve_status(post) when is_struct(post) do
     status = (post.published_at && "publish") || "draft"

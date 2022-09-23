@@ -12,23 +12,16 @@ defmodule Literature.Migrations.Post do
       add(:feature_image_caption, :string)
       add(:featured, :boolean, default: false)
       add(:published_at, :utc_datetime)
+      add(:excerpt, :text)
+      add(:html, :text)
       add(:meta_title, :string)
       add(:meta_description, :string)
-      add(:custom_excerpt, :text)
       add(:og_image, :string)
       add(:og_title, :string)
       add(:og_description, :string)
       add(:twitter_image, :string)
       add(:twitter_title, :string)
       add(:twitter_description, :string)
-      add(:excerpt, :text)
-
-      add(
-        :primary_author_id,
-        references(:literature_authors, on_delete: :nilify_all, type: :binary_id)
-      )
-
-      add(:primary_tag_id, references(:literature_tags, on_delete: :nilify_all, type: :binary_id))
 
       add(
         :publication_id,

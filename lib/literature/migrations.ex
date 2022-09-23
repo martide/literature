@@ -33,6 +33,8 @@ defmodule Literature.Migrations do
   """
   use Ecto.Migration
 
+  @tables ~w(Publication Author Tag Post AuthorPost TagPost)
+
   @doc """
   Run the `up` changes for all migrations
 
@@ -42,7 +44,7 @@ defmodule Literature.Migrations do
     
     Literature.Migrations.up()
   """
-  def up, do: change(:up, ~w(publication author tag post))
+  def up, do: change(:up, @tables)
 
   @doc """
   Run the `down` changes for all migrations
@@ -53,12 +55,10 @@ defmodule Literature.Migrations do
     
     Literature.Migrations.down()
   """
-  def down, do: change(:down, ~w(post author tag publication))
+  def down, do: change(:down, Enum.reverse(@tables))
 
   defp change(direction, tables) do
-    for name <- tables do
-      table_name = String.capitalize(name)
-
+    for table_name <- tables do
       [__MODULE__, table_name]
       |> Module.concat()
       # credo:disable-for-next-line

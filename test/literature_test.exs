@@ -1,6 +1,7 @@
 defmodule LiteratureTest do
   use Literature.DataCase
 
+  import Literature.Helpers, only: [atomize_keys_to_string: 1]
   import Literature.Test.Fixtures
 
   alias Literature
@@ -82,48 +83,26 @@ defmodule LiteratureTest do
 
     test "paginate_posts/0 returns all posts" do
       publication = publication_fixture()
-      author = author_fixture(publication_id: publication.id)
-      tag = tag_fixture(publication_id: publication.id)
+      post = post_fixture(publication_id: publication.id)
 
-      post =
-        post_fixture(
-          publication_id: publication.id,
-          primary_author_id: author.id,
-          primary_tag_id: tag.id
-        )
-
-      assert %Scrivener.Page{entries: entries} = Literature.paginate_posts()
+      attrs = %{"preload" => ~w(authors tags)a}
+      assert %Scrivener.Page{entries: entries} = Literature.paginate_posts(attrs)
       assert entries == [%{post | status: nil}]
     end
 
     test "list_posts/0 returns all posts" do
       publication = publication_fixture()
-      author = author_fixture(publication_id: publication.id)
-      tag = tag_fixture(publication_id: publication.id)
+      post = post_fixture(publication_id: publication.id)
 
-      post =
-        post_fixture(
-          publication_id: publication.id,
-          primary_author_id: author.id,
-          primary_tag_id: tag.id
-        )
-
-      assert Literature.list_posts() == [post]
+      attrs = %{"preload" => ~w(authors tags)a}
+      assert Literature.list_posts(attrs) == [post]
     end
 
     test "get_post!/1 returns the post with given id" do
       publication = publication_fixture()
-      author = author_fixture(publication_id: publication.id)
-      tag = tag_fixture(publication_id: publication.id)
+      post = post_fixture(publication_id: publication.id)
 
-      post =
-        post_fixture(
-          publication_id: publication.id,
-          primary_author_id: author.id,
-          primary_tag_id: tag.id
-        )
-
-      assert Literature.get_post!(post.id) == post
+      assert Literature.get_post!(post.id) |> Repo.preload(~w(authors tags)a) == post
     end
 
     test "create_post/1 with valid data creates an post" do
@@ -131,19 +110,21 @@ defmodule LiteratureTest do
       author = author_fixture(publication_id: publication.id)
       tag = tag_fixture(publication_id: publication.id)
 
-      valid_attrs = %{
-        title: "some title",
-        slug: "some-title",
-        publication_id: publication.id,
-        primary_author_id: author.id,
-        primary_tag_id: tag.id,
-        status: "publish"
-      }
+      valid_attrs =
+        %{
+          title: "some title",
+          slug: "some-title",
+          publication_id: publication.id,
+          status: "publish",
+          authors: [author.id],
+          tags: [tag.id]
+        }
+        |> atomize_keys_to_string()
 
       assert {:ok, %Post{} = post} = Literature.create_post(valid_attrs)
       assert post.publication_id == publication.id
-      assert post.primary_author_id == author.id
-      assert post.primary_tag_id == tag.id
+      assert post.authors == [author]
+      assert post.tags == [tag]
       assert post.title == "some title"
       assert post.slug == "some-title"
     end
@@ -154,53 +135,30 @@ defmodule LiteratureTest do
 
     test "update_post/2 with valid data updates the post" do
       publication = publication_fixture()
-      author = author_fixture(publication_id: publication.id)
-      tag = tag_fixture(publication_id: publication.id)
+      post = post_fixture(publication_id: publication.id)
 
-      post =
-        post_fixture(
-          publication_id: publication.id,
-          primary_author_id: author.id,
-          primary_tag_id: tag.id
-        )
-
-      update_attrs = %{title: "some updated title", slug: "some-update-title"}
+      update_attrs = %{
+        title: "some updated title",
+        slug: "some-update-title"
+      }
 
       assert {:ok, %Post{} = post} = Literature.update_post(post, update_attrs)
       assert post.publication_id == publication.id
-      assert post.primary_author_id == author.id
-      assert post.primary_tag_id == tag.id
       assert post.title == "some updated title"
       assert post.slug == "some-update-title"
     end
 
     test "update_post/2 with invalid data returns error changeset" do
       publication = publication_fixture()
-      author = author_fixture(publication_id: publication.id)
-      tag = tag_fixture(publication_id: publication.id)
-
-      post =
-        post_fixture(
-          publication_id: publication.id,
-          primary_author_id: author.id,
-          primary_tag_id: tag.id
-        )
+      post = post_fixture(publication_id: publication.id)
 
       assert {:error, %Ecto.Changeset{}} = Literature.update_post(post, @invalid_attrs)
-      assert post == Literature.get_post!(post.id)
+      assert post == Literature.get_post!(post.id) |> Repo.preload(~w(authors tags)a)
     end
 
     test "delete_post/1 deletes the post" do
       publication = publication_fixture()
-      author = author_fixture(publication_id: publication.id)
-      tag = tag_fixture(publication_id: publication.id)
-
-      post =
-        post_fixture(
-          publication_id: publication.id,
-          primary_author_id: author.id,
-          primary_tag_id: tag.id
-        )
+      post = post_fixture(publication_id: publication.id)
 
       assert {:ok, %Post{}} = Literature.delete_post(post)
       assert is_nil(Literature.get_post!(post.id))
@@ -208,15 +166,7 @@ defmodule LiteratureTest do
 
     test "change_post/1 returns post changeset" do
       publication = publication_fixture()
-      author = author_fixture(publication_id: publication.id)
-      tag = tag_fixture(publication_id: publication.id)
-
-      post =
-        post_fixture(
-          publication_id: publication.id,
-          primary_author_id: author.id,
-          primary_tag_id: tag.id
-        )
+      post = post_fixture(publication_id: publication.id)
 
       assert %Ecto.Changeset{} = Literature.change_post(post)
     end

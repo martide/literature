@@ -145,6 +145,7 @@ defmodule Literature do
     |> search(:title, attrs)
     |> search(:slug, attrs)
     |> sort_by(attrs)
+    |> where_preload(attrs)
     |> where_status(attrs)
     |> where_publication(attrs)
     |> Repo.paginate(attrs)
