@@ -62,21 +62,15 @@ defmodule Literature.Post do
   @doc false
   def changeset(post, params) do
     post
+    |> Literature.Repo.preload(~w(authors tags)a)
     |> cast(params, @required_params ++ @optional_params)
     |> cast_attachments(params, @attachments)
-    |> put_assoc(:authors, parse_authors(params))
-    |> put_assoc(:tags, parse_tags(params))
     |> maybe_generate_slug(post)
     |> put_published_at()
     |> validate_required(@required_params, message: "This field is required")
     |> unique_constraint(:slug, name: :literature_posts_publication_id_slug_index)
+    |> put_assocs(params)
   end
-
-  def parse_authors(params),
-    do: Enum.map(params["authors"] || [], &Literature.get_author!/1)
-
-  def parse_tags(params),
-    do: Enum.map(params["tags"] || [], &Literature.get_tag!/1)
 
   def resolve_status(post) when is_struct(post) do
     status = (post.published_at && "publish") || "draft"
@@ -106,4 +100,18 @@ defmodule Literature.Post do
         changeset
     end
   end
+
+  defp put_assocs(changeset, %{"authors" => ""}),
+    do: add_error(changeset, :authors, "Required at least one author")
+
+  defp put_assocs(changeset, %{"tags" => ""}),
+    do: add_error(changeset, :tags, "Required at least one tag")
+
+  defp put_assocs(%{valid?: true} = changeset, %{"authors" => authors, "tags" => tags}) do
+    changeset
+    |> put_assoc(:authors, Enum.map(authors, &Literature.get_author!/1))
+    |> put_assoc(:tags, Enum.map(tags, &Literature.get_tag!/1))
+  end
+
+  defp put_assocs(changeset, _), do: changeset
 end

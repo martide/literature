@@ -34,10 +34,6 @@ defmodule Literature.AuthorFormComponent do
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save">
-        <.form_group title="Meta Tags">
-          <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
-          <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" />
-        </.form_group>
         <.form_group title="Details">
           <.form_field form={f} type="text_input" field={:name} label="Name" />
           <.form_field form={f} type="text_input" field={:slug} label="Slug" disabled={@action == :new_author} placeholder={if @action == :new_author, do: "(auto-generate) you can change from edit page", else: ""} />
@@ -48,6 +44,10 @@ defmodule Literature.AuthorFormComponent do
           <.form_field form={f} type="text_input" field={:location} label="Location" />
           <.form_field form={f} type="url_input" field={:facebook} label="Facebook" />
           <.form_field form={f} type="url_input" field={:twitter} label="Twitter" />
+        </.form_group>
+        <.form_group title="Meta Tags">
+          <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
+          <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" />
         </.form_group>
         <.button_group>
           <.back_button label="Cancel" return_to={@return_to} />

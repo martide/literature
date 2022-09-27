@@ -35,6 +35,13 @@ defmodule Literature.TagFormComponent do
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save">
+        <.form_group title="Contents">
+          <.form_field form={f} type="text_input" field={:name} label="Name" />
+          <.form_field form={f} type="text_input" field={:slug} label="Slug" disabled={@action == :new_tag} placeholder={if @action == :new_tag, do: "(auto-generate) you can change from edit page", else: ""} />
+          <.form_field form={f} type="textarea" field={:description} label="Description" />
+          <.form_field form={f} type="image_upload" field={:feature_image} label="Feature Image" uploads={@uploads} />
+          <.form_field form={f} type="radio_group" field={:visibility} label="Visibility" options={[{"true", "Public"}, {"false", "Private"}]} />
+        </.form_group>
         <.form_group title="Meta Tags">
           <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
           <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" />
@@ -48,13 +55,6 @@ defmodule Literature.TagFormComponent do
           <.form_field form={f} type="image_upload" field={:twitter_image} label="Twitter Image" uploads={@uploads} />
           <.form_field form={f} type="text_input" field={:twitter_title} label="Twitter Title" />
           <.form_field form={f} type="textarea" field={:twitter_description} label="Twitter Description" />
-        </.form_group>
-        <.form_group title="Contents">
-          <.form_field form={f} type="text_input" field={:name} label="Name" />
-          <.form_field form={f} type="text_input" field={:slug} label="Slug" disabled={@action == :new_tag} placeholder={if @action == :new_tag, do: "(auto-generate) you can change from edit page", else: ""} />
-          <.form_field form={f} type="textarea" field={:description} label="Description" />
-          <.form_field form={f} type="image_upload" field={:feature_image} label="Feature Image" uploads={@uploads} />
-          <.form_field form={f} type="radio_group" field={:visibility} label="Visibility" options={[{"true", "Public"}, {"false", "Private"}]} />
         </.form_group>
         <.button_group>
           <.back_button label="Cancel" return_to={@return_to} />

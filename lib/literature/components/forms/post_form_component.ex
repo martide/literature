@@ -38,6 +38,18 @@ defmodule Literature.PostFormComponent do
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save">
+        <.form_group title="Contents">
+          <.form_field form={f} type="text_input" field={:title} label="Title" />
+          <.form_field form={f} type="text_input" field={:slug} label="Slug" disabled={@action == :new_post} placeholder={if @action == :new_post, do: "(auto-generate) you can change from edit page", else: ""} />
+          <.form_field form={f} type="text_editor" field={:html} label="Content" />
+          <.form_field form={f} type="checkbox_group" field={:authors} options={@authors} label="Authors" />
+          <.form_field form={f} type="checkbox_group" field={:tags} options={@tags} label="Tags" />
+          <.form_field form={f} type="image_upload" field={:feature_image} label="Feature Image" uploads={@uploads} />
+          <.form_field form={f} type="text_input" field={:feature_image_alt} label="Feature Image Alt" />
+          <.form_field form={f} type="text_input" field={:feature_image_caption} label="Feature Image Caption" />
+          <.form_field form={f} type="textarea" field={:excerpt} label="Excerpt" />
+          <.form_field form={f} type="radio_group" field={:status} label="Status" options={[draft: "Draft", publish: "Publish"]} />
+        </.form_group>
         <.form_group title="Meta Tags">
           <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
           <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" />
@@ -51,18 +63,6 @@ defmodule Literature.PostFormComponent do
           <.form_field form={f} type="image_upload" field={:twitter_image} label="Twitter Image" uploads={@uploads} />
           <.form_field form={f} type="text_input" field={:twitter_title} label="Twitter Title" />
           <.form_field form={f} type="textarea" field={:twitter_description} label="Twitter Description" />
-        </.form_group>
-        <.form_group title="Contents">
-          <.form_field form={f} type="text_input" field={:title} label="Title" />
-          <.form_field form={f} type="text_input" field={:slug} label="Slug" disabled={@action == :new_post} placeholder={if @action == :new_post, do: "(auto-generate) you can change from edit page", else: ""} />
-          <.form_field form={f} type="select" field={:primary_author_id} options={@authors} label="Primary Author" prompt="Select author" />
-          <.form_field form={f} type="select" field={:primary_tag_id} options={@tags} label="Primary Tag" prompt="Select tag" />
-          <.form_field form={f} type="image_upload" field={:feature_image} label="Feature Image" uploads={@uploads} />
-          <.form_field form={f} type="text_input" field={:feature_image_alt} label="Feature Image Alt" />
-          <.form_field form={f} type="text_input" field={:feature_image_caption} label="Feature Image Caption" />
-          <.form_field form={f} type="textarea" field={:custom_excerpt} label="Custom Excerpt" />
-          <.form_field form={f} type="text_editor" field={:excerpt} label="Excerpt" />
-          <.form_field form={f} type="radio_group" field={:status} label="Status" options={[draft: "Draft", publish: "Publish"]} />
         </.form_group>
         <.button_group>
           <.back_button label="Cancel" return_to={@return_to} />

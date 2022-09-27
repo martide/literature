@@ -21,7 +21,7 @@ defmodule Literature.FormComponent do
       end)
 
     ~H"""
-    <div class={@type == "text_editor" && "col-span-2 mb-10" || "mb-6"}>
+    <div class={form_field_classes(@type)}>
       <%= case @type do %>
         <% "text_input" -> %>
           <.form_label form={@form} field={@field} label={@label} />
@@ -32,6 +32,9 @@ defmodule Literature.FormComponent do
         <% "text_editor" -> %>
           <.form_label form={@form} field={@field} label={@label} />
           <.text_editor form={@form} field={@field} {@input_opts} />
+        <% "checkbox_group" -> %>
+          <.form_label form={@form} field={@field} label={@label} />
+          <.checkbox_group form={@form} field={@field} {@input_opts} />
         <% "radio_group" -> %>
           <.form_label form={@form} field={@field} label={@label} />
           <.radio_group form={@form} field={@field} {@input_opts} />
@@ -62,7 +65,7 @@ defmodule Literature.FormComponent do
     ~H"""
     <hr class="mb-6 border-gray-200 sm:mx-auto" />
     <p class="text-primary-700 font-semibold uppercase mb-3"><%= @title %></p>
-    <div class="grid grid-cols-2 gap-5">
+    <div class="grid grid-cols-2 gap-5 pb-5">
       <%= render_block(@inner_block) %>
     </div>
     """
@@ -169,7 +172,7 @@ defmodule Literature.FormComponent do
     assigns = assign_defaults(assigns, text_input_classes(assigns))
 
     ~H"""
-    <%= textarea @form, @field, [class: @classes, rows: "5", phx_feedback_for: input_name(@form, @field)] ++ @rest %>
+    <%= textarea @form, @field, [class: @classes, rows: "6", phx_feedback_for: input_name(@form, @field)] ++ @rest %>
     """
   end
 
@@ -214,6 +217,57 @@ defmodule Literature.FormComponent do
     """
   end
 
+  def checkbox(assigns) do
+    assigns = assign_defaults(assigns, checkbox_classes(assigns))
+
+    ~H"""
+    <%= checkbox @form, @field, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
+    """
+  end
+
+  def checkbox_group(assigns) do
+    assigns =
+      assigns
+      |> assign_defaults(text_input_classes(assigns))
+      |> assign_new(:checked, fn ->
+        values =
+          case input_value(assigns[:form], assigns[:field]) do
+            value when is_binary(value) -> [value]
+            value when is_list(value) -> value
+            _ -> []
+          end
+
+        Enum.map(values, &to_string/1)
+      end)
+      |> assign_new(:id_prefix, fn -> input_id(assigns[:form], assigns[:field]) <> "_" end)
+      |> assign_new(:layout, fn -> :col end)
+
+    ~H"""
+    <div class="">
+      <%= hidden_input @form, @field, name: input_name(@form, @field), value: "" %>
+      <%= for {label, value} <- @options do %>
+        <label class="flex items-center space-x-3">
+          <.checkbox
+            form={@form}
+            field={@field}
+            id={@id_prefix <> to_string(value)}
+            name={input_name(@form, @field) <> "[]"}
+            checked_value={value}
+            unchecked_value=""
+            value={value}
+            checked={to_string(value) in @checked}
+            hidden_input={false}
+            {@rest} />
+          <div class="font-medium"><%= label %></div>
+        </label>
+      <% end %>
+      <%= if Enum.empty?(@options) do %>
+        <p class="text-sm font-semibold text-red-500">No available options</p>
+      <% end %>
+    </div>
+    """
+  end
+
   defp form_field_error(assigns) do
     ~H"""
     <div class="mt-1">
@@ -241,9 +295,21 @@ defmodule Literature.FormComponent do
     )
   end
 
+  defp form_field_classes(type) do
+    case type do
+      "image_upload" -> "row-span-2"
+      "text_editor" -> "col-span-2"
+      _ -> "flex flex-col"
+    end
+  end
+
   defp label_classes(assigns) do
     "#{if field_has_errors?(assigns), do: "text-red-900", else: "text-gray-900"} block #{(assigns[:type] && "peer-checked:bg-primary-700 peer-checked:text-white w-full py-3 text-center transition duration-300 ease-in-out") || "mb-2 text-sm"} font-medium"
   end
+
+  defp checkbox_classes(_assigns),
+    do:
+      "w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 focus:ring-2"
 
   defp radio_classes(_assigns), do: "sr-only peer"
 

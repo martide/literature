@@ -52,9 +52,10 @@ defmodule Literature.LayoutComponent do
     ~H"""
     <footer class="pb-4 rounded-lg md:pb-6">
       <hr class="mb-6 border-gray-200 sm:mx-auto" />
-      <span class="block text-sm text-gray-500 sm:text-center">
-        &copy; <%= Date.utc_today().year %> <a href="https://martide.com/" class="hover:underline">Literature</a>. All Rights Reserved.
-      </span>
+      <%= link to: "https://github.com/martide/literature", target: "_blank", class: "block text-sm text-gray-500 sm:text-center" do %>
+        <span class="font-medium">Literature</span>
+        <%= Application.spec(:literature, :vsn) %>
+      <% end %>
     </footer>
     """
   end
