@@ -2,20 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-.ProseMirror {
-  @apply prose prose-sm sm:prose focus:outline-none p-2.5 w-full
+#editor {
+  @apply prose prose-sm sm:prose focus:outline-none p-2.5
          text-gray-900 bg-gray-50 rounded-lg border border-gray-300
          focus:ring-1 focus:ring-blue-500 focus:border-blue-500
 }
 
 .editor-menu {
-  @apply py-2 mb-3
+  @apply mb-3 border border-gray-300 rounded-lg
 }
 
 .editor-menu button {
-  @apply text-gray-900 bg-white border border-gray-300 focus:outline-none
-         hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium
-         rounded-lg text-sm px-3 py-2
+  @apply text-gray-900 bg-white focus:outline-none font-medium rounded-lg
+         text-sm px-2 py-2 hover:bg-gray-100
 }
 
 .editor-menu button.active {

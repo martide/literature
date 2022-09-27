@@ -2,10 +2,11 @@ defmodule Literature.FormComponent do
   @moduledoc false
   use Phoenix.Component
 
+  import Literature.Helpers
   import Phoenix.HTML.Form
   import Phoenix.HTML.Tag
-  import Literature.Helpers
 
+  alias Literature.Components.Icons
   alias Phoenix.LiveView.JS
 
   def form_field(assigns) do
@@ -179,23 +180,24 @@ defmodule Literature.FormComponent do
   defp text_editor(assigns) do
     ~H"""
     <div class="editor-menu">
-      <.menu_editor name="heading" to="#editor" data-level="1" label="H1" />
-      <.menu_editor name="heading" to="#editor" data-level="2" label="H2" />
-      <.menu_editor name="heading" to="#editor" data-level="3" label="H3" />
-      <.menu_editor name="bold" to="#editor" label="Bold" />
-      <.menu_editor name="italic" to="#editor" label="Italic" />
-      <.menu_editor name="bulletList" to="#editor" label="Bullet List" />
-      <.menu_editor name="orderedList" to="#editor" label="Ordered List" />
-      <.menu_editor name="blockquote" to="#editor" label="Blockquote" />
-      <.menu_editor name="horizontalRule" to="#editor" label="HR" />
+      <.menu_editor name="heading" to="#editor" data-heading-size="h1" icon="type-h1" />
+      <.menu_editor name="heading" to="#editor" data-heading-size="h2" icon="type-h2" />
+      <.menu_editor name="heading" to="#editor" data-heading-size="h3" icon="type-h3" />
+      <.menu_editor name="bold" to="#editor" icon="type-bold" />
+      <.menu_editor name="italic" to="#editor" icon="type-italic" />
+      <.menu_editor name="bulletedList" to="#editor" icon="list-ul" />
+      <.menu_editor name="orderedList" to="#editor" icon="list-ol" />
     </div>
-    <div id="editor" data-target={"##{input_id(@form, @field)}"} phx-hook="HTMLEditor"></div>
+    <div id="editor" data-target={"##{input_id(@form, @field)}"} phx-hook="HTMLEditor" contenteditable></div>
     <.textarea form={@form} field={@field} hidden="true" />
     """
   end
 
   defp menu_editor(assigns) do
-    assigns = assign_rest(assigns, ~w(label name to)a)
+    assigns =
+      assigns
+      |> assign_new(:label, fn -> nil end)
+      |> assign_rest(~w(label name to)a)
 
     ~H"""
     <button
@@ -204,7 +206,8 @@ defmodule Literature.FormComponent do
       data-name={@name}
       {@rest}
     >
-      <%= @label %>
+      <Icons.render icon={@icon} />
+      <%= assigns[:label] %>
     </button>
     """
   end

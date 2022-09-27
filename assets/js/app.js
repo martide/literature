@@ -7,7 +7,7 @@ Hooks.HTMLEditor = {
   loadHTMLEditor() {
     const element = this.el
     
-    import('./tiptap').then(
+    import('./lexical').then(
       ({ HTMLEditor }) => {
         HTMLEditor(element)
       }
