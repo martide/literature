@@ -7,9 +7,9 @@
         <span>·</span>
         <span>5 min read</span>
         <span>·</span>
-        <%= if @post.primary_tag do %>     
+        <%= for tag <- @post.tags do %>     
           <span class="text-primary-500">
-            <%= @post.primary_tag.name %>
+            <%= tag.name %>
           </span>
         <% end %>
       </div>
@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="max-w-5xl mx-auto prose prose-sm sm:prose">
-      <%= raw @post.excerpt %>
+      <%= raw @post.html %>
     </div>
   </div>
 </section>

@@ -35,25 +35,25 @@ defmodule Literature.PublicationFormComponent do
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save">
-        <.form_group title="Meta Tags">
-          <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
-          <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" />
-        </.form_group>
-        <.form_group title="Facebook Tags">
-          <.form_field form={f} type="image_upload" field={:og_image} label="Og Image" uploads={@uploads} />
-          <.form_field form={f} type="text_input" field={:og_title} label="Og Title" />
-          <.form_field form={f} type="textarea" field={:og_description} label="Og Description" />
-        </.form_group>
-        <.form_group title="Twitter Tags">
-          <.form_field form={f} type="image_upload" field={:twitter_image} label="Twitter Image" uploads={@uploads} />
-          <.form_field form={f} type="text_input" field={:twitter_title} label="Twitter Title" />
-          <.form_field form={f} type="textarea" field={:twitter_description} label="Twitter Description" />
-        </.form_group>
         <.form_group title="Contents">
           <.form_field form={f} type="text_input" field={:name} label="Name" />
           <.form_field form={f} type="text_input" field={:slug} label="Slug" disabled={@action == :new_publication} placeholder={if @action == :new_publication, do: "(auto-generate) you can change from edit page", else: ""} />
           <.form_field form={f} type="textarea" field={:description} label="Description" />
         </.form_group>
+        <.accordion title="Meta Tags">
+          <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
+          <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" />
+        </.accordion>
+        <.accordion title="Facebook Meta Tags">
+          <.form_field form={f} type="image_upload" field={:og_image} label="Og Image" uploads={@uploads} />
+          <.form_field form={f} type="text_input" field={:og_title} label="Og Title" />
+          <.form_field form={f} type="textarea" field={:og_description} label="Og Description" />
+        </.accordion>
+        <.accordion title="Twitter Meta Tags">
+          <.form_field form={f} type="image_upload" field={:twitter_image} label="Twitter Image" uploads={@uploads} />
+          <.form_field form={f} type="text_input" field={:twitter_title} label="Twitter Title" />
+          <.form_field form={f} type="textarea" field={:twitter_description} label="Twitter Description" />
+        </.accordion>
         <.button_group>
           <.back_button label="Cancel" return_to={@return_to} />
           <.submit_button label="Save changes" />

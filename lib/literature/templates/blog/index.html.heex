@@ -20,14 +20,14 @@
                 <span>·</span>
                 <span>5 min read</span>
                 <span>·</span>
-                <%= if post.primary_tag do %>     
-                  <span class="text-primary-500">
-                    <%= post.primary_tag.name %>
+                <%= for tag <- post.tags do %>     
+                  <span class="text-primary-500 uppercase text-xs font-semibold">
+                    <%= tag.name %>
                   </span>
                 <% end %>
               </div>
               <p class="font-light tracking-wide text-gray-700">
-                <%= post.custom_excerpt %>  
+                <%= post.excerpt %>  
               </p>
             <% end %>
             <div class="flex items-center justify-between font-semibold text-xs border-t border-gray-300 mt-10 py-5">
@@ -46,11 +46,11 @@
                 <% end %>
               </div>
               <div class="flex items-center">
-                <%= if post.primary_author do %>
-                  <%= img_tag literature_image_url(post.primary_author, :profile_image), class: "rounded-full h-7 w-7 mr-2", alt: post.primary_author.name %>
+                <%= for author <- post.authors do %>
+                  <%= img_tag literature_image_url(author, :profile_image), class: "rounded-full h-7 w-7 mr-2", alt: author.name %>
                   <span class="mr-1 text-gray-400">By: </span>
                   <span class="text-gray-900">
-                    <%= post.primary_author.name %>
+                    <%= author.name %>
                   </span>
                 <% end %>
               </div>

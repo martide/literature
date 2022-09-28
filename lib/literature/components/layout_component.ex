@@ -5,61 +5,6 @@ defmodule Literature.LayoutComponent do
   import Literature.Helpers
   import Phoenix.HTML.Link
 
-  def header(assigns) do
-    ~H"""
-    <header>
-      <nav class="bg-white px-2 sm:px-4 py-2.5 fixed w-full z-50 top-0 left-0 border-b border-gray-200 shadow shadow-slate-400/50">
-        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
-          <%= live_patch to: literature_dashboard_path(@socket, :list_publications), class: "flex items-center space-x-2 text-primary-700" do %>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-            </svg>
-            <span class="self-center text-xl font-semibold whitespace-nowrap">Literature</span>
-          <% end %>
-          <div class="flex md:order-2">
-            <%= live_redirect to: literature_dashboard_path(@socket, :new_publication), class: "text-primary-700 focus:outline-none hover:bg-primary-100 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center transition duration-300 ease-in-out" do %>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              <span class="flex-1 ml-2 whitespace-nowrap">New publication</span>
-            <% end %>
-            <button data-collapse-toggle="navbar-sticky" type="button" class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200" aria-controls="navbar-sticky" aria-expanded="false">
-              <span class="sr-only">Open main menu</span>
-              <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
-              </svg>
-            </button>
-          </div>
-          <div class="hidden justify-between items-center w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
-            <ul class="flex flex-col p-4 mt-4 bg-gray-50 rounded-lg border border-gray-100 md:flex-row md:space-x-12 md:mt-0 md:text-sm md:font-medium md:border-0 md:bg-white">
-              <li>
-                <%= render_tab "Dashboard", literature_dashboard_path(@socket, :list_publications), path: @uri.path, slug: "publications" %>
-              </li>
-              <%= for publication <- Literature.list_publications() do %>
-                <li>
-                  <%= render_tab publication.name, literature_dashboard_path(@socket, :list_posts, publication.slug), path: @uri.path, slug: publication.slug %>
-                </li>
-              <% end %>
-            </ul>
-          </div>
-        </div>
-      </nav>
-    </header>
-    """
-  end
-
-  def footer(assigns) do
-    ~H"""
-    <footer class="pb-4 rounded-lg md:pb-6">
-      <hr class="mb-6 border-gray-200 sm:mx-auto" />
-      <%= link to: "https://github.com/martide/literature", target: "_blank", class: "block text-sm text-gray-500 sm:text-center" do %>
-        <span class="font-medium">Literature</span>
-        <%= Application.spec(:literature, :vsn) %>
-      <% end %>
-    </footer>
-    """
-  end
-
   def h1(assigns) do
     ~H"""
     <h1 class="font-extrabold text-3xl text-primary-700 mb-5">
@@ -185,22 +130,5 @@ defmodule Literature.LayoutComponent do
       </div>
     </div>
     """
-  end
-
-  defp render_tab(name, path, opts) do
-    base_classes = "block py-2 pr-4 pl-3 rounded md:p-0 transition duration-300 ease-in-out"
-
-    if String.contains?(opts[:path], opts[:slug]) do
-      live_redirect(name,
-        to: path,
-        class: "#{base_classes} text-white bg-primary-700 md:bg-transparent md:text-primary-700"
-      )
-    else
-      live_redirect(name,
-        to: path,
-        class:
-          "#{base_classes} text-gray-700 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-primary-700"
-      )
-    end
   end
 end

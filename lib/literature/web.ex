@@ -40,6 +40,10 @@ defmodule Literature.Web do
         namespace: Literature,
         root: "lib/literature/templates"
 
+      # Import convenience functions from controllers
+      import Phoenix.Controller,
+        only: [get_flash: 2]
+
       unquote(view_helpers())
     end
   end

@@ -19,8 +19,9 @@ defmodule Literature.PublicationLive do
           <%= for publication <- @publications do %>
             <.card
               item={publication}
+              show_path={literature_dashboard_path(@socket, :list_posts, publication.slug)}
               edit_path={literature_dashboard_path(@socket, :edit_publication, publication.slug)}
-              show_path={literature_dashboard_path(@socket, :new_post, publication.slug)}
+              create_post_path={literature_dashboard_path(@socket, :new_post, publication.slug)}
             />
           <% end %>
           <%= if Enum.empty?(@publications) do %>

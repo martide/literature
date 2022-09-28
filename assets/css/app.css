@@ -2,24 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-#editor {
-  @apply prose prose-sm sm:prose focus:outline-none p-2.5
-         text-gray-900 bg-gray-50 rounded-lg border border-gray-300
-         focus:ring-1 focus:ring-blue-500 focus:border-blue-500
+#editorjs {
+  @apply prose prose-sm sm:prose max-w-full
 }
 
-.editor-menu {
-  @apply mb-3 border border-gray-300 rounded-lg
-}
-
-.editor-menu button {
-  @apply text-gray-900 bg-white focus:outline-none font-medium rounded-lg
-         text-sm px-2 py-2 hover:bg-gray-100
-}
-
-.editor-menu button.active {
-  @apply text-white bg-gray-900
-}
+/* Pagination */
 
 ul.pagination {
   @apply flex items-center justify-center text-sm my-5

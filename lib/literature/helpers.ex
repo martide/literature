@@ -32,6 +32,10 @@ defmodule Literature.Helpers do
     routes(conn).literature_dashboard_path(conn, action, params)
   end
 
+  def literature_dashboard_path(%Plug.Conn{} = conn, action, params, opts) do
+    routes(conn).literature_dashboard_path(conn, action, params, opts)
+  end
+
   def literature_dashboard_path(%Phoenix.LiveView.Socket{} = socket, action, params) do
     routes(socket).literature_dashboard_path(socket, action, params)
   end
@@ -45,7 +49,7 @@ defmodule Literature.Helpers do
   end
 
   def routes(%Plug.Conn{} = conn) do
-    conn.private.application_router.__helpers__()
+    conn.private.phoenix_router.__helpers__()
   end
 
   def routes(%Phoenix.LiveView.Socket{} = socket) do

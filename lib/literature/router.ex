@@ -38,6 +38,7 @@ defmodule Literature.Router do
         pipeline pipename do
           plug(:accepts, ["html"])
           plug(:fetch_session)
+          plug(:fetch_flash)
           plug(:protect_from_forgery)
         end
 
@@ -72,6 +73,8 @@ defmodule Literature.Router do
               live("/posts/page/:page", PostLive, :list_posts, route_opts)
               live("/posts/new", PostLive, :new_post, route_opts)
               live("/posts/:slug/edit", PostLive, :edit_post, route_opts)
+              get("/posts/:slug/content", PostController, :edit_content, route_opts)
+              put("/posts/:slug/content", PostController, :update_content, route_opts)
 
               # Tag routes
               live("/tags/page/1", TagLive, :list_tags, route_opts)

@@ -21,10 +21,10 @@ defmodule Literature.Tag do
 
     belongs_to(:publication, Publication)
 
-    has_many(:posts, Post, foreign_key: :primary_tag_id)
+    many_to_many(:posts, Post, join_through: "literature_tags_posts")
 
-    has_many(:published_posts, Post,
-      foreign_key: :primary_tag_id,
+    many_to_many(:published_posts, Post,
+      join_through: "literature_tags_posts",
       where: [published_at: {:not, nil}]
     )
 

@@ -162,11 +162,11 @@ defmodule Literature do
   """
   def list_posts(attrs \\ []) do
     Post
-    |> where_preload(attrs)
+    |> where_preload(%{"preload" => ~w(authors tags)a})
     |> where_status(attrs)
     |> where_publication(attrs)
     |> Repo.all()
-    |> Enum.map(&Post.resolve_status/1)
+    |> Enum.map(&Post.resolve/1)
   end
 
   @doc """
@@ -185,17 +185,19 @@ defmodule Literature do
   """
   def get_post!(id) when is_binary(id) do
     Post
+    |> where_preload(%{"preload" => ~w(authors tags)a})
     |> Repo.get(id)
-    |> Post.resolve_status()
+    |> Post.resolve()
   end
 
   def get_post!(list) do
     attrs = Keyword.delete(list, :publication_slug)
 
     Post
+    |> where_preload(%{"preload" => ~w(authors tags)a})
     |> where_publication(list)
     |> Repo.get_by(attrs)
-    |> Post.resolve_status()
+    |> Post.resolve()
   end
 
   @doc """

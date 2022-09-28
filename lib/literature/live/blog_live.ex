@@ -14,7 +14,7 @@ defmodule Literature.BlogLive do
     |> Enum.map(fn fun -> fun.(slug: slug, publication_slug: session["publication_slug"]) end)
     |> Enum.find(&is_struct/1)
     |> case do
-      %Post{} = post -> assign_to_socket(socket, :post, preload_post(post))
+      %Post{} = post -> assign_to_socket(socket, :post, post)
       %Tag{} = tag -> assign_to_socket(socket, :tag, preload_tag(tag))
       %Author{} = author -> assign_to_socket(socket, :author, preload_author(author))
     end
@@ -81,7 +81,6 @@ defmodule Literature.BlogLive do
   defp list_posts(%{assigns: %{publication_slug: slug}}) do
     %{"publication_slug" => slug, "status" => "published"}
     |> Literature.list_posts()
-    |> preload_post()
   end
 
   defp list_tags(%{assigns: %{publication_slug: slug}}) do
@@ -95,9 +94,6 @@ defmodule Literature.BlogLive do
     |> Literature.list_authors()
     |> preload_author()
   end
-
-  defp preload_post(post),
-    do: Repo.preload(post, ~w(primary_author primary_tag)a)
 
   defp preload_tag(tag),
     do: Repo.preload(tag, ~w(published_posts)a)

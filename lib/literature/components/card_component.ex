@@ -13,22 +13,24 @@ defmodule Literature.CardComponent do
   def card(assigns) do
     ~H"""
     <div class="border-2 border-gray-100 shadow-sm hover:border-primary-500 hover:-translate-y-1 hover:shadow-lg rounded-lg p-5 space-y-3 bg-white transition duration-300 ease-in-out flex flex-col">
-      <h2 class="text-primary-700 font-bold text-4xl"><%= @item.name %></h2>
-      <dl class="grid grid-cols-3 gap-8 p-4 text-gray-900">
-        <div class="flex flex-col justify-center items-center">
-          <dt class="mb-2 text-3xl font-extrabold"><%= length(@item.posts) %></dt>
-          <dd class="font-light text-gray-500">Posts</dd>
-        </div>
-        <div class="flex flex-col justify-center items-center">
-          <dt class="mb-2 text-3xl font-extrabold"><%= length(@item.tags) %></dt>
-          <dd class="font-light text-gray-500">Tags</dd>
-        </div>
-        <div class="flex flex-col justify-center items-center">
-          <dt class="mb-2 text-3xl font-extrabold"><%= length(@item.authors) %></dt>
-          <dd class="font-light text-gray-500">Authors</dd>
-        </div>
-      </dl>
-      <p class="text-gray-500 flex-1"><%= @item.description %></p>
+      <%= live_patch to: @show_path do %>
+        <h2 class="text-primary-700 font-bold text-4xl"><%= @item.name %></h2>
+        <dl class="grid grid-cols-3 gap-8 p-4 text-gray-900">
+          <div class="flex flex-col justify-center items-center">
+            <dt class="mb-2 text-3xl font-extrabold"><%= length(@item.posts) %></dt>
+            <dd class="font-light text-gray-500">Posts</dd>
+          </div>
+          <div class="flex flex-col justify-center items-center">
+            <dt class="mb-2 text-3xl font-extrabold"><%= length(@item.tags) %></dt>
+            <dd class="font-light text-gray-500">Tags</dd>
+          </div>
+          <div class="flex flex-col justify-center items-center">
+            <dt class="mb-2 text-3xl font-extrabold"><%= length(@item.authors) %></dt>
+            <dd class="font-light text-gray-500">Authors</dd>
+          </div>
+        </dl>
+        <p class="text-gray-500 flex-1"><%= @item.description %></p>
+      <% end %>
       <div class="flex items-center justify-end">
         <%= live_patch to: @edit_path, id: "edit-#{@item.id}", class: "text-gray-500 bg-white focus:outline-none hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5" do %>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -36,7 +38,7 @@ defmodule Literature.CardComponent do
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         <% end %>
-        <%= live_redirect "Create new post", to: @show_path, class: "text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" %>
+        <%= live_redirect "Create new post", to: @create_post_path, class: "text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center" %>
       </div>
     </div>
     """

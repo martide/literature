@@ -6,7 +6,6 @@ defmodule Literature.FormComponent do
   import Phoenix.HTML.Form
   import Phoenix.HTML.Tag
 
-  alias Literature.Components.Icons
   alias Phoenix.LiveView.JS
 
   def form_field(assigns) do
@@ -30,9 +29,6 @@ defmodule Literature.FormComponent do
         <% "textarea" -> %>
           <.form_label form={@form} field={@field} label={@label} />
           <.textarea form={@form} field={@field} {@input_opts} />
-        <% "text_editor" -> %>
-          <.form_label form={@form} field={@field} label={@label} />
-          <.text_editor form={@form} field={@field} {@input_opts} />
         <% "checkbox_group" -> %>
           <.form_label form={@form} field={@field} label={@label} />
           <.checkbox_group form={@form} field={@field} {@input_opts} />
@@ -50,6 +46,27 @@ defmodule Literature.FormComponent do
           <.image_upload form={@form} field={@field} {@input_opts} />
       <% end %>
       <.form_field_error form={@form} field={@field} />
+    </div>
+    """
+  end
+
+  def accordion(assigns) do
+    assigns =
+      assign_new(assigns, :id, fn -> "phx-#{hd(String.split(Ecto.UUID.generate(), "-"))}" end)
+
+    ~H"""
+    <hr class="border-gray-200 sm:mx-auto" />
+    <p
+      class="text-primary-700 font-semibold uppercase py-5 cursor-pointer"
+      phx-click={
+        JS.toggle(to: "##{@id}", in: {"ease-out duration-300", "opacity-0", "opacity-100"}, out: {"ease-in duration-300", "opacity-100", "opacity-0"})}
+      >
+      <%= @title %>
+    </p>
+    <div id={@id} class="hidden" phx-connected={JS.hide()}>
+      <div class="grid grid-cols-2 gap-5 pb-5">
+        <%= render_block(@inner_block) %>
+      </div>
     </div>
     """
   end
@@ -140,8 +157,8 @@ defmodule Literature.FormComponent do
     assigns = assign_new(assigns, :upload_field, fn -> image_field(assigns) end)
 
     ~H"""
-    <div class="w-full border border-gray-300 rounded-lg group hover:border-primary-300 transition duration-300 ease-in-out cursor-pointer relative overflow-hidden" phx-drop-target={@upload_field.ref}>
-      <div class="relative z-30 py-20 bg-white bg-opacity-60" phx-click={JS.dispatch("click", to: "##{@upload_field.ref}")}>
+    <div class="w-full border border-gray-300 rounded-lg group hover:border-primary-300 transition duration-300 ease-in-out cursor-pointer relative overflow-hidden group" phx-drop-target={@upload_field.ref}>
+      <div class="relative z-30 py-20 bg-white bg-opacity-60 opacity-10 group-hover:opacity-90 transition-all duration-300 ease-in-out" phx-click={JS.dispatch("click", to: "##{@upload_field.ref}")}>
         <div class="rounded-full h-14 w-14 bg-primary-100 text-primary-600 flex items-center justify-center mb-3 mx-auto group-hover:scale-110 transition duration-300 ease-in-out">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-8 h-8">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />
@@ -174,41 +191,6 @@ defmodule Literature.FormComponent do
 
     ~H"""
     <%= textarea @form, @field, [class: @classes, rows: "6", phx_feedback_for: input_name(@form, @field)] ++ @rest %>
-    """
-  end
-
-  defp text_editor(assigns) do
-    ~H"""
-    <div class="editor-menu">
-      <.menu_editor name="heading" to="#editor" data-heading-size="h1" icon="type-h1" />
-      <.menu_editor name="heading" to="#editor" data-heading-size="h2" icon="type-h2" />
-      <.menu_editor name="heading" to="#editor" data-heading-size="h3" icon="type-h3" />
-      <.menu_editor name="bold" to="#editor" icon="type-bold" />
-      <.menu_editor name="italic" to="#editor" icon="type-italic" />
-      <.menu_editor name="bulletedList" to="#editor" icon="list-ul" />
-      <.menu_editor name="orderedList" to="#editor" icon="list-ol" />
-    </div>
-    <div id="editor" data-target={"##{input_id(@form, @field)}"} phx-hook="HTMLEditor" contenteditable></div>
-    <.textarea form={@form} field={@field} hidden="true" />
-    """
-  end
-
-  defp menu_editor(assigns) do
-    assigns =
-      assigns
-      |> assign_new(:label, fn -> nil end)
-      |> assign_rest(~w(label name to)a)
-
-    ~H"""
-    <button
-      type="button"
-      phx-click={JS.dispatch(@name, to: @to)}
-      data-name={@name}
-      {@rest}
-    >
-      <Icons.render icon={@icon} />
-      <%= assigns[:label] %>
-    </button>
     """
   end
 
@@ -249,7 +231,7 @@ defmodule Literature.FormComponent do
     <div class="">
       <%= hidden_input @form, @field, name: input_name(@form, @field), value: "" %>
       <%= for {label, value} <- @options do %>
-        <label class="flex items-center space-x-3">
+        <label class="flex items-center space-x-3 space-y-1">
           <.checkbox
             form={@form}
             field={@field}
@@ -301,7 +283,6 @@ defmodule Literature.FormComponent do
   defp form_field_classes(type) do
     case type do
       "image_upload" -> "row-span-2"
-      "text_editor" -> "col-span-2"
       _ -> "flex flex-col"
     end
   end

@@ -13,7 +13,8 @@ defmodule Literature.Post do
     field(:featured, :boolean)
     field(:published_at, :utc_datetime)
     field(:excerpt, :string)
-    field(:html, :string)
+    field(:editor_json, :string)
+    field(:html, {:array, :string})
     field(:meta_title, :string)
     field(:meta_description, :string)
     field(:og_image, Uploader.Type)
@@ -22,11 +23,14 @@ defmodule Literature.Post do
     field(:twitter_image, Uploader.Type)
     field(:twitter_title, :string)
     field(:twitter_description, :string)
+
     field(:status, :string, virtual: true)
+    field(:authors_ids, {:array, :string}, virtual: true)
+    field(:tags_ids, {:array, :string}, virtual: true)
 
     belongs_to(:publication, Publication)
 
-    many_to_many(:authors, Author, join_through: "literature_authors_posts")
+    many_to_many(:authors, Author, join_through: "literature_authors_posts", on_replace: :delete)
     many_to_many(:tags, Tag, join_through: "literature_tags_posts")
 
     timestamps()
@@ -44,6 +48,7 @@ defmodule Literature.Post do
     feature_image_caption
     featured
     excerpt
+    editor_json
     html
     meta_title
     meta_description
@@ -62,7 +67,6 @@ defmodule Literature.Post do
   @doc false
   def changeset(post, params) do
     post
-    |> Literature.Repo.preload(~w(authors tags)a)
     |> cast(params, @required_params ++ @optional_params)
     |> cast_attachments(params, @attachments)
     |> maybe_generate_slug(post)
@@ -72,12 +76,16 @@ defmodule Literature.Post do
     |> put_assocs(params)
   end
 
-  def resolve_status(post) when is_struct(post) do
-    status = (post.published_at && "publish") || "draft"
-    Map.put(post, :status, status)
+  def resolve(post) when is_struct(post) do
+    %{
+      post
+      | status: (post.published_at && "publish") || "draft",
+        authors_ids: Enum.map(post.authors, & &1.id),
+        tags_ids: Enum.map(post.tags, & &1.id)
+    }
   end
 
-  def resolve_status(post), do: post
+  def resolve(post), do: post
 
   defp maybe_generate_slug(changeset, %{title: title, slug: slug}) when title != slug,
     do: changeset
@@ -101,13 +109,13 @@ defmodule Literature.Post do
     end
   end
 
-  defp put_assocs(changeset, %{"authors" => ""}),
-    do: add_error(changeset, :authors, "Required at least one author")
+  defp put_assocs(changeset, %{"authors_ids" => ""}),
+    do: add_error(changeset, :authors_ids, "Required at least one author")
 
-  defp put_assocs(changeset, %{"tags" => ""}),
-    do: add_error(changeset, :tags, "Required at least one tag")
+  defp put_assocs(changeset, %{"tags_ids" => ""}),
+    do: add_error(changeset, :tags_ids, "Required at least one tag")
 
-  defp put_assocs(%{valid?: true} = changeset, %{"authors" => authors, "tags" => tags}) do
+  defp put_assocs(%{valid?: true} = changeset, %{"authors_ids" => authors, "tags_ids" => tags}) do
     changeset
     |> put_assoc(:authors, Enum.map(authors, &Literature.get_author!/1))
     |> put_assoc(:tags, Enum.map(tags, &Literature.get_tag!/1))
