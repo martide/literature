@@ -27,3 +27,5 @@ literature-*.tar
 
 .DS_Store
 /assets/node_modules
+/priv/static/**/*.css
+/priv/static/**/*.js
