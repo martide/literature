@@ -2,7 +2,6 @@ defmodule Literature.LayoutComponent do
   @moduledoc false
   use Phoenix.Component
 
-  import Literature.Helpers
   import Phoenix.HTML.Link
 
   def h1(assigns) do

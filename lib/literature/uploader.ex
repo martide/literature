@@ -27,47 +27,47 @@ defmodule Literature.Uploader do
 
   # Define w100 transformation:
   def transform(:w100, _) do
-    {:convert, "-resize 10% -format webp", :webp}
+    {:convert, "-resize 100x100 -gravity center -extent 100x100 -format webp", :webp}
   end
 
   # Define w200 transformation:
   def transform(:w200, _) do
-    {:convert, "-resize 20% -format webp", :webp}
+    {:convert, "-resize 200x200 -gravity center -extent 200x200 -format webp", :webp}
   end
 
   # Define w300 transformation:
   def transform(:w300, _) do
-    {:convert, "-resize 30% -format webp", :webp}
+    {:convert, "-resize 300x300 -gravity center -extent 300x300 -format webp", :webp}
   end
 
   # Define w400 transformation:
   def transform(:w400, _) do
-    {:convert, "-resize 40% -format webp", :webp}
+    {:convert, "-resize 400x400 -gravity center -extent 400x400 -format webp", :webp}
   end
 
   # Define w500 transformation:
   def transform(:w500, _) do
-    {:convert, "-resize 50% -format webp", :webp}
+    {:convert, "-resize 500x500 -gravity center -extent 500x500 -format webp", :webp}
   end
 
   # Define w600 transformation:
   def transform(:w600, _) do
-    {:convert, "-resize 60% -format webp", :webp}
+    {:convert, "-resize 600x600 -gravity center -extent 600x600 -format webp", :webp}
   end
 
   # Define w700 transformation:
   def transform(:w700, _) do
-    {:convert, "-resize 70% -format webp", :webp}
+    {:convert, "-resize 700x700 -gravity center -extent 700x700 -format webp", :webp}
   end
 
   # Define w800 transformation:
   def transform(:w800, _) do
-    {:convert, "-resize 80% -format webp", :webp}
+    {:convert, "-resize 800x800 -gravity center -extent 800x800 -format webp", :webp}
   end
 
   # Define w900 transformation:
   def transform(:w900, _) do
-    {:convert, "-resize 90% -format webp", :webp}
+    {:convert, "-resize 900x900 -gravity center -extent 900x900 -format webp", :webp}
   end
 
   # To retain the original filename, but suffix the version
