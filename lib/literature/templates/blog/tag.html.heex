@@ -16,7 +16,7 @@
             <%= link post.title, to: literature_path(@socket, :show, post.slug) %>
           </h2>
           <p class="font-light text-gray-500 tracking-wide mb-4">
-            <%= post.custom_excerpt %>
+            <%= post.excerpt %>
           </p>
           <%= link to: literature_path(@socket, :show, post.slug), class: "text-primary-600 flex items-center space-x-2 font-medium" do %>
             <span>Read more</span>

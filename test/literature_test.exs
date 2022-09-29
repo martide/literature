@@ -83,26 +83,37 @@ defmodule LiteratureTest do
 
     test "paginate_posts/0 returns all posts" do
       publication = publication_fixture()
-      post = post_fixture(publication_id: publication.id)
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+
+      post =
+        post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
 
       attrs = %{"preload" => ~w(authors tags)a}
       assert %Scrivener.Page{entries: entries} = Literature.paginate_posts(attrs)
-      assert entries == [%{post | status: nil}]
+      assert entries == [%{post | status: nil, authors_ids: nil, tags_ids: nil}]
     end
 
     test "list_posts/0 returns all posts" do
       publication = publication_fixture()
-      post = post_fixture(publication_id: publication.id)
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
 
-      attrs = %{"preload" => ~w(authors tags)a}
-      assert Literature.list_posts(attrs) == [post]
+      post =
+        post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
+
+      assert Literature.list_posts() == [post]
     end
 
     test "get_post!/1 returns the post with given id" do
       publication = publication_fixture()
-      post = post_fixture(publication_id: publication.id)
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
 
-      assert Literature.get_post!(post.id) |> Repo.preload(~w(authors tags)a) == post
+      post =
+        post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
+
+      assert Literature.get_post!(post.id) == post
     end
 
     test "create_post/1 with valid data creates an post" do
@@ -116,8 +127,8 @@ defmodule LiteratureTest do
           slug: "some-title",
           publication_id: publication.id,
           status: "publish",
-          authors: [author.id],
-          tags: [tag.id]
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
         }
         |> atomize_keys_to_string()
 
@@ -135,7 +146,11 @@ defmodule LiteratureTest do
 
     test "update_post/2 with valid data updates the post" do
       publication = publication_fixture()
-      post = post_fixture(publication_id: publication.id)
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+
+      post =
+        post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
 
       update_attrs = %{
         title: "some updated title",
@@ -150,7 +165,11 @@ defmodule LiteratureTest do
 
     test "update_post/2 with invalid data returns error changeset" do
       publication = publication_fixture()
-      post = post_fixture(publication_id: publication.id)
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+
+      post =
+        post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
 
       assert {:error, %Ecto.Changeset{}} = Literature.update_post(post, @invalid_attrs)
       assert post == Literature.get_post!(post.id) |> Repo.preload(~w(authors tags)a)
@@ -158,7 +177,11 @@ defmodule LiteratureTest do
 
     test "delete_post/1 deletes the post" do
       publication = publication_fixture()
-      post = post_fixture(publication_id: publication.id)
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+
+      post =
+        post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
 
       assert {:ok, %Post{}} = Literature.delete_post(post)
       assert is_nil(Literature.get_post!(post.id))
@@ -166,7 +189,11 @@ defmodule LiteratureTest do
 
     test "change_post/1 returns post changeset" do
       publication = publication_fixture()
-      post = post_fixture(publication_id: publication.id)
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+
+      post =
+        post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
 
       assert %Ecto.Changeset{} = Literature.change_post(post)
     end

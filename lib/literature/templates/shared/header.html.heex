@@ -8,7 +8,7 @@
         <span class="self-center text-xl font-semibold whitespace-nowrap">Literature</span>
       <% end %>
       <div class="flex md:order-2">
-        <%= link to: literature_dashboard_path(@conn, :new_publication), class: "text-primary-700 focus:outline-none hover:bg-primary-100 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center transition duration-300 ease-in-out" do %>
+        <%= live_redirect to: literature_dashboard_path(@conn, :new_publication), class: "text-primary-700 focus:outline-none hover:bg-primary-100 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center transition duration-300 ease-in-out" do %>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>

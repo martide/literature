@@ -4,6 +4,9 @@ defmodule Literature.Test.Fixtures do
   entities via the `Literature` context.
   """
 
+  import Literature.Helpers, only: [atomize_keys_to_string: 1]
+  alias Literature.Post
+
   @doc """
   Generate an author.
   """
@@ -27,9 +30,10 @@ defmodule Literature.Test.Fixtures do
       |> Keyword.put_new(:featured, false)
       |> Keyword.put_new(:status, "publish")
       |> Enum.into(%{})
+      |> atomize_keys_to_string()
       |> Literature.create_post()
 
-    post
+    Post.resolve(post)
   end
 
   @doc """

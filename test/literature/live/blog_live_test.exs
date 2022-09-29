@@ -15,8 +15,8 @@ defmodule Literature.BlogLiveTest do
     post =
       post_fixture(
         publication_id: publication.id,
-        primary_author_id: author.id,
-        primary_tag_id: tag.id
+        authors_ids: [author.id],
+        tags_ids: [tag.id]
       )
 
     %{publication: publication, author: author, tag: tag, post: post}

@@ -7,8 +7,8 @@ defmodule Literature.PostLiveTest do
   @create_attrs %{
     title: "some new title",
     status: "draft",
-    primary_author_id: nil,
-    primary_tag_id: nil
+    authors_ids: [],
+    tags_ids: []
   }
   @update_attrs %{title: "some updated title", status: "publish"}
   @invalid_attrs %{title: nil}
@@ -21,8 +21,8 @@ defmodule Literature.PostLiveTest do
     post =
       post_fixture(
         publication_id: publication.id,
-        primary_author_id: author.id,
-        primary_tag_id: tag.id
+        authors_ids: [author.id],
+        tags_ids: [tag.id]
       )
 
     %{publication: publication, author: author, tag: tag, post: post}
@@ -56,19 +56,23 @@ defmodule Literature.PostLiveTest do
 
       assert html =~ "New Post"
 
-      result =
-        new_live
-        |> form("#post-form",
-          post: %{@create_attrs | primary_author_id: author.id, primary_tag_id: tag.id}
-        )
-        |> render_submit()
+      new_live
+      |> form("#post-form",
+        post: %{@create_attrs | authors_ids: [author.id], tags_ids: [tag.id]}
+      )
+      |> render_submit()
 
       {path, flash} = assert_redirect(new_live)
-      assert path == Routes.literature_dashboard_path(conn, :list_posts, publication.slug)
-      assert flash["success"] == "Post created successfully"
 
-      {:ok, _, html} = follow_redirect(result, conn, path)
-      assert html =~ @create_attrs.title
+      assert path ==
+               Routes.literature_dashboard_path(
+                 conn,
+                 :edit_content,
+                 publication.slug,
+                 String.replace(@create_attrs.title, " ", "-")
+               )
+
+      assert flash["success"] == "Post created successfully"
     end
 
     test "updates post in listing", %{conn: conn, publication: publication, post: post} do

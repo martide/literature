@@ -23,8 +23,8 @@ defmodule Literature.RSSControllerTest do
     published_post =
       post_fixture(
         publication_id: publication.id,
-        primary_author_id: author.id,
-        primary_tag_id: tag.id,
+        authors_ids: [author.id],
+        tags_ids: [tag.id],
         title: "Published Post",
         status: "publish"
       )
@@ -34,8 +34,8 @@ defmodule Literature.RSSControllerTest do
     draft_post =
       post_fixture(
         publication_id: publication.id,
-        primary_author_id: author.id,
-        primary_tag_id: tag.id,
+        authors_ids: [author.id],
+        tags_ids: [tag.id],
         title: "Draft Post",
         status: "draft"
       )

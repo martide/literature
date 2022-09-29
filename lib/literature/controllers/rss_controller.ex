@@ -19,7 +19,6 @@ defmodule Literature.RSSController do
   defp render_feed(base_url, publication_slug) do
     %{
       "status" => "published",
-      "preload" => ~w(primary_author)a,
       "publication_slug" => publication_slug
     }
     |> Literature.list_posts()
@@ -38,17 +37,16 @@ defmodule Literature.RSSController do
   defp get_entry(base_url, %{
          title: title,
          slug: slug,
-         custom_excerpt: custom_excerpt,
+         excerpt: excerpt,
          published_at: published_at,
-         primary_author: primary_author
+         authors: [author | _]
        }) do
     post_path = "#{base_url}/#{slug}"
-    name = Map.get(primary_author, :name)
 
     Entry.new(post_path, DateTime.from_naive!(published_at, "Etc/UTC"), title)
     |> Entry.link(post_path)
-    |> Entry.author(name)
-    |> Entry.content(custom_excerpt)
+    |> Entry.author(author.name)
+    |> Entry.content(excerpt)
     |> Entry.build()
   end
 end
