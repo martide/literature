@@ -75,6 +75,7 @@ defmodule Literature.Router do
               live("/posts/:slug/edit", PostLive, :edit_post, route_opts)
               get("/posts/:slug/content", PostController, :edit_content, route_opts)
               put("/posts/:slug/content", PostController, :update_content, route_opts)
+              post("/posts/:slug/content/*path", PostController, :upload_image, route_opts)
 
               # Tag routes
               live("/tags/page/1", TagLive, :list_tags, route_opts)

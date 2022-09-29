@@ -27,6 +27,7 @@ defmodule Literature.Post do
     field(:status, :string, virtual: true)
     field(:authors_ids, {:array, :string}, virtual: true)
     field(:tags_ids, {:array, :string}, virtual: true)
+    field(:upload_image, Uploader.Type, virtual: true)
 
     belongs_to(:publication, Publication)
 
@@ -50,6 +51,7 @@ defmodule Literature.Post do
     excerpt
     editor_json
     html
+    upload_image
     meta_title
     meta_description
     og_title

@@ -17488,14 +17488,26 @@ within:
   var import_image = __toESM(require_bundle2());
   var import_list = __toESM(require_bundle3());
   var import_editorjs_html = __toESM(require_edjsHTML_node());
+  var csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
   if (element = document.getElementById("editorjs")) {
     const editor = new import_editorjs.default({
       tools: {
         header: import_header.default,
-        image: import_image.default,
+        image: {
+          class: import_image.default,
+          config: {
+            additionalRequestHeaders: {
+              "X-CSRF-TOKEN": csrfToken
+            },
+            endpoints: {
+              byFile: `${window.location.href}/upload-file`,
+              byURL: `${window.location.href}/fetch-url`
+            }
+          }
+        },
         list: import_list.default
       },
-      data: JSON.parse(element.dataset.postData)
+      data: JSON.parse(element.dataset.postData || "{}")
     });
     const form = document.querySelector("form");
     const inputEditorJSON = document.querySelector("#post_params_editor_json");
@@ -17513,8 +17525,8 @@ within:
   }
 
   // js/app.js
-  var csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
-  var liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken } });
+  var csrfToken2 = document.querySelector("meta[name='csrf-token']").getAttribute("content");
+  var liveSocket = new LiveSocket("/live", Socket, { params: { _csrf_token: csrfToken2 } });
   liveSocket.connect();
   window.liveSocket = liveSocket;
 })();

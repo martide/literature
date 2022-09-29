@@ -4,14 +4,27 @@ import Image from '@editorjs/image'
 import List from '@editorjs/list'
 import editorParser from 'editorjs-html'
 
+let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+
 if (element = document.getElementById('editorjs')) {
   const editor = new EditorJS({
     tools: { 
       header: Header,
-      image: Image,
+      image: {
+        class: Image,
+        config: {
+          additionalRequestHeaders: {
+            'X-CSRF-TOKEN': csrfToken
+          },
+          endpoints: {
+            byFile: `${window.location.href}/upload-file`,
+            byURL: `${window.location.href}/fetch-url`
+          }
+        }
+      },
       list: List
     },
-    data: JSON.parse(element.dataset.postData)
+    data: JSON.parse(element.dataset.postData || '{}')
   })
 
   const form = document.querySelector('form')
