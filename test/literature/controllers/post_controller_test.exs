@@ -30,7 +30,11 @@ defmodule Literature.PostControllerTest do
 
   setup do
     publication = publication_fixture()
-    post = post_fixture(publication_id: publication.id)
+    author = author_fixture(publication_id: publication.id)
+    tag = tag_fixture(publication_id: publication.id)
+
+    post =
+      post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
 
     %{publication: publication, post: post}
   end
