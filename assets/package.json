@@ -1,0 +1,23 @@
+{
+  "scripts": {
+    "build:css": "tailwindcss --minify -i css/app.css -o ../priv/static/css/app.css",
+    "build:js": "esbuild js/app.js --minify --bundle --outdir=../priv/static/js",
+    "build": "npm-run-all build:*",
+    "watch:css": "tailwindcss -i css/app.css -o ../priv/static/css/app.css --watch",
+    "watch:js": "esbuild js/app.js --bundle --outdir=../priv/static/js --watch",
+    "watch": "npm-run-all --parallel watch:*"
+  },
+  "devDependencies": {
+    "@editorjs/editorjs": "^2.25.0",
+    "@editorjs/header": "^2.6.2",
+    "@editorjs/image": "^2.6.2",
+    "@editorjs/list": "^1.7.0",
+    "@tailwindcss/typography": "^0.5.4",
+    "editorjs-html": "^3.4.2",
+    "esbuild": "^0.15.7",
+    "npm-run-all": "^4.1.5",
+    "phoenix": "file:../deps/phoenix",
+    "phoenix_live_view": "file:../deps/phoenix_live_view",
+    "tailwindcss": "^3.1.8"
+  }
+}
