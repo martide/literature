@@ -1,7 +1,7 @@
 defmodule Literature.MixProject do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "0.1.1"
 
   def project do
     [
@@ -75,8 +75,7 @@ defmodule Literature.MixProject do
     [
       maintainers: ["Martide"],
       licenses: ["Apache-2.0"],
-      links: %{"GitHub" => "https://github.com/martide/literature"},
-      files: ~w(mix.exs README.md lib)
+      links: %{"GitHub" => "https://github.com/martide/literature"}
     ]
   end
 
