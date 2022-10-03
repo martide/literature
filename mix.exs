@@ -10,6 +10,7 @@ defmodule Literature.MixProject do
       elixir: "~> 1.13",
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
+      package: package(),
       config_path: "./config/config.exs",
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
@@ -20,7 +21,8 @@ defmodule Literature.MixProject do
         "coveralls.post": :test,
         "coveralls.html": :test
       ],
-      dialyzer: [plt_add_apps: [:mix, :ex_unit]]
+      dialyzer: [plt_add_apps: [:mix, :ex_unit]],
+      description: "A simple CMS / Blog"
     ]
   end
 
@@ -56,6 +58,7 @@ defmodule Literature.MixProject do
 
       # Others
       {:atomex, "~> 0.5.1"},
+      {:ex_doc, "~> 0.14", only: :dev, runtime: false},
       {:sitemapper, "~> 0.6.0"},
       {:slugy, "~> 4.1"},
 
@@ -65,6 +68,15 @@ defmodule Literature.MixProject do
       {:excoveralls, "~> 0.10", only: :test},
       {:floki, "~> 0.33", only: :test},
       {:sobelow, "~> 0.8", only: [:test, :dev], runtime: false}
+    ]
+  end
+
+  defp package do
+    [
+      maintainers: ["Martide"],
+      licenses: ["Apache-2.0"],
+      links: %{"GitHub" => "https://github.com/martide/literature"},
+      files: ~w(mix.exs README.md lib)
     ]
   end
 
