@@ -4,9 +4,9 @@ defmodule Literature.SidebarComponent do
 
   def sidebar(assigns) do
     ~H"""
-    <aside class="col-span-1" aria-label="Sidebar">
+    <aside aria-label="Sidebar">
       <div class="overflow-y-auto py-4 px-3 rounded">
-        <ul class="space-y-2">
+        <ul class="flex items-center space-x-2">
           <%= for tab <- @tab do %>
             <li>
               <.render_tab title={tab.title} path={tab.path} classes={tab_classes(@live_action in tab.actions)}>

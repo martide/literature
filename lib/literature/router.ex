@@ -73,9 +73,7 @@ defmodule Literature.Router do
               live("/posts/page/:page", PostLive, :list_posts, route_opts)
               live("/posts/new", PostLive, :new_post, route_opts)
               live("/posts/:slug/edit", PostLive, :edit_post, route_opts)
-              get("/posts/:slug/content", PostController, :edit_content, route_opts)
-              put("/posts/:slug/content", PostController, :update_content, route_opts)
-              post("/posts/:slug/content/*path", PostController, :upload_image, route_opts)
+              post("/posts/:slug/*path", PostController, :upload_image, route_opts)
 
               # Tag routes
               live("/tags/page/1", TagLive, :list_tags, route_opts)
@@ -209,7 +207,7 @@ defmodule Literature.Router do
   ```
   """
 
-  @gzip_assets Application.compile_env(:literature, :gzip_assets, false)
+  @gzip_assets Application.compile_env(:literature, :gzip_assets, true)
 
   defmacro literature_assets(path) do
     gzip_assets? = @gzip_assets

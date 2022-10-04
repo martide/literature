@@ -105,7 +105,7 @@ defmodule Literature.PostLive do
 
   defp apply_action(socket, :edit_post, %{"slug" => slug}) do
     socket
-    |> assign(:page_title, "Edit Post")
+    |> assign(:page_title, "Post Settings")
     |> assign(:post, Literature.get_post!(slug: slug, publication_slug: socket.assigns.slug))
   end
 
