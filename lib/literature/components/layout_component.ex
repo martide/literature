@@ -14,7 +14,7 @@ defmodule Literature.LayoutComponent do
 
   def container(assigns) do
     ~H"""
-    <div class="col-span-4 p-10 rounded-lg bg-white shadow-md">
+    <div class="mt-4 p-10 rounded-lg bg-white shadow-md">
       <%= render_slot(@inner_block) %>
     </div>
     """

@@ -2,14 +2,9 @@
 
 <main class="mt-16 min-h-screen py-10 bg-gray-50">
   <div class="max-w-screen-xl mx-auto">
-    <div class="grid grid-cols-5">
-      <div class="col-start-2 col-span-4">
-        <.success_alert {assigns} />
-        <.error_alert {assigns} />
-      </div>
-      
-      <%= @inner_content %>
-    </div>
+    <.success_alert {assigns} />
+    <.error_alert {assigns} />
+    <%= @inner_content %>
   </div>
 </main>
 
