@@ -77,16 +77,10 @@ defmodule Literature.RouterTest do
       assert Routes.literature_dashboard_path(conn, :edit_post, publication.slug, "123") ==
                "/literature/#{publication.slug}/posts/123/edit"
 
-      assert Routes.literature_dashboard_path(conn, :edit_content, publication.slug, "123") ==
-               "/literature/#{publication.slug}/posts/123/content"
-
-      assert Routes.literature_dashboard_path(conn, :update_content, publication.slug, "123") ==
-               "/literature/#{publication.slug}/posts/123/content"
-
       assert Routes.literature_dashboard_path(conn, :upload_image, publication.slug, "123", [
                "upload-file"
              ]) ==
-               "/literature/#{publication.slug}/posts/123/content/upload-file"
+               "/literature/#{publication.slug}/posts/123/upload-file"
     end
 
     test "generates helper for tags", %{conn: conn, publication: publication} do
@@ -145,28 +139,12 @@ defmodule Literature.RouterTest do
 
       assert DynamicPathRoutes.literature_dashboard_path(
                conn,
-               :edit_content,
-               publication.slug,
-               "123"
-             ) ==
-               "/foo/bar/#{publication.slug}/posts/123/content"
-
-      assert DynamicPathRoutes.literature_dashboard_path(
-               conn,
-               :update_content,
-               publication.slug,
-               "123"
-             ) ==
-               "/foo/bar/#{publication.slug}/posts/123/content"
-
-      assert DynamicPathRoutes.literature_dashboard_path(
-               conn,
                :upload_image,
                publication.slug,
                "123",
                ["upload-file"]
              ) ==
-               "/foo/bar/#{publication.slug}/posts/123/content/upload-file"
+               "/foo/bar/#{publication.slug}/posts/123/upload-file"
     end
 
     test "generates helper for tags", %{conn: conn, publication: publication} do

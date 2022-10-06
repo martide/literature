@@ -64,14 +64,7 @@ defmodule Literature.PostLiveTest do
 
       {path, flash} = assert_redirect(new_live)
 
-      assert path ==
-               Routes.literature_dashboard_path(
-                 conn,
-                 :edit_content,
-                 publication.slug,
-                 String.replace(@create_attrs.title, " ", "-")
-               )
-
+      assert path == Routes.literature_dashboard_path(conn, :list_posts, publication.slug)
       assert flash["success"] == "Post created successfully"
     end
 
@@ -81,7 +74,7 @@ defmodule Literature.PostLiveTest do
 
       assert html =~ "Posts"
 
-      assert view |> element("#edit-#{post.id}") |> render_click() =~ "Edit Post"
+      assert view |> element("#edit-#{post.id}") |> render_click() =~ "Post Settings"
 
       assert_patch(
         view,
