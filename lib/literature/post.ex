@@ -109,11 +109,11 @@ defmodule Literature.Post do
 
   defp put_published_at(changeset) do
     case changeset do
+      %Ecto.Changeset{changes: %{scheduled_at: _}, valid?: true} ->
+        changeset
+
       %Ecto.Changeset{changes: %{status: "draft"}, valid?: true} ->
         put_change(changeset, :published_at, nil)
-
-      %Ecto.Changeset{changes: %{status: "publish", scheduled_at: _}, valid?: true} ->
-        changeset
 
       %Ecto.Changeset{changes: %{status: "publish"}, valid?: true} ->
         datetime = DateTime.utc_now() |> DateTime.truncate(:second)
