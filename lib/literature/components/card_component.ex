@@ -13,7 +13,7 @@ defmodule Literature.CardComponent do
   def card(assigns) do
     ~H"""
     <div class="border-2 border-gray-100 shadow-sm hover:border-primary-500 hover:-translate-y-1 hover:shadow-lg rounded-lg p-5 space-y-3 bg-white transition duration-300 ease-in-out flex flex-col">
-      <%= live_patch to: @show_path do %>
+      <%= live_redirect to: @show_path do %>
         <h2 class="text-primary-700 font-bold text-4xl"><%= @item.name %></h2>
         <dl class="grid grid-cols-3 gap-8 p-4 text-gray-900">
           <div class="flex flex-col justify-center items-center">

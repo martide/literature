@@ -36,7 +36,6 @@ defmodule Literature.PostFormComponent do
         id="post-form"
         multipart
         phx-target={@myself}
-        phx-change="validate"
         phx-submit="save">
         <div class="flex">
           <div class="w-full">
@@ -55,6 +54,7 @@ defmodule Literature.PostFormComponent do
               <.form_field form={f} type="text_input" field={:feature_image_caption} label="Feature Image Caption" />
               <.form_field form={f} type="textarea" field={:excerpt} label="Excerpt" />
               <.form_field form={f} type="radio_group" field={:status} label="Status" options={[draft: "Draft", publish: "Publish"]} />
+              <.form_field form={f} type="datetime_local_input" field={:scheduled_at} label="Schedule At" />
             </div>  
             <.accordion title="Meta Tags" nogrid>
               <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
@@ -79,16 +79,6 @@ defmodule Literature.PostFormComponent do
       </.form>
     </div>
     """
-  end
-
-  @impl Phoenix.LiveComponent
-  def handle_event("validate", %{"post" => post_params}, socket) do
-    changeset =
-      socket.assigns.post
-      |> Literature.change_post(post_params)
-      |> put_validation(socket.assigns.action)
-
-    {:noreply, assign(socket, :changeset, changeset)}
   end
 
   @impl Phoenix.LiveComponent
@@ -148,7 +138,4 @@ defmodule Literature.PostFormComponent do
     |> Literature.get_publication!()
     |> then(&Map.put(params, "publication_id", &1.id))
   end
-
-  defp put_validation(changeset, :new_post), do: changeset
-  defp put_validation(changeset, :edit_post), do: Map.put(changeset, :action, :validate)
 end

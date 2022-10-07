@@ -25,6 +25,7 @@ defmodule Literature.Post do
     field(:twitter_description, :string)
 
     field(:status, :string, virtual: true)
+    field(:scheduled_at, :utc_datetime, virtual: true)
     field(:authors_ids, {:array, :string}, virtual: true)
     field(:tags_ids, {:array, :string}, virtual: true)
     field(:upload_image, Uploader.Type, virtual: true)
@@ -52,6 +53,7 @@ defmodule Literature.Post do
     editor_json
     html
     upload_image
+    scheduled_at
     meta_title
     meta_description
     og_title
@@ -89,6 +91,14 @@ defmodule Literature.Post do
 
   def resolve(post), do: post
 
+  def set_schedule({:ok, %{scheduled_at: scheduled_at} = post}) when not is_nil(scheduled_at) do
+    %{id: post.id}
+    |> Literature.Schedule.new(scheduled_at: scheduled_at)
+    |> Oban.insert()
+  end
+
+  def set_schedule(result), do: result
+
   defp maybe_generate_slug(changeset, %{title: title, slug: slug}) when title != slug,
     do: changeset
 
@@ -101,6 +111,9 @@ defmodule Literature.Post do
     case changeset do
       %Ecto.Changeset{changes: %{status: "draft"}, valid?: true} ->
         put_change(changeset, :published_at, nil)
+
+      %Ecto.Changeset{changes: %{status: "publish", scheduled_at: _}, valid?: true} ->
+        changeset
 
       %Ecto.Changeset{changes: %{status: "publish"}, valid?: true} ->
         datetime = DateTime.utc_now() |> DateTime.truncate(:second)

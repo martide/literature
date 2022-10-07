@@ -46,7 +46,6 @@ defmodule Literature.MixProject do
       {:ecto_sql, "~> 3.8"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_live_view, "~> 0.17"},
-      {:postgrex, ">= 0.0.0", only: :test},
 
       # Pagination
       {:scrivener_ecto, "~> 2.7"},
@@ -59,6 +58,7 @@ defmodule Literature.MixProject do
       # Others
       {:atomex, "~> 0.5.1"},
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
+      {:oban, "~> 2.13"},
       {:sitemapper, "~> 0.6.0"},
       {:slugy, "~> 4.1"},
 

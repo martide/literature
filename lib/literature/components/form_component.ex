@@ -44,6 +44,9 @@ defmodule Literature.FormComponent do
         <% "image_upload" -> %>
           <.form_label form={@form} field={@field} label={@label} />
           <.image_upload form={@form} field={@field} {@input_opts} />
+        <% "datetime_local_input" -> %>
+          <.form_label form={@form} field={@field} label={@label} />
+          <.datetime_local_input form={@form} field={@field} {@input_opts} />
       <% end %>
       <.form_field_error form={@form} field={@field} />
     </div>
@@ -186,6 +189,16 @@ defmodule Literature.FormComponent do
   defp image_field(%{field: field, uploads: uploads}),
     do: Map.get(uploads, field)
 
+  defp datetime_local_input(assigns) do
+    assigns = assign_defaults(assigns, text_input_classes(assigns))
+
+    ~H"""
+    <div class="datetime-select-wrapper">
+      <%= datetime_local_input @form, @field, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
+    </div>
+    """
+  end
+
   defp textarea(assigns) do
     assigns = assign_defaults(assigns, text_input_classes(assigns))
 
@@ -272,13 +285,8 @@ defmodule Literature.FormComponent do
     |> assign_new(:classes, fn -> base_classes end)
   end
 
-  defp assign_rest(assigns, exclude) do
-    Phoenix.LiveView.assign(
-      assigns,
-      :rest,
-      Phoenix.LiveView.Helpers.assigns_to_attributes(assigns, exclude)
-    )
-  end
+  defp assign_rest(assigns, exclude),
+    do: assign(assigns, :rest, assigns_to_attributes(assigns, exclude))
 
   defp form_field_classes(type) do
     case type do
