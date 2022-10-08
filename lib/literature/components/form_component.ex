@@ -63,7 +63,7 @@ defmodule Literature.FormComponent do
       >
       <%= @title %>
     </p>
-    <div id={@id} class="hidden" phx-connected={JS.hide()}>
+    <div id={@id}>
       <div class={assigns[:nogrid] && "space-y-5" || "grid grid-cols-2 gap-5 pb-5"}>
         <%= render_block(@inner_block) %>
       </div>
@@ -272,13 +272,8 @@ defmodule Literature.FormComponent do
     |> assign_new(:classes, fn -> base_classes end)
   end
 
-  defp assign_rest(assigns, exclude) do
-    Phoenix.LiveView.assign(
-      assigns,
-      :rest,
-      Phoenix.LiveView.Helpers.assigns_to_attributes(assigns, exclude)
-    )
-  end
+  defp assign_rest(assigns, exclude),
+    do: assign(assigns, :rest, assigns_to_attributes(assigns, exclude))
 
   defp form_field_classes(type) do
     case type do

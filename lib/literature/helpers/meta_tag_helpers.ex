@@ -2,22 +2,11 @@ defmodule Literature.MetaTagHelpers do
   @moduledoc false
   use Phoenix.HTML
 
-  import Literature.Helpers, only: [atomize_keys_to_string: 1]
-
-  alias Literature.Config
-
-  @default_og_type "website"
-  @default_og_locale "en"
-  @default_twitter_card "summary_large_image"
-
-  @metatags [
-              title: Config.meta_title(),
-              description: Config.meta_description(),
-              og_type: Config.meta_og_type() || @default_og_type,
-              og_locale: Config.meta_og_locale() || @default_og_locale,
-              twitter_card: Config.meta_og_locale() || @default_twitter_card
-            ]
-            |> atomize_keys_to_string()
+  @metatags %{
+    "og_type" => "website",
+    "og_locale" => "en",
+    "twitter_card" => "summary_large_image"
+  }
 
   @doc """
   Render default meta tags
@@ -44,6 +33,7 @@ defmodule Literature.MetaTagHelpers do
   defp render_tag_og(tags) do
     [
       tag(:meta, content: get_tag_value(tags, "og_type", "og_type"), property: "og:type"),
+      tag(:meta, content: get_tag_value(tags, "og_locale", "og_locale"), property: "og:locale"),
       tag(:meta, content: get_tag_value(tags, "url", "og_url"), property: "og:url"),
       tag(:meta, content: get_tag_value(tags, "title", "og_title"), property: "og:title"),
       tag(:meta,
@@ -77,6 +67,6 @@ defmodule Literature.MetaTagHelpers do
   end
 
   defp get_tag_value(tags, default_key, key) do
-    tags[key] || tags[default_key] || @metatags[default_key]
+    tags[key] || tags[default_key] || @metatags[key]
   end
 end
