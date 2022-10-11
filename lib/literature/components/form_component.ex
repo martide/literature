@@ -66,7 +66,7 @@ defmodule Literature.FormComponent do
       >
       <%= @title %>
     </p>
-    <div id={@id} class="hidden" phx-connected={JS.hide()}>
+    <div id={@id}>
       <div class={assigns[:nogrid] && "space-y-5" || "grid grid-cols-2 gap-5 pb-5"}>
         <%= render_block(@inner_block) %>
       </div>
