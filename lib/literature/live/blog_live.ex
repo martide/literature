@@ -9,7 +9,7 @@ defmodule Literature.BlogLive do
   @layout {Literature.LayoutView, "live.html"}
 
   @impl Phoenix.LiveView
-  def mount(%{"slug" => slug}, session, socket) do
+  def mount(%{"slug" => slug} = params, session, socket) do
     [&Literature.get_post!/1, &Literature.get_tag!/1, &Literature.get_author!/1]
     |> Enum.map(fn fun -> fun.(slug: slug, publication_slug: session["publication_slug"]) end)
     |> Enum.find(&is_struct/1)
@@ -19,6 +19,7 @@ defmodule Literature.BlogLive do
       %Author{} = author -> assign_to_socket(socket, :author, preload_author(author))
     end
     |> assign(%{
+      locale: params["locale"],
       publication_slug: session["publication_slug"],
       view_module: session["view_module"]
     })
@@ -26,9 +27,10 @@ defmodule Literature.BlogLive do
   end
 
   @impl Phoenix.LiveView
-  def mount(_params, session, socket) do
+  def mount(params, session, socket) do
     socket
     |> assign(%{
+      locale: params["locale"],
       publication_slug: session["publication_slug"],
       view_module: session["view_module"]
     })
