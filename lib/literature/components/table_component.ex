@@ -124,14 +124,27 @@ defmodule Literature.TableComponent do
     """
   end
 
-  defp render_item(item, :published_at = field) do
-    has_value? = Map.get(item, field)
-    label = (has_value? && "Published") || "Draft"
-    classes = (has_value? && "bg-primary-100 text-primary-800") || "bg-gray-100 text-gray-800"
+  defp render_item(item, :status = field) do
+    label = Map.get(item, field)
+
+    classes =
+      case label do
+        "scheduled" -> "bg-yellow-100 text-yellow-800"
+        "published" -> "bg-primary-100 text-primary-800"
+        _ -> "bg-gray-100 text-gray-800"
+      end
 
     content_tag(:span, label,
-      class: "text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg #{classes}"
+      class: "capitalize text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg #{classes}"
     )
+  end
+
+  defp render_item(item, :published_at = field) do
+    Map.get(item, field)
+    |> case do
+      nil -> ""
+      datetime -> Timex.format!(datetime, "%d %b %Y at %I:%M %p", :strftime)
+    end
   end
 
   defp render_item(item, :visibility = field) do

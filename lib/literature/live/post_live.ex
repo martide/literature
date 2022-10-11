@@ -110,10 +110,12 @@ defmodule Literature.PostLive do
   end
 
   defp paginate_posts(params) do
+    params = Map.put(params, "preload", ~w(authors tags)a)
     page = Literature.paginate_posts(params)
+    posts = Enum.map(page.entries, &Post.resolve/1)
 
     Map.new()
-    |> Map.put(:posts, page.entries)
+    |> Map.put(:posts, posts)
     |> Map.put(:page, page)
   end
 
@@ -121,7 +123,8 @@ defmodule Literature.PostLive do
     [
       {:title, "Title"},
       {:slug, "Slug"},
-      {:published_at, "Status"}
+      {:status, "Status"},
+      {:published_at, "Date Published"}
     ]
   end
 end

@@ -76,7 +76,7 @@ defmodule Literature.FormComponent do
 
   def button_group(assigns) do
     ~H"""
-    <div class="flex items-center justify-end">
+    <div class="flex flex-col md:flex-row items-center md:justify-end">
       <%= render_slot(@inner_block) %>
     </div>
     """
@@ -109,13 +109,13 @@ defmodule Literature.FormComponent do
 
   def back_button(assigns) do
     ~H"""
-    <%= live_patch @label, to: @return_to, class: "text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2" %>
+    <%= live_patch @label, to: @return_to, class: "w-full md:w-auto text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 md:mr-2 mb-2 text-center order-last md:order-first" %>
     """
   end
 
   def submit_button(assigns) do
     ~H"""
-    <%= submit @label, class: "text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 focus:outline-none" %>
+    <%= submit @label, class: "w-full md:w-auto text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 md:mr-2 mb-2 focus:outline-none" %>
     """
   end
 

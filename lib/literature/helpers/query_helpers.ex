@@ -36,8 +36,14 @@ defmodule Literature.QueryHelpers do
     where(query, [q], is_nil(q.published_at))
   end
 
+  def where_status(query, %{"status" => "scheduled"}) do
+    datetime = Timex.now() |> Timex.local()
+    where(query, [q], q.published_at > ^datetime)
+  end
+
   def where_status(query, %{"status" => "published"}) do
-    where(query, [q], not is_nil(q.published_at))
+    datetime = Timex.now() |> Timex.local()
+    where(query, [q], q.published_at <= ^datetime)
   end
 
   def where_status(query, %{"status" => "public"}) do

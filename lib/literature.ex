@@ -229,7 +229,6 @@ defmodule Literature do
     %Post{}
     |> Post.changeset(attrs)
     |> Repo.insert()
-    |> Post.set_schedule()
   end
 
   @doc """
@@ -248,7 +247,6 @@ defmodule Literature do
     post
     |> Post.changeset(attrs)
     |> Repo.update()
-    |> Post.set_schedule()
   end
 
   @doc """

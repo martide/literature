@@ -25,7 +25,6 @@ defmodule Literature.Post do
     field(:twitter_description, :string)
 
     field(:status, :string, virtual: true)
-    field(:scheduled_at, :utc_datetime, virtual: true)
     field(:authors_ids, {:array, :string}, virtual: true)
     field(:tags_ids, {:array, :string}, virtual: true)
     field(:upload_image, Uploader.Type, virtual: true)
@@ -53,7 +52,7 @@ defmodule Literature.Post do
     editor_json
     html
     upload_image
-    scheduled_at
+    published_at
     meta_title
     meta_description
     og_title
@@ -74,7 +73,6 @@ defmodule Literature.Post do
     |> cast(params, @required_params ++ @optional_params)
     |> cast_attachments(params, @attachments)
     |> maybe_generate_slug(post)
-    |> put_published_at()
     |> validate_required(@required_params, message: "This field is required")
     |> unique_constraint(:slug, name: :literature_posts_publication_id_slug_index)
     |> put_assocs(params)
@@ -83,7 +81,7 @@ defmodule Literature.Post do
   def resolve(post) when is_struct(post) do
     %{
       post
-      | status: (post.published_at && "publish") || "draft",
+      | status: get_status(post),
         authors_ids: Enum.map(post.authors, & &1.id),
         tags_ids: Enum.map(post.tags, & &1.id)
     }
@@ -91,13 +89,15 @@ defmodule Literature.Post do
 
   def resolve(post), do: post
 
-  def set_schedule({:ok, %{scheduled_at: scheduled_at} = post}) when not is_nil(scheduled_at) do
-    %{id: post.id}
-    |> Literature.Schedule.new(scheduled_at: scheduled_at)
-    |> Oban.insert()
-  end
+  defp get_status(%{published_at: published_at}) do
+    datetime = Timex.now() |> Timex.local()
 
-  def set_schedule(result), do: result
+    cond do
+      is_nil(published_at) -> "draft"
+      published_at < datetime -> "published"
+      published_at > datetime -> "scheduled"
+    end
+  end
 
   defp maybe_generate_slug(changeset, %{title: title, slug: slug}) when title != slug,
     do: changeset
@@ -106,23 +106,6 @@ defmodule Literature.Post do
     do: slugify(changeset, :title)
 
   defp maybe_generate_slug(changeset, _), do: changeset
-
-  defp put_published_at(changeset) do
-    case changeset do
-      %Ecto.Changeset{changes: %{scheduled_at: _}, valid?: true} ->
-        changeset
-
-      %Ecto.Changeset{changes: %{status: "draft"}, valid?: true} ->
-        put_change(changeset, :published_at, nil)
-
-      %Ecto.Changeset{changes: %{status: "publish"}, valid?: true} ->
-        datetime = DateTime.utc_now() |> DateTime.truncate(:second)
-        put_change(changeset, :published_at, datetime)
-
-      changeset ->
-        changeset
-    end
-  end
 
   defp put_assocs(changeset, %{"authors_ids" => ""}),
     do: add_error(changeset, :authors_ids, "Required at least one author")
