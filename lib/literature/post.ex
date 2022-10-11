@@ -41,7 +41,6 @@ defmodule Literature.Post do
     publication_id
     slug
     title
-    status
   )a
 
   @optional_params ~w(

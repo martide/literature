@@ -6,12 +6,11 @@ defmodule Literature.PostLiveTest do
 
   @create_attrs %{
     title: "some new title",
-    status: "draft",
     authors_ids: [],
     tags_ids: []
   }
 
-  @update_attrs %{title: "some updated title", status: "publish"}
+  @update_attrs %{title: "some updated title"}
 
   defp create_post(_) do
     publication = publication_fixture()
