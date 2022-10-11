@@ -25,8 +25,7 @@ defmodule Literature.RSSControllerTest do
         publication_id: publication.id,
         authors_ids: [author.id],
         tags_ids: [tag.id],
-        title: "Published Post",
-        status: "publish"
+        title: "Published Post"
       )
 
     published_post_path = Routes.literature_path(conn, :show, published_post.slug)
@@ -37,7 +36,7 @@ defmodule Literature.RSSControllerTest do
         authors_ids: [author.id],
         tags_ids: [tag.id],
         title: "Draft Post",
-        status: "draft"
+        published_at: nil
       )
 
     draft_post_path = Routes.literature_path(conn, :show, draft_post.slug)

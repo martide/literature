@@ -93,10 +93,10 @@ defmodule Literature.LayoutComponent do
 
   def loading_page(assigns) do
     ~H"""
-    <div class="px-3 py-4 space-y-3 animate-pulse">
-      <div class="bg-slate-200 h-12 w-full rounded-lg"></div>
-      <div class="bg-slate-200 h-12 w-full rounded-lg"></div>
-      <div class="bg-slate-200 h-12 w-full rounded-lg"></div>
+    <div class="px-3 py-4 space-x-3 animate-pulse">
+      <div class="bg-slate-200 h-12 w-40 rounded-lg inline-block"></div>
+      <div class="bg-slate-200 h-12 w-40 rounded-lg inline-block"></div>
+      <div class="bg-slate-200 h-12 w-40 rounded-lg inline-block"></div>
     </div>
     <div class="col-span-4 bg-white shadow-md rounded-lg p-10">
       <div class="animate-pulse">

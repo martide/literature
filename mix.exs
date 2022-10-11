@@ -61,6 +61,7 @@ defmodule Literature.MixProject do
       {:ex_doc, "~> 0.14", only: :dev, runtime: false},
       {:sitemapper, "~> 0.6.0"},
       {:slugy, "~> 4.1"},
+      {:timex, "~> 3.7"},
 
       # Test
       {:credo, "~> 1.6", only: [:test, :dev], runtime: false},

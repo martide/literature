@@ -36,15 +36,14 @@ defmodule Literature.PostFormComponent do
         id="post-form"
         multipart
         phx-target={@myself}
-        phx-change="validate"
         phx-submit="save">
-        <div class="flex">
+        <div class="md:flex">
           <div class="w-full">
             <div id="editorjs" data-post-data={f.params["editor_json"] || @post.editor_json} phx-hook="EditorJS"></div>
             <%= hidden_input f, :editor_json %>
             <%= hidden_input f, :html %>
           </div>
-          <div class="w-2/3 border-l pl-8">
+          <div class="w-full md:w-2/3 md:border-l md:pl-8">
             <div class="space-y-5 mb-5">
               <.form_field form={f} type="text_input" field={:title} label="Title" />
               <.form_field form={f} type="text_input" field={:slug} label="Slug" disabled={@action == :new_post} placeholder={if @action == :new_post, do: "(auto-generate) you can change from edit page", else: ""} />
@@ -54,7 +53,7 @@ defmodule Literature.PostFormComponent do
               <.form_field form={f} type="text_input" field={:feature_image_alt} label="Feature Image Alt" />
               <.form_field form={f} type="text_input" field={:feature_image_caption} label="Feature Image Caption" />
               <.form_field form={f} type="textarea" field={:excerpt} label="Excerpt" />
-              <.form_field form={f} type="radio_group" field={:status} label="Status" options={[draft: "Draft", publish: "Publish"]} />
+              <.form_field form={f} type="datetime_local_input" field={:published_at} label="Date Published" />
             </div>  
             <.accordion title="Meta Tags" nogrid>
               <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
@@ -70,25 +69,17 @@ defmodule Literature.PostFormComponent do
               <.form_field form={f} type="text_input" field={:twitter_title} label="Twitter Title" />
               <.form_field form={f} type="textarea" field={:twitter_description} label="Twitter Description" />
             </.accordion>
-            <.button_group>
-              <.back_button label="Cancel" return_to={@return_to} />
-              <.submit_button label="Save Changes" />
-            </.button_group>
+            <div class="mt-5">
+              <.button_group>
+                <.back_button label="Cancel" return_to={@return_to} />
+                <.submit_button label="Save Changes" />
+              </.button_group>
+            </div>
           </div>
         </div>
       </.form>
     </div>
     """
-  end
-
-  @impl Phoenix.LiveComponent
-  def handle_event("validate", %{"post" => post_params}, socket) do
-    changeset =
-      socket.assigns.post
-      |> Literature.change_post(post_params)
-      |> put_validation(socket.assigns.action)
-
-    {:noreply, assign(socket, :changeset, changeset)}
   end
 
   @impl Phoenix.LiveComponent
@@ -148,7 +139,4 @@ defmodule Literature.PostFormComponent do
     |> Literature.get_publication!()
     |> then(&Map.put(params, "publication_id", &1.id))
   end
-
-  defp put_validation(changeset, :new_post), do: changeset
-  defp put_validation(changeset, :edit_post), do: Map.put(changeset, :action, :validate)
 end

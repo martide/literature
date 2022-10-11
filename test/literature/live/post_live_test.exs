@@ -6,12 +6,11 @@ defmodule Literature.PostLiveTest do
 
   @create_attrs %{
     title: "some new title",
-    status: "draft",
     authors_ids: [],
     tags_ids: []
   }
-  @update_attrs %{title: "some updated title", status: "publish"}
-  @invalid_attrs %{title: nil}
+
+  @update_attrs %{title: "some updated title"}
 
   defp create_post(_) do
     publication = publication_fixture()
@@ -80,10 +79,6 @@ defmodule Literature.PostLiveTest do
         view,
         Routes.literature_dashboard_path(conn, :edit_post, publication.slug, post.slug)
       )
-
-      assert view
-             |> form("#post-form", post: @invalid_attrs)
-             |> render_change() =~ "This field is required"
 
       result =
         view
