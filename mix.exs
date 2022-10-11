@@ -1,7 +1,7 @@
 defmodule Literature.MixProject do
   use Mix.Project
 
-  @version "0.1.1"
+  @version "0.1.2"
 
   def project do
     [
@@ -40,12 +40,12 @@ defmodule Literature.MixProject do
   defp deps do
     [
       # JSON
-      {:jason, "~> 1.3", optional: true},
+      {:jason, "~> 1.4", optional: true},
 
       # Phoenix
-      {:ecto_sql, "~> 3.8"},
+      {:ecto_sql, "~> 3.9"},
       {:phoenix_ecto, "~> 4.4"},
-      {:phoenix_live_view, "~> 0.17"},
+      {:phoenix_live_view, "~> 0.18"},
       {:postgrex, ">= 0.0.0", only: :test},
 
       # Pagination
@@ -57,18 +57,18 @@ defmodule Literature.MixProject do
       {:waffle_ecto, "~> 0.0.11"},
 
       # Others
-      {:atomex, "~> 0.5.1"},
-      {:ex_doc, "~> 0.14", only: :dev, runtime: false},
-      {:sitemapper, "~> 0.6.0"},
+      {:atomex, "~> 0.5"},
+      {:ex_doc, "~> 0.28", only: :dev, runtime: false},
+      {:sitemapper, "~> 0.7"},
       {:slugy, "~> 4.1"},
       {:timex, "~> 3.7"},
 
       # Test
       {:credo, "~> 1.6", only: [:test, :dev], runtime: false},
-      {:dialyxir, "~> 1.0", only: [:test, :dev], runtime: false},
-      {:excoveralls, "~> 0.10", only: :test},
+      {:dialyxir, "~> 1.2", only: [:test, :dev], runtime: false},
+      {:excoveralls, "~> 0.15", only: :test},
       {:floki, "~> 0.33", only: :test},
-      {:sobelow, "~> 0.8", only: [:test, :dev], runtime: false}
+      {:sobelow, "~> 0.11", only: [:test, :dev], runtime: false}
     ]
   end
 

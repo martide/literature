@@ -10,7 +10,7 @@ by adding `literature` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:literature, "~> 0.1.0"}
+    {:literature, "~> 0.1"}
   ]
 end
 ```
