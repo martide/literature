@@ -32,7 +32,7 @@ defmodule Literature.Post do
     belongs_to(:publication, Publication)
 
     many_to_many(:authors, Author, join_through: "literature_authors_posts", on_replace: :delete)
-    many_to_many(:tags, Tag, join_through: "literature_tags_posts")
+    many_to_many(:tags, Tag, join_through: "literature_tags_posts", on_replace: :delete)
 
     timestamps()
   end
