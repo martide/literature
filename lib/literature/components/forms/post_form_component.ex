@@ -36,9 +36,10 @@ defmodule Literature.PostFormComponent do
         id="post-form"
         multipart
         phx-target={@myself}
+        phx-change="validate"
         phx-submit="save">
         <div class="md:flex">
-          <div class="w-full">
+          <div id="ignore-updates" class="w-full" phx-update="ignore">
             <div id="editorjs" data-post-data={f.params["editor_json"] || @post.editor_json} phx-hook="EditorJS"></div>
             <%= hidden_input f, :editor_json %>
             <%= hidden_input f, :html %>
@@ -80,6 +81,16 @@ defmodule Literature.PostFormComponent do
       </.form>
     </div>
     """
+  end
+
+  @impl Phoenix.LiveComponent
+  def handle_event("validate", %{"post" => post_params}, socket) do
+    changeset =
+      socket.assigns.post
+      |> Literature.change_post(post_params)
+      |> put_validation(socket.assigns.action)
+
+    {:noreply, assign(socket, :changeset, changeset)}
   end
 
   @impl Phoenix.LiveComponent
@@ -139,4 +150,7 @@ defmodule Literature.PostFormComponent do
     |> Literature.get_publication!()
     |> then(&Map.put(params, "publication_id", &1.id))
   end
+
+  defp put_validation(changeset, :new_post), do: changeset
+  defp put_validation(changeset, :edit_post), do: Map.put(changeset, :action, :validate)
 end
