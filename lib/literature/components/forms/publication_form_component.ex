@@ -36,8 +36,8 @@ defmodule Literature.PublicationFormComponent do
         phx-change="validate"
         phx-submit="save">
         <.form_group title="Contents">
-          <.form_field form={f} type="text_input" field={:name} label="Name" />
-          <.form_field form={f} type="text_input" field={:slug} label="Slug" disabled={@action == :new_publication} placeholder={if @action == :new_publication, do: "(auto-generate) you can change from edit page", else: ""} />
+          <.form_field form={f} type="text_input" field={:name} label="Name" required={true} />
+          <.form_field form={f} type="text_input" field={:slug} label="Slug" required={true} disabled={@action == :new_publication} placeholder={if @action == :new_publication, do: "(auto-generate) you can change from edit page", else: ""} />
           <.form_field form={f} type="textarea" field={:description} label="Description" />
         </.form_group>
         <.accordion title="Meta Tags">

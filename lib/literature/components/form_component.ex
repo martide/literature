@@ -24,28 +24,28 @@ defmodule Literature.FormComponent do
     <div class={form_field_classes(@type)}>
       <%= case @type do %>
         <% "text_input" -> %>
-          <.form_label form={@form} field={@field} label={@label} />
+          <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
           <.text_input form={@form} field={@field} {@input_opts} />
         <% "textarea" -> %>
-          <.form_label form={@form} field={@field} label={@label} />
+          <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
           <.textarea form={@form} field={@field} {@input_opts} />
         <% "checkbox_group" -> %>
-          <.form_label form={@form} field={@field} label={@label} />
+          <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
           <.checkbox_group form={@form} field={@field} {@input_opts} />
         <% "radio_group" -> %>
-          <.form_label form={@form} field={@field} label={@label} />
+          <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
           <.radio_group form={@form} field={@field} {@input_opts} />
         <% "select" -> %>
-          <.form_label form={@form} field={@field} label={@label} />
+          <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
           <.select form={@form} field={@field} {@input_opts} />
         <% "url_input" -> %>
-          <.form_label form={@form} field={@field} label={@label} />
+          <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
           <.url_input form={@form} field={@field} {@input_opts} />
         <% "image_upload" -> %>
-          <.form_label form={@form} field={@field} label={@label} />
+          <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
           <.image_upload form={@form} field={@field} {@input_opts} />
         <% "datetime_local_input" -> %>
-          <.form_label form={@form} field={@field} label={@label} />
+          <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
           <.datetime_local_input form={@form} field={@field} {@input_opts} />
       <% end %>
       <.form_field_error form={@form} field={@field} />
@@ -123,11 +123,14 @@ defmodule Literature.FormComponent do
     assigns =
       assigns
       |> assign_new(:classes, fn -> label_classes(assigns) end)
-      |> assign_rest(~w(classes form field label)a)
+      |> assign_rest(~w(classes form field label required)a)
 
     ~H"""
     <%= label @form, @field, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest do %>
       <%= @label %>
+      <%= if @required do %>
+        <span class="text-red-500">*</span>
+      <% end %>
     <% end %>
     """
   end

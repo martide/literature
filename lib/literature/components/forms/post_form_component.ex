@@ -46,10 +46,10 @@ defmodule Literature.PostFormComponent do
           </div>
           <div class="w-full md:w-2/3 md:border-l md:pl-8">
             <div class="space-y-5 mb-5">
-              <.form_field form={f} type="text_input" field={:title} label="Title" />
-              <.form_field form={f} type="text_input" field={:slug} label="Slug" disabled={@action == :new_post} placeholder={if @action == :new_post, do: "(auto-generate) you can change from edit page", else: ""} />
-              <.form_field form={f} type="checkbox_group" field={:authors_ids} options={@authors} label="Authors" />
-              <.form_field form={f} type="checkbox_group" field={:tags_ids} options={@tags} label="Tags" />
+              <.form_field form={f} type="text_input" field={:title} label="Title" required={true} />
+              <.form_field form={f} type="text_input" field={:slug} label="Slug" required={true} disabled={@action == :new_post} placeholder={if @action == :new_post, do: "(auto-generate) you can change from edit page", else: ""} />
+              <.form_field form={f} type="checkbox_group" field={:authors_ids} options={@authors} label="Authors" required={true} />
+              <.form_field form={f} type="checkbox_group" field={:tags_ids} options={@tags} label="Tags" required={true} />
               <.form_field form={f} type="image_upload" field={:feature_image} label="Feature Image" uploads={@uploads} />
               <.form_field form={f} type="text_input" field={:feature_image_alt} label="Feature Image Alt" />
               <.form_field form={f} type="text_input" field={:feature_image_caption} label="Feature Image Caption" />
