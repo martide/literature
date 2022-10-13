@@ -7,7 +7,6 @@ defmodule Literature.Uploader do
 
   alias Literature.Config
 
-  @acl :public_read
   @extension_whitelist ~w(.jpg .jpeg .png)
   @versions ~w(w100 w200 w300 w400 w500 w600 w700 w800 w900 original)a
 
