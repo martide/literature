@@ -1,7 +1,7 @@
 defmodule Literature.MixProject do
   use Mix.Project
 
-  @version "0.1.2"
+  @version "0.1.3"
 
   def project do
     [
@@ -98,7 +98,7 @@ defmodule Literature.MixProject do
         "phx.digest.clean"
       ],
       publish: [
-        "assets.build",
+        "cmd npm run build --prefix assets",
         "hex.publish"
       ]
     ]
