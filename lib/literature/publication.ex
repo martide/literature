@@ -10,6 +10,7 @@ defmodule Literature.Publication do
     field(:description, :string)
     field(:meta_title, :string)
     field(:meta_description, :string)
+    field(:meta_keywords, :string)
     field(:og_image, Uploader.Type)
     field(:og_title, :string)
     field(:og_description, :string)
@@ -33,6 +34,7 @@ defmodule Literature.Publication do
     description
     meta_title
     meta_description
+    meta_keywords
     og_title
     og_description
     twitter_title

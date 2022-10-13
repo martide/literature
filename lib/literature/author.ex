@@ -16,6 +16,7 @@ defmodule Literature.Author do
     field(:twitter, :string)
     field(:meta_title, :string)
     field(:meta_description, :string)
+    field(:meta_keywords, :string)
 
     belongs_to(:publication, Publication)
 
@@ -43,6 +44,7 @@ defmodule Literature.Author do
     twitter
     meta_title
     meta_description
+    meta_keywords
   )a
 
   @attachments ~w(

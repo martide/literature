@@ -59,6 +59,7 @@ defmodule Literature.PostFormComponent do
             <.accordion title="Meta Tags" nogrid>
               <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
               <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" />
+              <.form_field form={f} type="text_input" field={:meta_keywords} label="Meta Keywords" />
             </.accordion>
             <.accordion title="Facebook Meta Tags" nogrid>
               <.form_field form={f} type="image_upload" field={:og_image} label="Facebook Image" uploads={@uploads} />

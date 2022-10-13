@@ -26,7 +26,8 @@ defmodule Literature.MetaTagHelpers do
       tag(:meta,
         content: get_tag_value(tags, "description", "meta_description"),
         name: "description"
-      )
+      ),
+      tag(:meta, content: get_tag_value(tags, "meta_keywords", "meta_keywords"), name: "keywords")
     ]
   end
 

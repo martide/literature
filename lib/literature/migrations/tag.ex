@@ -12,6 +12,7 @@ defmodule Literature.Migrations.Tag do
       add(:visibility, :boolean)
       add(:meta_title, :string)
       add(:meta_description, :string)
+      add(:meta_keywords, :string)
       add(:og_image, :string)
       add(:og_title, :string)
       add(:og_description, :string)

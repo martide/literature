@@ -48,6 +48,7 @@ defmodule Literature.AuthorFormComponent do
         <.accordion title="Meta Tags">
           <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
           <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" />
+          <.form_field form={f} type="text_input" field={:meta_keywords} label="Meta Keywords" />
         </.accordion>
         <.button_group>
           <.back_button label="Cancel" return_to={@return_to} />
