@@ -171,7 +171,7 @@ defmodule Literature.FormComponent do
       </div>
       <%= img_tag literature_image_url(@form.data, @field), class: "object-cover object-center absolute top-0" %>
       <%= for entry <- @upload_field.entries do %>
-        <%= live_img_preview entry, class: "object-cover object-center absolute top-0" %>
+        <.live_img_preview entry={entry} class="object-cover object-center absolute top-0" />
         <%= if entry.progress < 100 do %>
           <div class="w-full bg-gray-200 h-2 absolute bottom-0">
             <div class="bg-primary-600 h-2 rounded-full" style={"width: #{entry.progress}%"}></div>
