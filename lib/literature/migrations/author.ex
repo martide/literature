@@ -16,6 +16,7 @@ defmodule Literature.Migrations.Author do
       add(:twitter, :string)
       add(:meta_title, :string)
       add(:meta_description, :string)
+      add(:meta_keywords, :string)
 
       add(
         :publication_id,

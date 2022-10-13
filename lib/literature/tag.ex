@@ -12,6 +12,7 @@ defmodule Literature.Tag do
     field(:visibility, :boolean)
     field(:meta_title, :string)
     field(:meta_description, :string)
+    field(:meta_keywords, :string)
     field(:og_image, Uploader.Type)
     field(:og_title, :string)
     field(:og_description, :string)
@@ -42,6 +43,7 @@ defmodule Literature.Tag do
     description
     meta_title
     meta_description
+    meta_keywords
     og_title
     og_description
     twitter_title
