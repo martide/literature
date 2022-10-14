@@ -95,8 +95,8 @@ defmodule Literature.Post do
 
     cond do
       is_nil(published_at) -> "draft"
-      published_at < datetime -> "published"
-      published_at > datetime -> "scheduled"
+      Timex.compare(published_at, datetime) < 1 -> "published"
+      Timex.compare(published_at, datetime) == 1 -> "scheduled"
     end
   end
 
