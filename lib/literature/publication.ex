@@ -11,10 +11,10 @@ defmodule Literature.Publication do
     field(:meta_title, :string)
     field(:meta_description, :string)
     field(:meta_keywords, :string)
-    field(:og_image, Uploader.Type)
+    field(:og_image, Uploaders.Type)
     field(:og_title, :string)
     field(:og_description, :string)
-    field(:twitter_image, Uploader.Type)
+    field(:twitter_image, Uploaders.Type)
     field(:twitter_title, :string)
     field(:twitter_description, :string)
 
