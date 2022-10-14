@@ -48,6 +48,7 @@ defmodule Literature.Uploaders.Actions.Url do
   end
 
   defp build(definition, version, file_and_scope, options) do
+    # add size option for file name
     case Versioning.resolve_file_name(definition, version, file_and_scope, options[:size]) do
       nil ->
         nil

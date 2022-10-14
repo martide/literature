@@ -8,6 +8,7 @@ defmodule Literature.Uploaders.Versioning do
     end
   end
 
+  # size param: to call the generated size image.
   def resolve_file_name(definition, version, {file, scope}, size) do
     name = definition.filename(version, {file, scope}, size)
     conversion = definition.transform(version, {file, scope})

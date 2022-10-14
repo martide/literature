@@ -23,6 +23,7 @@ defmodule Literature.Uploaders.Processor do
     |> Enum.map(&Convert.apply(cmd, file, &1, extension))
   end
 
+  # To generate image sizes from 100px until the image width
   defp generates_image_sizes(%{path: path}, conversion) do
     %{width: width} =
       path
