@@ -11,7 +11,7 @@ defmodule Literature.Uploaders do
 
   alias Literature.Config
 
-  @extension_whitelist ~w(.png)
+  @extension_whitelist ~w(.jpg .jpeg .png)
   @versions ~w(original jpg webp avif)a
 
   def asset_host, do: Config.waffle_asset_host()
