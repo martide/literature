@@ -59,6 +59,7 @@ defmodule Literature.Tag do
   @doc false
   def changeset(tag, params) do
     tag
+    |> maybe_generate_id()
     |> cast(params, @required_params ++ @optional_params)
     |> cast_attachments(params, @attachments)
     |> maybe_generate_slug(tag)

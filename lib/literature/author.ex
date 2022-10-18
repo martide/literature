@@ -55,6 +55,7 @@ defmodule Literature.Author do
   @doc false
   def changeset(author, params) do
     author
+    |> maybe_generate_id()
     |> cast(params, @required_params ++ @optional_params)
     |> cast_attachments(params, @attachments)
     |> maybe_generate_slug(author)

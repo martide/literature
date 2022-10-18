@@ -14,8 +14,13 @@ defmodule Literature.Web do
 
       alias Literature.{Author, Post, Publication, Tag, Uploaders}
 
-      @primary_key {:id, :binary_id, autogenerate: true}
+      @primary_key {:id, :binary_id, autogenerate: false}
       @foreign_key_type :binary_id
+
+      def maybe_generate_id(%{id: nil} = schema),
+        do: change(schema, id: Ecto.UUID.generate())
+
+      def maybe_generate_id(schema), do: schema
     end
   end
 

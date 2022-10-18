@@ -41,10 +41,10 @@ defmodule Literature.Uploaders do
   end
 
   def storage_dir(:original, {_, scope}),
-    do: "literature/#{scope.publication_id}/#{scope.slug}"
+    do: "literature/#{scope.id}"
 
   def storage_dir(version, {_, scope}),
-    do: "literature/#{scope.publication_id}/#{scope.slug}/#{version}"
+    do: "literature/#{scope.id}/#{version}"
 
   def filename(version, {file, _}, size) do
     file_name = Path.basename(file.file_name, Path.extname(file.file_name))
