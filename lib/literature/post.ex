@@ -71,6 +71,7 @@ defmodule Literature.Post do
   @doc false
   def changeset(post, params) do
     post
+    |> maybe_generate_id()
     |> cast(params, @required_params ++ @optional_params)
     |> maybe_generate_slug(post)
     |> cast_attachments(params, @attachments)
