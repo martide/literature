@@ -7,8 +7,8 @@ defmodule Literature.Author do
   schema "literature_authors" do
     field(:slug, :string)
     field(:name, :string)
-    field(:profile_image, Uploader.Type)
-    field(:cover_image, Uploader.Type)
+    field(:profile_image, Uploaders.Type)
+    field(:cover_image, Uploaders.Type)
     field(:bio, :string)
     field(:website, :string)
     field(:location, :string)
