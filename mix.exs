@@ -54,12 +54,12 @@ defmodule Literature.MixProject do
 
       # Images
       {:waffle, "~> 1.1"},
-      {:waffle_ecto, "~> 0.0.11"},
+      {:waffle_ecto, "~> 0.0"},
 
       # Others
       {:atomex, "~> 0.5"},
       {:ex_doc, "~> 0.28", only: :dev, runtime: false},
-      {:mogrify, "~> 0.9.2"},
+      {:mogrify, "~> 0.9"},
       {:sitemapper, "~> 0.7"},
       {:slugy, "~> 4.1"},
       {:timex, "~> 3.7"},
