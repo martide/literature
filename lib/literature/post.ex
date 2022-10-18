@@ -72,8 +72,8 @@ defmodule Literature.Post do
   def changeset(post, params) do
     post
     |> cast(params, @required_params ++ @optional_params)
-    |> cast_attachments(params, @attachments)
     |> maybe_generate_slug(post)
+    |> cast_attachments(params, @attachments)
     |> validate_required(@required_params, message: "This field is required")
     |> unique_constraint(:slug, name: :literature_posts_publication_id_slug_index)
     |> put_assocs(params)

@@ -11,8 +11,8 @@ defmodule Literature.Uploaders do
 
   alias Literature.Config
 
-  @extension_whitelist ~w(.jpg .jpeg .png)
-  @versions ~w(original jpg webp)a
+  @extension_whitelist ~w(.png)
+  @versions ~w(original jpg webp avif)a
 
   def asset_host, do: Config.waffle_asset_host()
   def bucket, do: Config.waffle_bucket()
@@ -40,21 +40,11 @@ defmodule Literature.Uploaders do
     {:convert, "-format avif", :avif}
   end
 
-  def storage_dir(:original, {file, _}) do
-    file_name = Path.basename(file.file_name, Path.extname(file.file_name))
+  def storage_dir(:original, {_, scope}),
+    do: "literature/#{scope.publication_id}/#{scope.slug}"
 
-    "literature/#{file_name}"
-  end
-
-  def storage_dir(version, {file, _}) do
-    file_name =
-      file.file_name
-      |> Path.basename(Path.extname(file.file_name))
-      |> String.split("-")
-      |> List.delete_at(-1)
-
-    "literature/#{file_name}/#{version}"
-  end
+  def storage_dir(version, {_, scope}),
+    do: "literature/#{scope.publication_id}/#{scope.slug}/#{version}"
 
   def filename(version, {file, _}, size) do
     file_name = Path.basename(file.file_name, Path.extname(file.file_name))
