@@ -12,6 +12,7 @@ defmodule Literature.Uploaders do
   alias Literature.Config
 
   @extension_whitelist ~w(.jpg .jpeg .png)
+  # imagemagick 7 is required for avif conversions
   @versions ~w(original jpg webp)a
 
   def asset_host, do: Config.waffle_asset_host()
