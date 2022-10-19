@@ -51,7 +51,6 @@ defmodule Literature.Post do
     excerpt
     editor_json
     html
-    upload_image
     published_at
     meta_title
     meta_description
@@ -65,6 +64,7 @@ defmodule Literature.Post do
   @attachments ~w(
     feature_image
     og_image
+    upload_image
     twitter_image
   )a
 
