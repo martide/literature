@@ -25,12 +25,12 @@ defmodule Literature.Uploaders.Processor do
 
   # To generate image sizes from 100px until the image width
   defp generates_image_sizes(%{path: path}, conversion) do
-    %{width: width} =
+    %{height: height} =
       path
       |> Mogrify.open()
       |> Mogrify.verbose()
 
-    Range.new(100, width, 100)
+    Range.new(100, height, 100)
     |> Enum.map(&"-resize #{&1}x#{&1}^ #{conversion}")
   end
 end

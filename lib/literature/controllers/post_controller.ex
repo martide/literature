@@ -4,7 +4,7 @@ defmodule Literature.PostController do
   def upload_image(conn, %{"image" => image} = params) do
     params
     |> get_post()
-    |> Literature.update_post(%{"upload_image" => image})
+    |> Literature.update_post(%{"upload_image" => rename_filename(image)})
     |> case do
       {:ok, post} ->
         conn
@@ -34,4 +34,13 @@ defmodule Literature.PostController do
 
   defp get_post(%{"slug" => slug, "publication_slug" => publication_slug}),
     do: Literature.get_post!(slug: slug, publication_slug: publication_slug)
+
+  defp rename_filename(file) do
+    %{height: height} = Mogrify.verbose(Mogrify.open(file.path))
+
+    file_name =
+      Slugy.slugify("#{Path.basename(file.filename, Path.extname(file.filename))} w#{height}")
+
+    %{file | filename: "#{file_name}#{Path.extname(file.filename)}"}
+  end
 end

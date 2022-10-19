@@ -8,7 +8,7 @@
       <%= for post <- @posts do %>
         <article class="group">
           <div class="h-[30rem] overflow-hidden relative">
-            <.responsive_img_tag post={post} />
+            <.responsive_img_tag post={post} field={:feature_image} alt={post.feature_image_alt} />
           </div>
           <div class="max-w-3xl mx-auto py-8">
             <%= link to: literature_path(@socket, :show, post.slug) do %>
