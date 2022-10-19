@@ -48,16 +48,14 @@ defmodule Literature.ImageComponent do
     height = get_original_height(%{file_name: url})
 
     Range.new(100, height, 100)
-    |> Enum.map(&"#{String.replace(url, "w#{height}", "w#{&1}")} w#{&1}")
-    |> Enum.join(", ")
+    |> Enum.map_join(", ", &"#{String.replace(url, "w#{height}", "w#{&1}")} w#{&1}")
   end
 
   defp load_srcset(file, url) do
     height = get_original_height(file)
 
     Range.new(100, height, 100)
-    |> Enum.map(&"#{String.replace(url, "w#{height}", "w#{&1}")} w#{&1}")
-    |> Enum.join(", ")
+    |> Enum.map_join(", ", &"#{String.replace(url, "w#{height}", "w#{&1}")} w#{&1}")
   end
 
   defp get_original_height(%{file_name: file_name}) do
