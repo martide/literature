@@ -14,11 +14,20 @@ defmodule Literature.BlogLive do
     |> Enum.map(fn fun -> fun.(slug: slug, publication_slug: session["publication_slug"]) end)
     |> Enum.find(&is_struct/1)
     |> case do
-      %Post{} = post -> assign_to_socket(socket, :post, post)
-      %Tag{} = tag -> assign_to_socket(socket, :tag, preload_tag(tag))
-      %Author{} = author -> assign_to_socket(socket, :author, preload_author(author))
+      %Post{} = post ->
+        assign_to_socket(socket, :post, post)
+
+      %Tag{} = tag ->
+        assign_to_socket(socket, :tag, preload_tag(tag))
+
+      %Author{} = author ->
+        assign_to_socket(socket, :author, preload_author(author))
+
+      _ ->
+        socket
     end
     |> assign(%{
+      application_router: session["application_router"],
       locale: params["locale"],
       publication_slug: session["publication_slug"],
       view_module: session["view_module"]
@@ -48,7 +57,15 @@ defmodule Literature.BlogLive do
           {assigns[:author], "author.html"}
         ]
         |> Enum.find(fn {assign, _} -> is_map(assign) end)
-        |> elem(1)
+        |> case do
+          nil ->
+            raise Phoenix.Router.NoRouteError,
+              conn: %{path_info: assigns[:path_info], method: "GET"},
+              router: assigns[:application_router]
+
+          result ->
+            elem(result, 1)
+        end
 
       action ->
         "#{to_string(action)}.html"
@@ -57,8 +74,13 @@ defmodule Literature.BlogLive do
   end
 
   @impl Phoenix.LiveView
-  def handle_params(_params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, socket.assigns.publication_slug)}
+  def handle_params(_params, url, socket) do
+    path_info = String.split(URI.parse(url).path, "/") |> Enum.reject(&(&1 == ""))
+
+    socket
+    |> assign(:path_info, path_info)
+    |> apply_action(socket.assigns.live_action, socket.assigns.publication_slug)
+    |> then(&{:noreply, &1})
   end
 
   defp apply_action(socket, :index, slug) do
