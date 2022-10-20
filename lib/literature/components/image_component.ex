@@ -14,11 +14,13 @@ defmodule Literature.ImageComponent do
       |> assign_new(:classes, fn -> "object-cover object-center absolute w-full" end)
 
     ~H"""
-    <picture>
-      <source srcset={load_srcset(Map.get(@post, @field), literature_image_url(@post, @field, :jpg))} />
-      <source srcset={load_srcset(Map.get(@post, @field), literature_image_url(@post, @field, :webp))} />
-      <%= img_tag literature_image_url(@post, @field), class: @classes, alt: @alt %>
-    </picture>
+    <%= if file = Map.get(@post, @field) do %>
+      <picture>
+        <source srcset={load_srcset(file, literature_image_url(@post, @field, :jpg))} />
+        <source srcset={load_srcset(file, literature_image_url(@post, @field, :webp))} />
+        <%= img_tag literature_image_url(@post, @field), class: @classes, alt: @alt %>
+      </picture>
+    <% end %>
     """
   end
 
