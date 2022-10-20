@@ -36,10 +36,10 @@ defmodule Literature.PostController do
     do: Literature.get_post!(slug: slug, publication_slug: publication_slug)
 
   defp rename_filename(file) do
-    %{width: width} = Mogrify.verbose(Mogrify.open(file.path))
+    %{height: height} = Mogrify.verbose(Mogrify.open(file.path))
 
     file_name =
-      Slugy.slugify("#{Path.basename(file.filename, Path.extname(file.filename))} w#{width}")
+      Slugy.slugify("#{Path.basename(file.filename, Path.extname(file.filename))} w#{height}")
 
     %{file | filename: "#{file_name}#{Path.extname(file.filename)}"}
   end

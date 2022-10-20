@@ -49,20 +49,20 @@ defmodule Literature.ImageComponent do
 
   defp load_srcset(version, url) when version in ~w(jpg webp)a do
     url = String.replace(url, "\"", "") |> String.replace("jpeg", to_string(version))
-    width = get_original_width(%{file_name: url})
+    height = get_original_height(%{file_name: url})
 
-    Range.new(100, width, Config.waffle_width_step())
-    |> Enum.map_join(", ", &"#{String.replace(url, "w#{width}", "w#{&1}")} w#{&1}")
+    Range.new(100, height, Config.waffle_width_step())
+    |> Enum.map_join(", ", &"#{String.replace(url, "w#{height}", "w#{&1}")} #{&1}w")
   end
 
   defp load_srcset(file, url) do
-    width = get_original_width(file)
+    height = get_original_height(file)
 
-    Range.new(100, width, Config.waffle_width_step())
-    |> Enum.map_join(", ", &"#{String.replace(url, "w#{width}", "w#{&1}")} w#{&1}")
+    Range.new(100, height, Config.waffle_width_step())
+    |> Enum.map_join(", ", &"#{String.replace(url, "w#{height}", "w#{&1}")} #{&1}w")
   end
 
-  defp get_original_width(%{file_name: file_name}) do
+  defp get_original_height(%{file_name: file_name}) do
     file_name
     |> Path.basename(Path.extname(file_name))
     |> String.split("w")
@@ -79,10 +79,10 @@ defmodule Literature.ImageComponent do
   end
 
   defp rename_filename({field, file}) do
-    %{width: width} = Mogrify.verbose(Mogrify.open(file.path))
+    %{height: height} = Mogrify.verbose(Mogrify.open(file.path))
 
     file_name =
-      Slugy.slugify("#{Path.basename(file.filename, Path.extname(file.filename))} w#{width}")
+      Slugy.slugify("#{Path.basename(file.filename, Path.extname(file.filename))} w#{height}")
 
     {field, %{file | filename: "#{file_name}#{Path.extname(file.filename)}"}}
   end
