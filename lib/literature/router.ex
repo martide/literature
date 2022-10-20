@@ -168,6 +168,7 @@ defmodule Literature.Router do
     session_opts = [
       root_layout: {Literature.LayoutView, root_layout},
       session: %{
+        "application_router" => Keyword.get(opts, :application_router),
         "publication_slug" => Keyword.get(opts, :publication_slug),
         "view_module" => Keyword.get(opts, :view_module)
       }
