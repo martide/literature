@@ -5,7 +5,6 @@ defmodule Literature.BlogLive do
     only: [atomize_keys_to_string: 1, literature_image_url: 2]
 
   alias Literature.{Author, Post, Repo, Tag}
-  alias Literature.ErrorView
 
   @layout {Literature.LayoutView, "live.html"}
 
