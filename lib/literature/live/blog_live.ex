@@ -5,6 +5,7 @@ defmodule Literature.BlogLive do
     only: [atomize_keys_to_string: 1, literature_image_url: 2]
 
   alias Literature.{Author, Post, Repo, Tag}
+  alias Literature.ErrorView
 
   @layout {Literature.LayoutView, "live.html"}
 
@@ -14,9 +15,17 @@ defmodule Literature.BlogLive do
     |> Enum.map(fn fun -> fun.(slug: slug, publication_slug: session["publication_slug"]) end)
     |> Enum.find(&is_struct/1)
     |> case do
-      %Post{} = post -> assign_to_socket(socket, :post, post)
-      %Tag{} = tag -> assign_to_socket(socket, :tag, preload_tag(tag))
-      %Author{} = author -> assign_to_socket(socket, :author, preload_author(author))
+      %Post{} = post ->
+        assign_to_socket(socket, :post, post)
+
+      %Tag{} = tag ->
+        assign_to_socket(socket, :tag, preload_tag(tag))
+
+      %Author{} = author ->
+        assign_to_socket(socket, :author, preload_author(author))
+
+      _ ->
+        raise Literature.PageNotFound, "Page Not Found"
     end
     |> assign(%{
       locale: params["locale"],
@@ -126,4 +135,9 @@ defmodule Literature.BlogLive do
     |> Map.put(:og_image, literature_image_url(author_or_tag_or_post, :og_image))
     |> Map.put(:twitter_image, literature_image_url(author_or_tag_or_post, :twitter_image))
   end
+end
+
+defmodule Literature.PageNotFound do
+  @moduledoc false
+  defexception [:message, plug_status: 404]
 end
