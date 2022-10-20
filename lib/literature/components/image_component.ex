@@ -5,6 +5,8 @@ defmodule Literature.ImageComponent do
   import Literature.Helpers
   import Phoenix.HTML.Tag
 
+  alias Literature.Config
+
   def responsive_img_tag(assigns) do
     assigns =
       assigns
@@ -45,20 +47,20 @@ defmodule Literature.ImageComponent do
 
   defp load_srcset(version, url) when version in ~w(jpg webp)a do
     url = String.replace(url, "\"", "") |> String.replace("jpeg", to_string(version))
-    height = get_original_height(%{file_name: url})
+    width = get_original_width(%{file_name: url})
 
-    Range.new(100, height, 100)
-    |> Enum.map_join(", ", &"#{String.replace(url, "w#{height}", "w#{&1}")} w#{&1}")
+    Range.new(100, width, Config.waffle_width_step())
+    |> Enum.map_join(", ", &"#{String.replace(url, "w#{width}", "w#{&1}")} w#{&1}")
   end
 
   defp load_srcset(file, url) do
-    height = get_original_height(file)
+    width = get_original_width(file)
 
-    Range.new(100, height, 100)
-    |> Enum.map_join(", ", &"#{String.replace(url, "w#{height}", "w#{&1}")} w#{&1}")
+    Range.new(100, width, Config.waffle_width_step())
+    |> Enum.map_join(", ", &"#{String.replace(url, "w#{width}", "w#{&1}")} w#{&1}")
   end
 
-  defp get_original_height(%{file_name: file_name}) do
+  defp get_original_width(%{file_name: file_name}) do
     file_name
     |> Path.basename(Path.extname(file_name))
     |> String.split("w")
@@ -75,10 +77,10 @@ defmodule Literature.ImageComponent do
   end
 
   defp rename_filename({field, file}) do
-    %{height: height} = Mogrify.verbose(Mogrify.open(file.path))
+    %{width: width} = Mogrify.verbose(Mogrify.open(file.path))
 
     file_name =
-      Slugy.slugify("#{Path.basename(file.filename, Path.extname(file.filename))} w#{height}")
+      Slugy.slugify("#{Path.basename(file.filename, Path.extname(file.filename))} w#{width}")
 
     {field, %{file | filename: "#{file_name}#{Path.extname(file.filename)}"}}
   end

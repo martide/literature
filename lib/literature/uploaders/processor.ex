@@ -1,6 +1,7 @@
 defmodule Literature.Uploaders.Processor do
   @moduledoc false
 
+  alias Literature.Config
   alias Waffle.Transformations.Convert
 
   def process(definition, version, {file, scope}) do
@@ -25,12 +26,12 @@ defmodule Literature.Uploaders.Processor do
 
   # To generate image sizes from 100px until the image width
   defp generates_image_sizes(%{path: path}, conversion) do
-    %{height: height} =
+    %{width: width} =
       path
       |> Mogrify.open()
       |> Mogrify.verbose()
 
-    Range.new(100, height, 100)
+    Range.new(100, width, Config.waffle_width_step())
     |> Enum.map(&"-resize #{&1}x#{&1}^ #{conversion}")
   end
 end
