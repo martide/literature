@@ -87,6 +87,7 @@ defmodule Literature.Web do
       import Phoenix.LiveView.Helpers
       import Literature.Helpers
       import Literature.QueryHelpers
+      import Literature.ReadingTimeHelpers
     end
   end
 
