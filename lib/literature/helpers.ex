@@ -95,4 +95,7 @@ defmodule Literature.Helpers do
     |> Enum.map(fn {key, val} -> {Atom.to_string(key), val} end)
     |> Enum.into(%{})
   end
+
+  def date_format(datetime, format \\ "%b %d, %Y"),
+    do: Timex.format!(datetime, format, :strftime)
 end
