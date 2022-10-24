@@ -1,7 +1,6 @@
 defmodule Literature.PostLive do
   use Literature.Web, :live_view
 
-  alias Literature.Config
   alias Literature.Post
   alias Literature.PostFormComponent
   alias Literature.TableComponent
