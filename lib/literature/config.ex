@@ -24,7 +24,7 @@ defmodule Literature.Config do
   def cloudflare_api_host, do: cloudflare_config()[:api_host] || @default_cloudflare_api_host
   def cloudflare_email, do: cloudflare_config()[:email]
   def cloudflare_identifier, do: cloudflare_config()[:identifier]
-  def cloudflare_key, do: cloudflare_config()[:key]
+  def cloudflare_api_key, do: cloudflare_config()[:api_key]
 
   def cloudflare_config,
     do: Application.get_env(:literature, :cloudflare)

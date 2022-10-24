@@ -499,7 +499,7 @@ defmodule Literature do
       "#{Config.cloudflare_api_host()}/zones/#{Config.cloudflare_identifier()}"
       |> HTTPoison.post(Jason.encode!(body), [
         {"X-Auth-Email", Config.cloudflare_email()},
-        {"X-Auth-Key", Config.cloudflare_key()},
+        {"X-Auth-Key", Config.cloudflare_api_key()},
         {"Content-Type", "application/json"}
       ])
     else
