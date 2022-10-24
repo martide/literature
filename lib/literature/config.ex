@@ -1,6 +1,9 @@
 defmodule Literature.Config do
   @moduledoc false
 
+  @default_30_days 60 * 60 * 24 * 30
+  @default_cloudflare_api_host "https://api.cloudflare.com/client/v4"
+
   def logo,
     do: Application.get_env(:literature, :image_path)
 
@@ -12,6 +15,19 @@ defmodule Literature.Config do
 
   def env,
     do: Application.get_env(:literature, :env)
+
+  def ttl,
+    do: Application.get_env(:literature, :ttl, @default_30_days)
+
+  # Cloudflare Config
+
+  def cloudflare_api_host, do: cloudflare_config()[:api_host] || @default_cloudflare_api_host
+  def cloudflare_email, do: cloudflare_config()[:email]
+  def cloudflare_identifier, do: cloudflare_config()[:identifier]
+  def cloudflare_key, do: cloudflare_config()[:key]
+
+  def cloudflare_config,
+    do: Application.get_env(:literature, :cloudflare)
 
   # Waffle Config
 

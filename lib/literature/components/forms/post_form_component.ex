@@ -105,7 +105,9 @@ defmodule Literature.PostFormComponent do
     post_params = Map.merge(post_params, images)
 
     case Literature.update_post(socket.assigns.post, post_params) do
-      {:ok, _post} ->
+      {:ok, post} ->
+        Literature.update_cloudflare(%{tags: [post.slug]})
+
         {:noreply,
          socket
          |> put_flash(:success, "Post updated successfully")

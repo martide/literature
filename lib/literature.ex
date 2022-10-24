@@ -2,7 +2,7 @@ defmodule Literature do
   @moduledoc false
 
   import Literature.QueryHelpers
-  alias Literature.{Author, Post, Publication, Repo, Tag}
+  alias Literature.{Author, Config, Post, Publication, Repo, Tag}
 
   ## Author Context
 
@@ -489,5 +489,21 @@ defmodule Literature do
   """
   def delete_tag(%Tag{} = tag) do
     Repo.delete(tag)
+  end
+
+  @doc """
+  Updates cloudflare.
+  """
+  def update_cloudflare(body \\ %{}) do
+    if Config.cloudflare_config() do
+      "#{Config.cloudflare_api_host()}/zones/#{Config.cloudflare_identifier()}"
+      |> HTTPoison.post(Jason.encode!(body), [
+        {"X-Auth-Email", Config.cloudflare_email()},
+        {"X-Auth-Key", Config.cloudflare_key()},
+        {"Content-Type", "application/json"}
+      ])
+    else
+      :ok
+    end
   end
 end

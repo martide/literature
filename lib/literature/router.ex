@@ -3,6 +3,8 @@ defmodule Literature.Router do
   Provides LiveView routing for literature.
   """
 
+  alias Literature.Config
+
   @doc """
   Defines a Literature dashboard route.
 
@@ -139,6 +141,7 @@ defmodule Literature.Router do
           plug(:accepts, ["html"])
           plug(:fetch_session)
           plug(:protect_from_forgery)
+          plug(:cdn_cache_control)
         end
 
         scope path: "/" do
@@ -159,6 +162,9 @@ defmodule Literature.Router do
             get("/posts/rss.xml", RSSController, :rss, as: session_name)
           end
         end
+
+        defp cdn_cache_control(conn, _),
+          do: put_resp_header(conn, "cdn-cache-control", "max-age=#{Config.ttl()}")
       end
     end
   end
