@@ -24,14 +24,14 @@ defmodule Literature.Uploaders.Processor do
     |> Enum.map(&Convert.apply(cmd, file, &1, extension))
   end
 
-  # To generate image sizes from 100px until the image height
+  # To generate image sizes from 100px until the image width
   defp generates_image_sizes(%{path: path}, conversion) do
-    %{height: height} =
+    %{width: width} =
       path
       |> Mogrify.open()
       |> Mogrify.verbose()
 
-    Range.new(100, height, Config.waffle_width_step())
+    Range.new(100, width, Config.waffle_width_step())
     |> Enum.map(&"-resize #{&1}x#{&1}^ #{conversion}")
   end
 end
