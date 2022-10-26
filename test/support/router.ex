@@ -6,7 +6,6 @@ defmodule Literature.Test.Router do
 
   literature_assets("/blog")
   literature("/", publication_slug: "blog", view_module: @view_module)
-  literature("/foo/bar", publication_slug: "some-name", view_module: @view_module, as: :liete)
   literature_dashboard("/literature")
 end
 
