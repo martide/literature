@@ -58,7 +58,7 @@ defmodule Literature.Helpers do
 
   # Image Routing Helpers
   def literature_image_url(schema, field, version \\ :original),
-    do: Literature.Uploaders.url({Map.get(schema, field), schema}, version, signed: true)
+    do: Literature.Uploaders.url({Map.get(schema, field), schema}, version)
 
   # Uploaded Entries Helpers
   def build_uploaded_entries(socket, fields) do
