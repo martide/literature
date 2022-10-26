@@ -1,7 +1,6 @@
 defmodule Literature.Uploaders.Actions.Store do
   @moduledoc false
 
-  alias Literature.Config
   alias Literature.Uploaders.Actions.Store
   alias Literature.Uploaders.Processor
   alias Literature.Uploaders.Versioning
@@ -108,10 +107,10 @@ defmodule Literature.Uploaders.Actions.Store do
 
       {:ok, file} ->
         # Get image width to set in file name
-        %{width: width} = Mogrify.verbose(Mogrify.open(file.path))
+        %{width: width, height: height} = Mogrify.verbose(Mogrify.open(file.path))
+        width = (width < height && width) || height
 
-        if width < original_width do
-          width = div(width, Config.waffle_width_step()) * Config.waffle_width_step()
+        if width < original_width || version == :original do
           file_name = Versioning.resolve_file_name(definition, version, {file, scope}, width)
           file = %Waffle.File{file | file_name: file_name}
           result = definition.__storage.put(definition, version, {file, scope})
