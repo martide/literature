@@ -1,6 +1,8 @@
 defmodule Literature.PostLive do
   use Literature.Web, :live_view
 
+  import Literature.Cloudflare
+
   alias Literature.Post
   alias Literature.PostFormComponent
   alias Literature.TableComponent
@@ -80,7 +82,7 @@ defmodule Literature.PostLive do
     post = Literature.get_post!(id)
     {:ok, _} = Literature.delete_post(post)
 
-    Literature.update_cloudflare()
+    purge_cloudflare_files(socket, post.slug)
 
     socket =
       socket

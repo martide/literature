@@ -2,6 +2,7 @@ defmodule Literature.PostFormComponent do
   @moduledoc false
   use Literature.Web, :live_component
 
+  import Literature.Cloudflare
   import Literature.FormComponent
 
   @accept ~w(.jpg .jpeg .png)
@@ -106,7 +107,7 @@ defmodule Literature.PostFormComponent do
 
     case Literature.update_post(socket.assigns.post, post_params) do
       {:ok, post} ->
-        Literature.update_cloudflare(%{tags: [post.slug]})
+        purge_cloudflare_files(socket, post.slug)
 
         {:noreply,
          socket
