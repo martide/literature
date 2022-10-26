@@ -106,27 +106,31 @@ defmodule Literature.Uploaders.Actions.Store do
         {:ok, nil}
 
       {:ok, file} ->
-        # Get image width to set in file name
-        %{width: width, height: height} = Mogrify.verbose(Mogrify.open(file.path))
-        width = (width < height && width) || height
+        save_version(definition, version, {file, scope}, original_width)
+    end
+  end
 
-        if width < original_width || version == :original do
-          file_name = Versioning.resolve_file_name(definition, version, {file, scope}, width)
-          file = %Waffle.File{file | file_name: file_name}
-          result = definition.__storage.put(definition, version, {file, scope})
+  defp save_version(definition, version, {file, scope}, original_width) do
+    # Get image width to set in file name
+    %{width: width, height: height} = Mogrify.verbose(Mogrify.open(file.path))
+    width = (width < height && width) || height
 
-          case definition.transform(version, {file, scope}) do
-            :noaction ->
-              # We don't have to cleanup after `:noaction` transformations
-              # because final `cleanup!` will remove the original temporary file.
-              result
+    if width < original_width || version == :original do
+      file_name = Versioning.resolve_file_name(definition, version, {file, scope}, width)
+      file = %Waffle.File{file | file_name: file_name}
+      result = definition.__storage.put(definition, version, {file, scope})
 
-            _ ->
-              cleanup!(result, file)
-          end
-        else
-          {:ok, nil}
-        end
+      case definition.transform(version, {file, scope}) do
+        :noaction ->
+          # We don't have to cleanup after `:noaction` transformations
+          # because final `cleanup!` will remove the original temporary file.
+          result
+
+        _ ->
+          cleanup!(result, file)
+      end
+    else
+      {:ok, nil}
     end
   end
 
