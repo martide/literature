@@ -41,19 +41,23 @@ defmodule Literature.Uploaders.Actions.Store do
   end
 
   defp put_versions(definition, {file, scope}) do
+    %{width: original_width} = Mogrify.verbose(Mogrify.open(file.path))
+
     if definition.async do
       definition.__versions
       |> Enum.map(fn r -> async_process_version(definition, r, {file, scope}) end)
       |> Enum.map(fn task -> Task.await(task, version_timeout()) end)
       |> ensure_all_success
-      |> Enum.map(fn {v, r} -> async_put_version(definition, v, {r, scope}) end)
+      |> Enum.map(fn {v, r} -> async_put_version(definition, v, {r, scope}, original_width) end)
       |> Enum.map(fn task -> Task.await(task, version_timeout()) end)
       |> handle_responses(file.file_name)
     else
       definition.__versions
       |> Enum.map(fn version -> process_version(definition, version, {file, scope}) end)
       |> ensure_all_success
-      |> Enum.map(fn {version, result} -> put_version(definition, version, {result, scope}) end)
+      |> Enum.map(fn {version, result} ->
+        put_version(definition, version, {result, scope}, original_width)
+      end)
       |> handle_responses(file.file_name)
     end
   end
@@ -83,9 +87,9 @@ defmodule Literature.Uploaders.Actions.Store do
     end)
   end
 
-  defp async_put_version(definition, version, {result, scope}) do
+  defp async_put_version(definition, version, {result, scope}, original_width) do
     Task.async(fn ->
-      put_version(definition, version, {result, scope})
+      put_version(definition, version, {result, scope}, original_width)
     end)
   end
 
@@ -94,7 +98,7 @@ defmodule Literature.Uploaders.Actions.Store do
     |> Enum.map(&{version, &1})
   end
 
-  defp put_version(definition, version, {result, scope}) do
+  defp put_version(definition, version, {result, scope}, original_width) do
     case result do
       {:error, error} ->
         {:error, error}
@@ -105,19 +109,24 @@ defmodule Literature.Uploaders.Actions.Store do
       {:ok, file} ->
         # Get image width to set in file name
         %{width: width} = Mogrify.verbose(Mogrify.open(file.path))
-        width = div(width, Config.waffle_width_step()) * Config.waffle_width_step()
-        file_name = Versioning.resolve_file_name(definition, version, {file, scope}, width)
-        file = %Waffle.File{file | file_name: file_name}
-        result = definition.__storage.put(definition, version, {file, scope})
 
-        case definition.transform(version, {file, scope}) do
-          :noaction ->
-            # We don't have to cleanup after `:noaction` transformations
-            # because final `cleanup!` will remove the original temporary file.
-            result
+        if width < original_width do
+          width = div(width, Config.waffle_width_step()) * Config.waffle_width_step()
+          file_name = Versioning.resolve_file_name(definition, version, {file, scope}, width)
+          file = %Waffle.File{file | file_name: file_name}
+          result = definition.__storage.put(definition, version, {file, scope})
 
-          _ ->
-            cleanup!(result, file)
+          case definition.transform(version, {file, scope}) do
+            :noaction ->
+              # We don't have to cleanup after `:noaction` transformations
+              # because final `cleanup!` will remove the original temporary file.
+              result
+
+            _ ->
+              cleanup!(result, file)
+          end
+        else
+          {:ok, nil}
         end
     end
   end
