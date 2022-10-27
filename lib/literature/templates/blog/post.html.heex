@@ -14,7 +14,7 @@
         <% end %>
       </div>
       <div class="h-[32rem] overflow-hidden relative my-14">
-        <%= img_tag literature_image_url(@post, :feature_image), alt: @post.feature_image_alt, class: "object-cover object-center absolute w-full" %>
+        <.responsive_img_tag post={@post} field={:feature_image} alt={@post.feature_image_alt} />
       </div>
     </div>
     <div class="max-w-5xl mx-auto prose prose-sm sm:prose">

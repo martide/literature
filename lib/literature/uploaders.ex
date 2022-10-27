@@ -41,17 +41,17 @@ defmodule Literature.Uploaders do
     {:convert, "-format avif", :avif}
   end
 
-  def storage_dir(:original, {_, scope}),
+  def storage_dir(_, {_, scope}),
     do: "literature/#{scope.id}"
 
-  def storage_dir(version, {_, scope}),
-    do: "literature/#{scope.id}/#{version}"
-
-  def filename(version, {file, _}, size) do
+  def filename(:original, {file, _}, _) do
     file_name = Path.basename(file.file_name, Path.extname(file.file_name))
+    Slugy.slugify(file_name)
+  end
 
-    if String.ends_with?(file_name, to_string(version)) || version == :original,
-      do: file_name,
-      else: Slugy.slugify("#{file_name} #{size}w")
+  def filename(_version, {file, _}, size) do
+    file_name = Path.basename(file.file_name, Path.extname(file.file_name))
+    suffix = String.split(file_name, "w") |> List.last()
+    Slugy.slugify(String.replace_suffix(file_name, suffix, to_string(size)))
   end
 end

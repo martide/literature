@@ -40,6 +40,9 @@ defmodule Literature.Config do
   def waffle_storage,
     do: Application.get_env(:literature, :storage)
 
+  def waffle_width_step,
+    do: Application.get_env(:literature, :width_step, 100)
+
   # Sitemap Config
 
   def sitemap_changefreq, do: sitemap_config()[:changefreq]

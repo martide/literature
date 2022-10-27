@@ -1,6 +1,7 @@
 defmodule Literature.Uploaders.Processor do
   @moduledoc false
 
+  alias Literature.Config
   alias Waffle.Transformations.Convert
 
   def process(definition, version, {file, scope}) do
@@ -30,7 +31,7 @@ defmodule Literature.Uploaders.Processor do
       |> Mogrify.open()
       |> Mogrify.verbose()
 
-    Range.new(100, width, 100)
-    |> Enum.map(&"-resize #{&1}x#{&1}^ #{conversion}")
+    Range.new(100, width, Config.waffle_width_step())
+    |> Enum.map(&"-resize #{&1} #{conversion}")
   end
 end

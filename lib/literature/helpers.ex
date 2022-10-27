@@ -57,8 +57,17 @@ defmodule Literature.Helpers do
   end
 
   # Image Routing Helpers
-  def literature_image_url(schema, field, version \\ :original),
-    do: Literature.Uploaders.url({Map.get(schema, field), schema}, version, signed: true)
+  def literature_image_url(schema, field, version \\ :original) do
+    case Literature.Uploaders.url({Map.get(schema, field), schema}, version) do
+      url when is_binary(url) ->
+        url
+        |> String.split("?")
+        |> hd()
+
+      url ->
+        url
+    end
+  end
 
   # Uploaded Entries Helpers
   def build_uploaded_entries(socket, fields) do
