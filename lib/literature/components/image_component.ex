@@ -48,7 +48,7 @@ defmodule Literature.ImageComponent do
   end
 
   defp load_srcset(version, url) when version in ~w(jpg webp)a do
-    url = String.replace(url, "\"", "") |> String.replace("jpeg", to_string(version))
+    url = String.replace(url, "\"", "") |> String.replace(~r/(jpeg|jpg|png)$/, to_string(version))
     width = get_original_width(%{file_name: url})
 
     Range.new(100, width, Config.waffle_width_step())
