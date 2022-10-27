@@ -112,8 +112,7 @@ defmodule Literature.Uploaders.Actions.Store do
 
   defp save_version(definition, version, {file, scope}, original_width) do
     # Get image width to set in file name
-    %{width: width, height: height} = Mogrify.verbose(Mogrify.open(file.path))
-    width = (width < height && width) || height
+    %{width: width} = Mogrify.verbose(Mogrify.open(file.path))
 
     if width < original_width || version == :original do
       file_name = Versioning.resolve_file_name(definition, version, {file, scope}, width)
