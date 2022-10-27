@@ -41,11 +41,8 @@ defmodule Literature.Uploaders do
     {:convert, "-format avif", :avif}
   end
 
-  def storage_dir(:original, {_, scope}),
+  def storage_dir(_, {_, scope}),
     do: "literature/#{scope.id}"
-
-  def storage_dir(version, {_, scope}),
-    do: "literature/#{scope.id}/#{version}"
 
   def filename(:original, {file, _}, _) do
     file_name = Path.basename(file.file_name, Path.extname(file.file_name))
