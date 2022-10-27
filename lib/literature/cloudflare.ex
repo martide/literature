@@ -10,7 +10,7 @@ defmodule Literature.Cloudflare do
   """
   def purge_cloudflare_files(socket, slug) do
     if Config.cloudflare_config() do
-      "#{Config.cloudflare_api_host()}/zones/#{Config.cloudflare_identifier()}"
+      "#{Config.cloudflare_api_host()}/zones/#{Config.cloudflare_identifier()}/purge_cache"
       |> HTTPoison.post(build_json(socket, slug), [
         {"X-Auth-Email", Config.cloudflare_email()},
         {"X-Auth-Key", Config.cloudflare_api_key()},
