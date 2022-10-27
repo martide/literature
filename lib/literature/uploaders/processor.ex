@@ -32,6 +32,6 @@ defmodule Literature.Uploaders.Processor do
       |> Mogrify.verbose()
 
     Range.new(100, width, Config.waffle_width_step())
-    |> Enum.map(&"-resize #{&1}x#{&1}> #{conversion}")
+    |> Enum.map(&"-resize #{&1} #{conversion}")
   end
 end
