@@ -3,6 +3,7 @@ defmodule Literature.PostFormComponent do
   use Literature.Web, :live_component
 
   import Literature.FormComponent
+  import Literature.ImageComponent
 
   @accept ~w(.jpg .jpeg .png)
 
@@ -101,8 +102,11 @@ defmodule Literature.PostFormComponent do
   end
 
   defp save_post(socket, :edit_post, post_params) do
-    images = build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a)
-    post_params = Map.merge(post_params, images)
+    post_params =
+      post_params
+      |> Map.merge(build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a))
+      |> build_images()
+      |> build_html()
 
     case Literature.update_post(socket.assigns.post, post_params) do
       {:ok, _post} ->
@@ -121,6 +125,8 @@ defmodule Literature.PostFormComponent do
       post_params
       |> put_publication_id(socket)
       |> Map.merge(build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a))
+      |> build_images()
+      |> build_html()
 
     case Literature.create_post(post_params) do
       {:ok, _post} ->
@@ -154,4 +160,9 @@ defmodule Literature.PostFormComponent do
 
   defp put_validation(changeset, :new_post), do: changeset
   defp put_validation(changeset, :edit_post), do: Map.put(changeset, :action, :validate)
+
+  defp build_html(%{"html" => html} = params) do
+    html = Enum.map(html, &parse_image_tag/1)
+    %{params | "html" => html}
+  end
 end
