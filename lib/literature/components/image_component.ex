@@ -30,7 +30,7 @@ defmodule Literature.ImageComponent do
       <picture>
         <source srcset="#{load_srcset(:jpg, find_img_attribute(tag, "src"))}" />
         <source srcset="#{load_srcset(:webp, find_img_attribute(tag, "src"))}" />
-        <img src=#{find_img_attribute(tag, "src")} alt=#{find_img_attribute(tag, "alt")} />
+        <img src="#{find_img_attribute(tag, "src")}" alt="#{find_img_attribute(tag, "alt")}" width="#{get_img_size(tag)}" height="#{get_img_size(tag)}" />
       </picture>
       """
     else
@@ -72,9 +72,18 @@ defmodule Literature.ImageComponent do
 
   defp find_img_attribute(tag, attr) do
     tag
+    |> String.replace("\"", "")
     |> String.split(" ")
     |> Enum.find(&(&1 =~ attr))
     |> String.split("#{attr}=")
+    |> List.last()
+  end
+
+  defp get_img_size(tag) do
+    tag
+    |> find_img_attribute("src")
+    |> String.replace(~r/\.(jpeg|jpg|png)$/, "")
+    |> String.split("w")
     |> List.last()
   end
 
