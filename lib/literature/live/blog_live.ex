@@ -78,6 +78,7 @@ defmodule Literature.BlogLive do
     path_info = String.split(URI.parse(url).path, "/") |> Enum.reject(&(&1 == ""))
 
     socket
+    |> assign(:current_url, url)
     |> assign(:path_info, path_info)
     |> apply_action(socket.assigns.live_action, socket.assigns.publication_slug)
     |> then(&{:noreply, &1})
