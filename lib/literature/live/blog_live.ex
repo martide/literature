@@ -149,7 +149,12 @@ defmodule Literature.BlogLive do
     do: Map.put_new(post, :description, post[:excerpt])
 
   defp convert_image_to_url(author_or_tag_or_post) do
+    image =
+      literature_image_url(author_or_tag_or_post, :feature_image) ||
+        literature_image_url(author_or_tag_or_post, :profile_image)
+
     author_or_tag_or_post
+    |> Map.put(:image, image)
     |> Map.put(:og_image, literature_image_url(author_or_tag_or_post, :og_image))
     |> Map.put(:twitter_image, literature_image_url(author_or_tag_or_post, :twitter_image))
   end
