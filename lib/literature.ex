@@ -144,7 +144,7 @@ defmodule Literature do
     Post
     |> search(:title, attrs)
     |> search(:slug, attrs)
-    |> sort_by(attrs)
+    |> sort_by(attrs, {:desc, :published_at})
     |> where_preload(attrs)
     |> where_status(attrs)
     |> where_publication(attrs)
