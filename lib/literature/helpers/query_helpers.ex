@@ -22,8 +22,8 @@ defmodule Literature.QueryHelpers do
     Enum.map(list, &{&1.name, &1.id})
   end
 
-  def sort_by(query, attrs) do
-    order_by(query, ^sort(attrs))
+  def sort_by(query, attrs, default_sort \\ {:asc, :name}) do
+    order_by(query, ^sort(attrs, default_sort))
   end
 
   def where_preload(query, %{"preload" => preloads}) do
@@ -72,10 +72,10 @@ defmodule Literature.QueryHelpers do
 
   ### Private Methods
 
-  defp sort(%{"sort_field" => field, "sort_direction" => direction})
+  defp sort(%{"sort_field" => field, "sort_direction" => direction}, _)
        when direction in ~w(asc desc) do
     {String.to_atom(direction), String.to_existing_atom(field)}
   end
 
-  defp sort(_), do: {:asc, :id}
+  defp sort(_, default_sort), do: default_sort
 end
