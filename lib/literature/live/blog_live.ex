@@ -135,6 +135,7 @@ defmodule Literature.BlogLive do
     struct
     |> Map.from_struct()
     |> convert_name_to_title()
+    |> convert_excerpt_to_description()
     |> convert_image_to_url()
     |> atomize_keys_to_string()
     |> then(&assign(socket, :meta_tags, &1))
@@ -142,6 +143,9 @@ defmodule Literature.BlogLive do
 
   defp convert_name_to_title(author_or_tag),
     do: Map.put_new(author_or_tag, :title, author_or_tag[:name])
+
+  defp convert_excerpt_to_description(post),
+    do: Map.put_new(post, :description, post[:excerpt])
 
   defp convert_image_to_url(author_or_tag_or_post) do
     author_or_tag_or_post
