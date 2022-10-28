@@ -27,8 +27,11 @@ defmodule Literature.MetaTagHelpers do
         content: get_tag_value(tags, "description", "meta_description"),
         name: "description"
       ),
-      tag(:meta, content: get_tag_value(tags, "meta_keywords", "meta_keywords"), name: "keywords")
+      if meta_keywords = get_tag_value(tags, "meta_keywords", "meta_keywords") do
+        tag(:meta, content: meta_keywords, name: "keywords")
+      end
     ]
+    |> Enum.reject(&is_nil/1)
   end
 
   defp render_tag_og(tags) do
