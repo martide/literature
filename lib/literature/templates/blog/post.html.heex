@@ -2,15 +2,15 @@
   <div class="my-10">
     <div class="text-center max-w-5xl mx-auto">
       <h2 class="text-3xl font-extrabold mb-5"><%= @post.title %></h2>
-      <div class="flex items-center justify-center text-xs font-bold text-gray-400 uppercase tracking-wider space-x-1 mb-8">
+      <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-8">
         <span><%= date_format(@post.published_at) %></span>
         <span>·</span>
         <span><%= reading_time(@post.html) %></span>
         <span>·</span>
-        <%= for tag <- @post.tags do %>     
-          <span class="text-primary-500">
-            <%= tag.name %>
-          </span>
+        <%= for {tag, index} <- Enum.with_index(@post.tags) do %>     
+          <%= link to: literature_path(@socket, :show, tag.slug), class: "text-primary-500 hover:text-primary-700 uppercase text-xs font-semibold transition duration-300 ease-in-out" do %>
+            <%= tag.name %><%= if index < length(@post.tags) - 1, do: ", ", else: "" %>
+          <% end %>
         <% end %>
       </div>
       <div class="h-[32rem] overflow-hidden relative my-14">
