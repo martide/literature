@@ -93,12 +93,22 @@ defmodule Literature.BlogLive do
     |> assign(:posts, list_posts(socket))
   end
 
-  defp apply_action(socket, :tags, _params) do
-    assign(socket, :tags, list_tags(socket))
+  defp apply_action(socket, :tags, slug) do
+    publication = Literature.get_publication!(slug: slug)
+    meta_tags = get_meta_tags_from_view_module(socket, :tags, publication)
+
+    socket
+    |> assign_meta_tags(meta_tags)
+    |> assign(:tags, list_tags(socket))
   end
 
-  defp apply_action(socket, :authors, _params) do
-    assign(socket, :authors, list_authors(socket))
+  defp apply_action(socket, :authors, slug) do
+    publication = Literature.get_publication!(slug: slug)
+    meta_tags = get_meta_tags_from_view_module(socket, :authors, publication)
+
+    socket
+    |> assign_meta_tags(meta_tags)
+    |> assign(:authors, list_authors(socket))
   end
 
   defp apply_action(socket, _, _), do: socket
@@ -128,19 +138,24 @@ defmodule Literature.BlogLive do
 
   defp assign_to_socket(socket, name, struct) do
     socket
-    |> assign(name, Map.from_struct(struct))
+    |> assign(name, struct_to_map(struct))
     |> assign_meta_tags(struct)
   end
 
   defp assign_meta_tags(socket, struct) do
     struct
-    |> Map.from_struct()
+    |> struct_to_map()
     |> convert_name_to_title()
     |> convert_excerpt_to_description()
     |> convert_image_to_url()
     |> atomize_keys_to_string()
     |> then(&assign(socket, :meta_tags, &1))
   end
+
+  defp struct_to_map(struct) when is_struct(struct),
+    do: Map.from_struct(struct)
+
+  defp struct_to_map(map), do: map
 
   defp convert_name_to_title(author_or_tag),
     do: Map.put_new(author_or_tag, :title, author_or_tag[:name])
@@ -157,5 +172,11 @@ defmodule Literature.BlogLive do
     |> Map.put(:image, image)
     |> Map.put(:og_image, literature_image_url(author_or_tag_or_post, :og_image))
     |> Map.put(:twitter_image, literature_image_url(author_or_tag_or_post, :twitter_image))
+  end
+
+  defp get_meta_tags_from_view_module(socket, action, publication) do
+    socket.assigns.view_module.meta_tags(action, publication) || %{}
+  rescue
+    _ -> %{}
   end
 end
