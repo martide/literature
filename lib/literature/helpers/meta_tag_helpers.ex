@@ -11,11 +11,11 @@ defmodule Literature.MetaTagHelpers do
   @doc """
   Render default meta tags
   """
-  def render_all_tags(tags) do
+  def render_all_tags(tags, current_url) do
     [
       render_tag_default(tags),
-      render_tag_og(tags),
-      render_tag_twitter(tags)
+      render_tag_og(tags, current_url),
+      render_tag_twitter(tags, current_url)
     ]
   end
 
@@ -33,11 +33,11 @@ defmodule Literature.MetaTagHelpers do
     |> Enum.reject(&is_nil/1)
   end
 
-  defp render_tag_og(tags) do
+  defp render_tag_og(tags, current_url) do
     [
       tag(:meta, content: get_tag_value(tags, "og_type", "og_type"), property: "og:type"),
       tag(:meta, content: get_tag_value(tags, "og_locale", "og_locale"), property: "og:locale"),
-      tag(:meta, content: get_tag_value(tags, "url", "og_url"), property: "og:url"),
+      tag(:meta, content: current_url, property: "og:url"),
       tag(:meta, content: get_tag_value(tags, "title", "og_title"), property: "og:title"),
       tag(:meta,
         content: get_tag_value(tags, "description", "og_description"),
@@ -47,13 +47,13 @@ defmodule Literature.MetaTagHelpers do
     ]
   end
 
-  defp render_tag_twitter(tags) do
+  defp render_tag_twitter(tags, current_url) do
     [
       tag(:meta,
         content: get_tag_value(tags, "twitter_card", "twitter_card"),
         name: "twitter:card"
       ),
-      tag(:meta, content: get_tag_value(tags, "url", "twitter_url"), name: "twitter:url"),
+      tag(:meta, content: current_url, name: "twitter:url"),
       tag(:meta,
         content: get_tag_value(tags, "title", "twitter_title"),
         name: "twitter:title"
