@@ -153,7 +153,7 @@ defmodule Literature.BlogLive do
   end
 
   defp struct_to_map(struct) when is_struct(struct),
-    do: Map.from_struct()
+    do: Map.from_struct(struct)
 
   defp struct_to_map(map), do: map
 
