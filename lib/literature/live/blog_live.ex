@@ -6,7 +6,7 @@ defmodule Literature.BlogLive do
 
   alias Literature.{Author, Post, Repo, Tag}
 
-  @layout {Literature.LayoutView, "live.html"}
+  @layout {Literature.LayoutView, :live}
 
   @impl Phoenix.LiveView
   def mount(%{"slug" => slug} = params, session, socket) do
