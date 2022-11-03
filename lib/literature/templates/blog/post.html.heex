@@ -230,11 +230,11 @@
         <p class="uppercase font-semibold mb-8 text-sm tracking-wider">You might also like...</p>
         <div class="grid grid-cols-3 gap-5 font-semibold">
           <%= for similar_post <- @post.similar_posts do %>
-            <div class="space-y-4">
+            <%= link to: literature_path(@socket, :show, similar_post.slug), class: "space-y-4" do %>
               <%= img_tag literature_image_url(similar_post, :feature_image), alt: similar_post.title %>
               <p class="capitalize tracking-wide"><%= similar_post.title %></p>
               <p class="text-xs uppercase text-gray-500"><%= date_format(similar_post.published_at) %></p>
-            </div>
+            <% end %>
           <% end %>
         </div>
       </div>
