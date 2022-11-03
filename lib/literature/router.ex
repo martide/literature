@@ -169,8 +169,14 @@ defmodule Literature.Router do
           end
         end
 
-        defp cdn_cache_control(conn, _),
-          do: put_resp_header(conn, "cloudflare-cdn-cache-control", "max-age=#{Config.ttl()}")
+        defp cdn_cache_control(conn, _) do
+          conn
+          |> put_resp_header(
+            "cache-control",
+            "public, stale-if-error=90, stale-while-revalidate=30, max-age=30"
+          )
+          |> put_resp_header("cloudflare-cdn-cache-control", "max-age=#{Config.ttl()}")
+        end
       end
     end
   end
