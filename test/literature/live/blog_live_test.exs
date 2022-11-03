@@ -16,7 +16,8 @@ defmodule Literature.BlogLiveTest do
       post_fixture(
         publication_id: publication.id,
         authors_ids: [author.id],
-        tags_ids: [tag.id]
+        tags_ids: [tag.id],
+        html: ["<p>content</p>"]
       )
 
     %{publication: publication, author: author, tag: tag, post: post}
