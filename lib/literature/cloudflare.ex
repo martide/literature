@@ -2,6 +2,7 @@ defmodule Literature.Cloudflare do
   @moduledoc """
     Literature Cloudflare
   """
+  require Logger
 
   alias Literature.Config
 
@@ -16,6 +17,10 @@ defmodule Literature.Cloudflare do
         {"X-Auth-Key", Config.cloudflare_api_key()},
         {"Content-Type", "application/json"}
       ])
+      |> case do
+        {:ok, response} -> Logger.info(response)
+        {:error, reason} -> Logger.error(reason)
+      end
     else
       :ok
     end
