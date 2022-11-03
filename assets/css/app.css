@@ -19,3 +19,74 @@ ul.pagination .page-item a {
 ul.pagination .page-item.active a {
   @apply text-primary-600 font-medium bg-primary-50 rounded-full
 }
+
+.share {
+  display: flex;
+  align-items: center;
+  margin-top: 30px;
+  line-height: 1;
+}
+
+.share-item {
+  width: 28px;
+  height: 28px;
+  color: #fff;
+  font-size: 16px;
+  line-height: 28px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.share-item + .share-item {
+  margin-left: 8px;
+}
+
+.share-facebook {
+  background-color: #3b5998;
+}
+
+.share-twitter {
+  background-color: #1da1f2;
+}
+
+.share-pinterest {
+  background-color: #bd081c;
+}
+
+.share-linkedin {
+  background-color: #0077b5;
+}
+
+.share-reddit {
+  background-color: #ff4500;
+}
+
+.share-tumblr {
+  background-color: #35465c;
+}
+
+.share-vk {
+  background-color: #45668e;
+}
+
+.share-pocket {
+  background-color: #ef4056;
+}
+
+.share-telegram {
+  background-color: #08c;
+}
+
+.u-hover-item {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.u-hover-wrapper:hover .u-hover-item {
+  opacity: 0.7;
+}
+
+.u-hover-wrapper:hover .u-hover-item:hover {
+  opacity: 1;
+}
