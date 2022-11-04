@@ -3,6 +3,7 @@ defmodule Literature.Config do
 
   @default_30_days 60 * 60 * 24 * 30
   @default_cloudflare_api_host "https://api.cloudflare.com/client/v4"
+  @default_locales ~w(en)
 
   def logo,
     do: Application.get_env(:literature, :image_path)
@@ -25,6 +26,7 @@ defmodule Literature.Config do
   def cloudflare_email, do: cloudflare_config()[:email]
   def cloudflare_identifier, do: cloudflare_config()[:identifier]
   def cloudflare_api_key, do: cloudflare_config()[:api_key]
+  def cloudflare_locales, do: cloudflare_config()[:locales] || @default_locales
 
   def cloudflare_config,
     do: Application.get_env(:literature, :cloudflare)

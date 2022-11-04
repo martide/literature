@@ -28,12 +28,12 @@ defmodule Literature.Cloudflare do
 
   defp build_json(socket, slug) do
     Map.new()
-    |> Map.put(:files, [build_url(socket, slug)])
+    |> Map.put(:files, build_url(socket, slug))
     |> Jason.encode!()
   end
 
   defp build_url(%{assigns: assigns, endpoint: endpoint, router: router}, slug) do
-    publication_slug = assigns[:slug] || assigns.params["publicatin_slug"]
+    publication_slug = assigns[:slug] || assigns.params["publication_slug"]
 
     router.__routes__()
     |> Enum.reject(&(&1.helper in ~w(literature_dashboard literature_assets)))
@@ -41,6 +41,14 @@ defmodule Literature.Cloudflare do
     |> build_url(endpoint, slug)
   end
 
-  defp build_url(%{path: path}, endpoint, slug),
-    do: "#{endpoint.url()}#{String.replace(path, ":slug", slug)}"
+  defp build_url(%{path: path}, endpoint, slug) do
+    for locale <- Config.cloudflare_locales() do
+      path =
+        path
+        |> String.replace(":locale", locale)
+        |> String.replace(":slug", slug)
+
+      "#{endpoint.url()}#{path}"
+    end
+  end
 end
