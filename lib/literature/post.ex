@@ -29,6 +29,9 @@ defmodule Literature.Post do
     field(:authors_ids, {:array, :string}, virtual: true)
     field(:tags_ids, {:array, :string}, virtual: true)
     field(:upload_image, Uploaders.Type, virtual: true)
+    field(:prev_post, :map, virtual: true)
+    field(:next_post, :map, virtual: true)
+    field(:similar_posts, {:array, :map}, virtual: true)
 
     belongs_to(:publication, Publication)
 
@@ -90,6 +93,37 @@ defmodule Literature.Post do
   end
 
   def resolve(post), do: post
+
+  def resolve_prev_and_next_post(post, %{published_posts: published_posts}) do
+    post_index = Enum.find_index(published_posts, &(&1.id == post.id))
+
+    post
+    |> build_post(:prev, published_posts, post_index)
+    |> build_post(:next, published_posts, post_index)
+  end
+
+  def resolve_similar_posts(%{tags_ids: tags_ids} = post, %{published_posts: published_posts}) do
+    similar_posts =
+      published_posts
+      |> Stream.reject(&(&1.id == post.id))
+      |> Stream.map(&resolve/1)
+      |> Stream.filter(&List.myers_difference(&1.tags_ids, tags_ids)[:eq])
+      |> Stream.take(3)
+      |> Enum.to_list()
+
+    %{post | similar_posts: similar_posts}
+  end
+
+  defp build_post(post, :prev, _, 0), do: post
+
+  defp build_post(post, :prev, published_posts, index),
+    do: %{post | prev_post: Enum.fetch!(published_posts, index - 1)}
+
+  defp build_post(post, :next, published_posts, index) do
+    %{post | next_post: Enum.fetch!(published_posts, index + 1)}
+  rescue
+    _ -> post
+  end
 
   defp get_status(%{published_at: published_at}) do
     datetime = Timex.now() |> Timex.local()
