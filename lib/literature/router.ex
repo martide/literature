@@ -140,8 +140,6 @@ defmodule Literature.Router do
 
         pipeline pipename_browser do
           plug(:accepts, ["html"])
-          plug(:fetch_session)
-          plug(:protect_from_forgery)
         end
 
         pipeline pipename_cdn do
