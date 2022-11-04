@@ -23,9 +23,8 @@ defmodule Literature.Config do
   # Cloudflare Config
 
   def cloudflare_api_host, do: cloudflare_config()[:api_host] || @default_cloudflare_api_host
-  def cloudflare_email, do: cloudflare_config()[:email]
   def cloudflare_identifier, do: cloudflare_config()[:identifier]
-  def cloudflare_api_key, do: cloudflare_config()[:api_key]
+  def cloudflare_token, do: cloudflare_config()[:token]
   def cloudflare_locales, do: cloudflare_config()[:locales] || @default_locales
 
   def cloudflare_config,

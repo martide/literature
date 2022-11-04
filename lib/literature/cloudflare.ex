@@ -13,8 +13,7 @@ defmodule Literature.Cloudflare do
     if Config.cloudflare_config() do
       "#{Config.cloudflare_api_host()}/zones/#{Config.cloudflare_identifier()}/purge_cache"
       |> HTTPoison.post(build_json(socket, slug), [
-        {"X-Auth-Email", Config.cloudflare_email()},
-        {"X-Auth-Key", Config.cloudflare_api_key()},
+        {"Authorization", "Bearer #{Config.cloudflare_token()}"},
         {"Content-Type", "application/json"}
       ])
       |> case do
