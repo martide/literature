@@ -3,6 +3,8 @@ defmodule Literature.Router do
   Provides LiveView routing for literature.
   """
 
+  alias Literature.Config
+
   @doc """
   Defines a Literature dashboard route.
 
@@ -133,16 +135,19 @@ defmodule Literature.Router do
       scope path, alias: false, as: false do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
 
-        pipename = String.to_atom("#{session_name}_browser")
+        pipename_browser = String.to_atom("#{session_name}_browser")
+        pipename_cdn = String.to_atom("#{session_name}_cdn")
 
-        pipeline pipename do
+        pipeline pipename_browser do
           plug(:accepts, ["html"])
-          plug(:fetch_session)
-          plug(:protect_from_forgery)
+        end
+
+        pipeline pipename_cdn do
+          plug(:cdn_cache_control)
         end
 
         scope path: "/" do
-          pipe_through(pipename)
+          pipe_through(pipename_browser)
 
           {session_name, session_opts, route_opts} =
             Literature.Router.__options__(opts, session_name, :root)
@@ -153,11 +158,22 @@ defmodule Literature.Router do
               live("/", BlogLive, :index, route_opts)
               live("/tags", BlogLive, :tags, route_opts)
               live("/authors", BlogLive, :authors, route_opts)
+
+              pipe_through(pipename_cdn)
               live("/:slug", BlogLive, :show, route_opts)
             end
 
             get("/posts/rss.xml", RSSController, :rss, as: session_name)
           end
+        end
+
+        defp cdn_cache_control(conn, _) do
+          conn
+          |> put_resp_header(
+            "cache-control",
+            "public, stale-if-error=90, stale-while-revalidate=30, max-age=30"
+          )
+          |> put_resp_header("cloudflare-cdn-cache-control", "max-age=#{Config.ttl()}")
         end
       end
     end

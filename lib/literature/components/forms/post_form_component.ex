@@ -2,6 +2,7 @@ defmodule Literature.PostFormComponent do
   @moduledoc false
   use Literature.Web, :live_component
 
+  import Literature.Cloudflare
   import Literature.FormComponent
   import Literature.ImageComponent
 
@@ -109,7 +110,9 @@ defmodule Literature.PostFormComponent do
       |> build_html()
 
     case Literature.update_post(socket.assigns.post, post_params) do
-      {:ok, _post} ->
+      {:ok, post} ->
+        purge_cloudflare_files(socket, post.slug)
+
         {:noreply,
          socket
          |> put_flash(:success, "Post updated successfully")
