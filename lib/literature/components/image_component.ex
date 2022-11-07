@@ -14,8 +14,8 @@ defmodule Literature.ImageComponent do
       |> assign_new(:classes, fn -> "object-cover object-center absolute w-full" end)
 
     ~H"""
-    <% [width, height] = get_img_size(@post, @field) %>
     <%= if file = Map.get(@post, @field) do %>
+      <% [width, height] = get_img_size(@post, @field) %>
       <picture>
         <source srcset={load_srcset(file, literature_image_url(@post, @field, :jpg))} />
         <source srcset={load_srcset(file, literature_image_url(@post, @field, :webp))} />
