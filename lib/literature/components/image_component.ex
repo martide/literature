@@ -26,9 +26,9 @@ defmodule Literature.ImageComponent do
   end
 
   def parse_image_tag(tag) do
-    [width, height] = get_img_size(tag)
-
     if tag =~ "<img" do
+      [width, height] = get_img_size(tag)
+
       ~s"""
       <picture>
         <source srcset="#{load_srcset(:jpg, find_img_attribute(tag, "src"))}" />
