@@ -119,6 +119,8 @@ defmodule Literature.Router do
   defmacro literature(path, opts \\ []) do
     opts = Keyword.put(opts, :application_router, __CALLER__.module)
 
+    routes = Keyword.get(opts, :only, ~w(index tags authors show)a)
+
     session_name = Keyword.get(opts, :as, :literature)
 
     publication_slug =
@@ -155,12 +157,22 @@ defmodule Literature.Router do
           scope "/#{publication_slug}", Literature do
             live_session session_name, session_opts do
               # Blog routes
-              live("/", BlogLive, :index, route_opts)
-              live("/tags", BlogLive, :tags, route_opts)
-              live("/authors", BlogLive, :authors, route_opts)
+              if :index in routes do
+                live("/", BlogLive, :index, route_opts)
+              end
 
-              pipe_through(pipename_cdn)
-              live("/:slug", BlogLive, :show, route_opts)
+              if :tags in routes do
+                live("/tags", BlogLive, :tags, route_opts)
+              end
+
+              if :authors in routes do
+                live("/authors", BlogLive, :authors, route_opts)
+              end
+
+              if :show in routes do
+                pipe_through(pipename_cdn)
+                live("/:slug", BlogLive, :show, route_opts)
+              end
             end
 
             get("/posts/rss.xml", RSSController, :rss, as: session_name)
