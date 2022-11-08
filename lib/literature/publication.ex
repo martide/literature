@@ -22,6 +22,11 @@ defmodule Literature.Publication do
     has_many(:tags, Tag)
     has_many(:posts, Post)
 
+    has_many(:public_tags, Tag,
+      preload_order: [asc: :name],
+      where: [visibility: true]
+    )
+
     has_many(:published_posts, Post,
       preload_order: [desc: :published_at],
       where: [published_at: {:fragment, "?::date < current_date"}]
