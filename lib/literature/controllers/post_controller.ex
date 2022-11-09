@@ -43,6 +43,6 @@ defmodule Literature.PostController do
         "#{Path.basename(file.filename, Path.extname(file.filename))} w#{width}x#{height}"
       )
 
-    %{file | filename: "#{file_name}#{Path.extname(file.filename)}"}
+    %{file | filename: "#{file_name}#{Path.extname(file.filename) |> String.downcase()}"}
   end
 end

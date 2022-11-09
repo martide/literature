@@ -114,7 +114,7 @@ defmodule Literature.Post do
     %{post | similar_posts: similar_posts}
   end
 
-  defp build_post(post, :prev, _, 0), do: post
+  defp build_post(post, :prev, _, nil), do: post
 
   defp build_post(post, :prev, published_posts, index),
     do: %{post | prev_post: Enum.fetch!(published_posts, index - 1)}

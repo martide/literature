@@ -94,7 +94,7 @@ defmodule Literature.ImageComponent do
 
   defp get_width_and_height(url) do
     url
-    |> String.replace(~r/\.(jpeg|jpg|png)$/, "")
+    |> String.replace(~r/\.(jpeg|jpg|png|webp)$/, "")
     |> String.split("w")
     |> List.last()
     |> String.split("x")
@@ -108,6 +108,6 @@ defmodule Literature.ImageComponent do
         "#{Path.basename(file.filename, Path.extname(file.filename))} w#{width}x#{height}"
       )
 
-    {field, %{file | filename: "#{file_name}#{Path.extname(file.filename)}"}}
+    {field, %{file | filename: "#{file_name}#{Path.extname(file.filename) |> String.downcase()}"}}
   end
 end
