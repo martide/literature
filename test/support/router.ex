@@ -1,6 +1,6 @@
 defmodule Literature.Test.Router do
   use Phoenix.Router
-  import Literature.Router
+  use Literature.Router
 
   @view_module Literature.BlogView
 
@@ -11,7 +11,7 @@ end
 
 defmodule Literature.Test.DynamicPathRouter do
   use Phoenix.Router
-  import Literature.Router
+  use Literature.Router
 
   @view_module Literature.BlogView
 
