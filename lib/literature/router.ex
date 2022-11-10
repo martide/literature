@@ -5,6 +5,36 @@ defmodule Literature.Router do
 
   alias Literature.Config
 
+  defmacro __using__(_opts) do
+    quote do
+      import Literature.Router
+
+      pipeline :dashboard_browser do
+        plug(:accepts, ["html"])
+        plug(:fetch_session)
+        plug(:fetch_flash)
+        plug(:protect_from_forgery)
+      end
+
+      pipeline :blog_browser do
+        plug(:accepts, ["html"])
+      end
+
+      pipeline :cloudflare_cdn do
+        plug(:cdn_cache_control)
+      end
+
+      defp cdn_cache_control(conn, _) do
+        conn
+        |> put_resp_header(
+          "cache-control",
+          "public, stale-if-error=90, stale-while-revalidate=30, max-age=30"
+        )
+        |> put_resp_header("cloudflare-cdn-cache-control", "max-age=#{Config.ttl()}")
+      end
+    end
+  end
+
   @doc """
   Defines a Literature dashboard route.
 
@@ -35,17 +65,8 @@ defmodule Literature.Router do
       scope path, alias: false, as: false do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
 
-        pipename = String.to_atom("#{session_name}_browser")
-
-        pipeline pipename do
-          plug(:accepts, ["html"])
-          plug(:fetch_session)
-          plug(:fetch_flash)
-          plug(:protect_from_forgery)
-        end
-
         scope path: "/" do
-          pipe_through(pipename)
+          pipe_through(:dashboard_browser)
 
           {session_name, session_opts, route_opts} =
             Literature.Router.__options__(opts, session_name, :root_dashboard)
@@ -137,19 +158,8 @@ defmodule Literature.Router do
       scope path, alias: false, as: false do
         import Phoenix.LiveView.Router, only: [live: 4, live_session: 3]
 
-        pipename_browser = String.to_atom("#{session_name}_browser")
-        pipename_cdn = String.to_atom("#{session_name}_cdn")
-
-        pipeline pipename_browser do
-          plug(:accepts, ["html"])
-        end
-
-        pipeline pipename_cdn do
-          plug(:cdn_cache_control)
-        end
-
         scope path: "/" do
-          pipe_through(pipename_browser)
+          pipe_through(:blog_browser)
 
           {session_name, session_opts, route_opts} =
             Literature.Router.__options__(opts, session_name, :root)
@@ -170,22 +180,13 @@ defmodule Literature.Router do
               end
 
               if :show in routes do
-                pipe_through(pipename_cdn)
+                pipe_through(:cloudflare_cdn)
                 live("/:slug", BlogLive, :show, route_opts)
               end
             end
 
             get("/posts/rss.xml", RSSController, :rss, as: session_name)
           end
-        end
-
-        defp cdn_cache_control(conn, _) do
-          conn
-          |> put_resp_header(
-            "cache-control",
-            "public, stale-if-error=90, stale-while-revalidate=30, max-age=30"
-          )
-          |> put_resp_header("cloudflare-cdn-cache-control", "max-age=#{Config.ttl()}")
         end
       end
     end
