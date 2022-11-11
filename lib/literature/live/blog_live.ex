@@ -14,10 +14,10 @@ defmodule Literature.BlogLive do
     |> Enum.map(fn fun -> fun.(slug: slug, publication_slug: session["publication_slug"]) end)
     |> Enum.find(&is_struct/1)
     |> case do
-      %Post{} = post ->
+      %Post{status: "published"} = post ->
         assign_to_socket(socket, :post, build_post(post, session["publication_slug"]))
 
-      %Tag{} = tag ->
+      %Tag{visibility: true} = tag ->
         assign_to_socket(socket, :tag, preload_tag(tag))
 
       %Author{} = author ->
