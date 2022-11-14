@@ -80,7 +80,7 @@ defmodule Literature.DownloadHelpers do
     end
   end
 
-  alias HTTPoison.{AsyncHeaders, AsyncStatus, AsyncChunk, AsyncEnd}
+  alias HTTPoison.{AsyncChunk, AsyncEnd, AsyncHeaders, AsyncStatus}
 
   @wait_timeout 5000
 
