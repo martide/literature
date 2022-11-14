@@ -169,7 +169,6 @@ defmodule Literature.ApiController do
   defp parse_image(data, _, _), do: data
 
   defp parse_authors(%{"authors_names" => authors} = data) when is_list(authors) do
-    IO.inspect(authors)
     authors_ids = Enum.map(authors, &Literature.get_author!(name: &1).id)
     Map.put(data, "authors_ids", authors_ids)
   end

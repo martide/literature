@@ -1,5 +1,5 @@
 defmodule Literature.DownloadHelpers do
-  @doc """
+  @moduledoc """
 
   Returns:
 
