@@ -15,13 +15,13 @@ defmodule Literature.DownloadHelpers do
 
   ## Examples
 
-      iex> Literature.Download.from("http://speedtest.ftp.otenet.gr/files/test100k.db")
+      iex> Literature.DownloadHelpers.download_image("http://speedtest.ftp.otenet.gr/files/test100k.db")
       {:ok, "/absolute/path/to/test_100k.db"}
 
-      iex> Literature.Download.from("http://speedtest.ftp.otenet.gr/files/test100k.db", [max_file_size: 99 * 1000])
+      iex> Literature.DownloadHelpers.download_image("http://speedtest.ftp.otenet.gr/files/test100k.db", [max_file_size: 99 * 1000])
       {:error, :file_size_is_too_big}
 
-      iex> Literature.Download.from("http://speedtest.ftp.otenet.gr/files/test100k.db", [path: "/custom/absolute/file/path.db"])
+      iex> Literature.DownloadHelpers.download_image("http://speedtest.ftp.otenet.gr/files/test100k.db", [path: "/custom/absolute/file/path.db"])
       {:ok, "/custom/absolute/file/path.db"}
   """
 
