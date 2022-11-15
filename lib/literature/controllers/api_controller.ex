@@ -8,14 +8,14 @@ defmodule Literature.ApiController do
   def author(conn, params) do
     with {:ok, _} <- validate_params(params),
          params <- build_params(params),
-         {:ok, _} <- Literature.create_author(params) do
+         {:ok, author} <- Literature.create_author(params) do
       conn
       |> put_resp_content_type("application/json")
       |> send_resp(
         200,
         Jason.encode!(%{
           status: "success",
-          message: "Successfully created."
+          message: "#{author.name} successfully created"
         })
       )
     else
@@ -46,14 +46,14 @@ defmodule Literature.ApiController do
   def tag(conn, params) do
     with {:ok, _} <- validate_params(params),
          params <- build_params(params),
-         {:ok, _} <- Literature.create_tag(params) do
+         {:ok, tag} <- Literature.create_tag(params) do
       conn
       |> put_resp_content_type("application/json")
       |> send_resp(
         200,
         Jason.encode!(%{
           status: "success",
-          message: "Successfully created."
+          message: "#{tag.name} successfully created"
         })
       )
     else
@@ -84,14 +84,14 @@ defmodule Literature.ApiController do
   def post(conn, params) do
     with {:ok, _} <- validate_params(params),
          params <- build_params(params),
-         {:ok, _} <- Literature.create_post(params) do
+         {:ok, post} <- Literature.create_post(params) do
       conn
       |> put_resp_content_type("application/json")
       |> send_resp(
         200,
         Jason.encode!(%{
           status: "success",
-          message: "Successfully created."
+          message: "#{post.title} successfully created"
         })
       )
     else

@@ -38,7 +38,7 @@ defmodule Literature.ApiControllerTest do
         )
 
       assert json_response(conn, 200) == %{
-               "message" => "Successfully created.",
+               "message" => "#{@valid_attrs.name} successfully created",
                "status" => "success"
              }
     end
@@ -89,7 +89,7 @@ defmodule Literature.ApiControllerTest do
         )
 
       assert json_response(conn, 200) == %{
-               "message" => "Successfully created.",
+               "message" => "#{@valid_attrs.name} successfully created",
                "status" => "success"
              }
     end
@@ -139,7 +139,7 @@ defmodule Literature.ApiControllerTest do
         )
 
       assert json_response(conn, 200) == %{
-               "message" => "Successfully created.",
+               "message" => "#{@valid_attrs.title} successfully created",
                "status" => "success"
              }
     end
