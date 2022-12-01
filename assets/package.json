@@ -8,7 +8,7 @@
     "watch": "npm-run-all --parallel watch:*"
   },
   "devDependencies": {
-    "@editorjs/editorjs": "^2.25.0",
+    "@editorjs/editorjs": "^2.26.0",
     "@editorjs/header": "^2.7.0",
     "@editorjs/image": "^2.6.2",
     "@editorjs/list": "^1.7.0",
