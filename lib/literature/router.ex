@@ -185,7 +185,7 @@ defmodule Literature.Router do
               end
             end
 
-            get("/posts/rss.xml", RSSController, :rss, as: session_name)
+            get("/rss.xml", RSSController, :rss, as: session_name)
           end
         end
       end
