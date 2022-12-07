@@ -165,6 +165,8 @@ defmodule Literature.Router do
             Literature.Router.__options__(opts, session_name, :root)
 
           scope "/#{publication_slug}", Literature do
+            get("/rss.xml", RSSController, :rss, as: session_name)
+
             live_session session_name, session_opts do
               # Blog routes
               if :index in routes do
@@ -184,8 +186,6 @@ defmodule Literature.Router do
                 live("/:slug", BlogLive, :show, route_opts)
               end
             end
-
-            get("/posts/rss.xml", RSSController, :rss, as: session_name)
           end
         end
       end
