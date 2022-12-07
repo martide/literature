@@ -16,7 +16,7 @@ defmodule Literature.Sitemap do
       ]
     ]
 
-    list_sitemap_paths()
+    literature_sitemap_paths()
     |> Stream.map(fn path ->
       %URL{
         loc: Config.sitemap_url() <> path,
@@ -31,7 +31,7 @@ defmodule Literature.Sitemap do
     |> Stream.run()
   end
 
-  defp list_sitemap_paths do
+  def literature_sitemap_paths do
     Config.repo().transaction(fn ->
       Config.sitemap_router().__routes__()
       |> Stream.filter(&is_blog_path/1)
