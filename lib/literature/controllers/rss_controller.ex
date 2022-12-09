@@ -26,7 +26,7 @@ defmodule Literature.RSSController do
   end
 
   def build_feed(posts, base_url) do
-    Feed.new(base_url, DateTime.utc_now(), "Literature RSS")
+    Feed.new(base_url, DateTime.utc_now(), Config.feed_title())
     |> Feed.author(Config.feed_author(), email: Config.feed_email())
     |> Feed.link(base_url <> @default_path, rel: "self")
     |> Feed.entries(Enum.map(posts, &get_entry(base_url, &1)))
