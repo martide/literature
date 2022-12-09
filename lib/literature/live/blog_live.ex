@@ -74,26 +74,28 @@ defmodule Literature.BlogLive do
   end
 
   @impl Phoenix.LiveView
-  def handle_params(_params, url, socket) do
+  def handle_params(params, url, socket) do
     path_info = String.split(URI.parse(url).path, "/") |> Enum.reject(&(&1 == ""))
 
     socket
     |> assign(:current_url, url)
     |> assign(:path_info, path_info)
-    |> apply_action(socket.assigns.live_action, socket.assigns.publication_slug)
+    |> apply_action(socket.assigns.live_action, socket.assigns.publication_slug, params)
     |> then(&{:noreply, &1})
   end
 
-  defp apply_action(socket, :index, slug) do
+  defp apply_action(socket, :index, slug, params) do
     publication = Literature.get_publication!(slug: slug)
+    page = paginate_posts(socket, params)
 
     socket
     |> assign_meta_tags(publication)
     |> assign(:publication, publication)
-    |> assign(:posts, list_posts(socket))
+    |> assign(:page, page)
+    |> assign(:posts, page.entries)
   end
 
-  defp apply_action(socket, :tags, slug) do
+  defp apply_action(socket, :tags, slug, _params) do
     publication = Literature.get_publication!(slug: slug)
     meta_tags = get_meta_tags_from_view_module(socket, :tags, publication)
 
@@ -102,7 +104,7 @@ defmodule Literature.BlogLive do
     |> assign(:tags, list_tags(socket))
   end
 
-  defp apply_action(socket, :authors, slug) do
+  defp apply_action(socket, :authors, slug, _params) do
     publication = Literature.get_publication!(slug: slug)
     meta_tags = get_meta_tags_from_view_module(socket, :authors, publication)
 
@@ -111,11 +113,17 @@ defmodule Literature.BlogLive do
     |> assign(:authors, list_authors(socket))
   end
 
-  defp apply_action(socket, _, _), do: socket
+  defp apply_action(socket, _, _, _), do: socket
 
-  defp list_posts(%{assigns: %{publication_slug: slug}}) do
-    %{"publication_slug" => slug, "status" => "published"}
-    |> Literature.list_posts()
+  defp paginate_posts(%{assigns: %{publication_slug: slug}}, params) do
+    %{
+      "publication_slug" => slug,
+      "status" => "published",
+      "preload" => ~w(authors tags)a,
+      "page" => params["page"],
+      "page_size" => 5
+    }
+    |> Literature.paginate_posts()
   end
 
   defp list_tags(%{assigns: %{publication_slug: slug}}) do
