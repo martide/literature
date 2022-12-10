@@ -171,6 +171,7 @@ defmodule Literature.Router do
               # Blog routes
               if :index in routes do
                 live("/", BlogLive, :index, route_opts)
+                live("/page/:page", BlogLive, :index, route_opts)
               end
 
               if :tags in routes do
