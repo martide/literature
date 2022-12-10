@@ -121,7 +121,7 @@ defmodule Literature.BlogLive do
       "status" => "published",
       "preload" => ~w(authors tags)a,
       "page" => params["page"],
-      "page_size" => 5
+      "page_size" => 10
     }
     |> Literature.paginate_posts()
   end
