@@ -33,5 +33,4 @@ config :literature, :sitemap,
 config :literature, :rss,
   url: "https://www.example.com",
   author: "Literature Team",
-  email: "literature@example.com",
-  title: "Literature RSS"
+  email: "literature@example.com"
