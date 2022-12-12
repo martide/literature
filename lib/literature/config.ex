@@ -56,7 +56,6 @@ defmodule Literature.Config do
 
   # RSS Config
 
-  def feed_title, do: feed_config()[:title]
   def feed_author, do: feed_config()[:author]
   def feed_email, do: feed_config()[:email]
   def feed_url, do: feed_config()[:url]

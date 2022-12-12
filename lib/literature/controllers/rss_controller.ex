@@ -10,23 +10,24 @@ defmodule Literature.RSSController do
     base_path = String.replace(current_path(conn), @default_path, "")
     base_url = Config.feed_url() <> base_path
     publication_slug = String.split(base_path, "/") |> List.last()
+    publication = Literature.get_publication!(slug: publication_slug)
 
     conn
     |> put_resp_content_type("text/xml")
-    |> send_resp(200, render_feed(base_url, publication_slug))
+    |> send_resp(200, render_feed(base_url, publication))
   end
 
-  defp render_feed(base_url, publication_slug) do
+  defp render_feed(base_url, publication) do
     %{
       "status" => "published",
-      "publication_slug" => publication_slug
+      "publication_slug" => publication.slug
     }
     |> Literature.list_posts()
-    |> build_feed(base_url)
+    |> build_feed(publication, base_url)
   end
 
-  def build_feed(posts, base_url) do
-    Feed.new(base_url, DateTime.utc_now(), Config.feed_title())
+  def build_feed(posts, publication, base_url) do
+    Feed.new(base_url, DateTime.utc_now(), publication.name)
     |> Feed.author(Config.feed_author(), email: Config.feed_email())
     |> Feed.link(base_url <> @default_path, rel: "self")
     |> Feed.entries(Enum.map(posts, &get_entry(base_url, &1)))
