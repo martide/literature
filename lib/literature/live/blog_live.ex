@@ -59,7 +59,7 @@ defmodule Literature.BlogLive do
         |> Enum.find(fn {assign, _} -> is_map(assign) end)
         |> case do
           nil ->
-            raise Phoenix.Router.NoRouteError,
+            raise Literature.PageNotFound,
               conn: %{path_info: assigns[:path_info], method: "GET"},
               router: assigns[:application_router]
 
@@ -195,5 +195,26 @@ defmodule Literature.BlogLive do
     socket.assigns.view_module.meta_tags(action, publication) || %{}
   rescue
     _ -> %{}
+  end
+end
+
+defmodule Literature.PageNotFound do
+  @moduledoc """
+    Exception raised when no route is found.
+  """
+  defexception plug_status: 404, message: "no route found", conn: nil, router: nil
+
+  if Mix.env() == :dev do
+    def exception(opts) do
+      conn = Keyword.fetch!(opts, :conn)
+      router = Keyword.fetch!(opts, :router)
+      path = "/" <> Enum.join(conn.path_info, "/")
+
+      %Phoenix.Router.NoRouteError{
+        message: "no route found for #{conn.method} #{path} (#{inspect(router)})",
+        conn: conn,
+        router: router
+      }
+    end
   end
 end
