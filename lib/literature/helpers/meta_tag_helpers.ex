@@ -15,7 +15,8 @@ defmodule Literature.MetaTagHelpers do
     [
       render_tag_default(tags),
       render_tag_og(tags, current_url),
-      render_tag_twitter(tags, current_url)
+      render_tag_twitter(tags, current_url),
+      render_tag_article(tags)
     ]
   end
 
@@ -69,7 +70,26 @@ defmodule Literature.MetaTagHelpers do
     ]
   end
 
+  defp render_tag_article(tags) do
+    [
+      tag(:meta,
+        content: get_tag_value(tags, "published_at", "published_at"),
+        property: "article:published_time"
+      ),
+      tag(:meta,
+        content: get_tag_value(tags, "updated_at", "updated_at"),
+        property: "article:modified_time"
+      ),
+      for tag <- get_tag_value(tags, "tags", "tags") || [] do
+        tag(:meta, content: tag.name, property: "article:tag")
+      end
+    ]
+  end
+
   defp get_tag_value(tags, default_key, key) do
-    tags[key] || tags[default_key] || @metatags[key]
+    case tags[key] do
+      %Ecto.Association.NotLoaded{} -> nil
+      value -> value || tags[default_key] || @metatags[key]
+    end
   end
 end
