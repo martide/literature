@@ -80,13 +80,16 @@ defmodule Literature.MetaTagHelpers do
         content: get_tag_value(tags, "updated_at", "updated_at"),
         property: "article:modified_time"
       ),
-      for tag <- get_tag_value(tags, "tags", "tags") do
+      for tag <- get_tag_value(tags, "tags", "tags") || [] do
         tag(:meta, content: tag.name, property: "article:tag")
       end
     ]
   end
 
   defp get_tag_value(tags, default_key, key) do
-    tags[key] || tags[default_key] || @metatags[key]
+    case tags[key] do
+      %Ecto.Association.NotLoaded{} -> nil
+      value -> value || tags[default_key] || @metatags[key]
+    end
   end
 end
