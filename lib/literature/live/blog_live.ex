@@ -101,6 +101,7 @@ defmodule Literature.BlogLive do
 
     socket
     |> assign_meta_tags(meta_tags)
+    |> assign(:publication, publication)
     |> assign(:tags, list_tags(socket))
   end
 
@@ -110,10 +111,14 @@ defmodule Literature.BlogLive do
 
     socket
     |> assign_meta_tags(meta_tags)
+    |> assign(:publication, publication)
     |> assign(:authors, list_authors(socket))
   end
 
-  defp apply_action(socket, _, _, _), do: socket
+  defp apply_action(socket, _, slug, _) do
+    publication = Literature.get_publication!(slug: slug)
+    assign(socket, :publication, publication)
+  end
 
   defp paginate_posts(%{assigns: %{publication_slug: slug}}, params) do
     %{

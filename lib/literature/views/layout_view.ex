@@ -11,6 +11,9 @@ defmodule Literature.LayoutView do
   defp application_favicon_path(conn_or_socket, view_module),
     do: view_module.favicon_path(conn_or_socket)
 
+  defp application_rss_path(conn_or_socket, view_module),
+    do: view_module.rss_path(conn_or_socket)
+
   defp application_css_path(conn_or_socket, view_module),
     do: view_module.css_path(conn_or_socket)
 

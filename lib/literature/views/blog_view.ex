@@ -7,6 +7,7 @@ defmodule Literature.BlogView do
   alias Literature.Config
 
   def favicon_path(conn), do: asset_path(conn, "favicon/favicon.ico")
+  def rss_path(conn), do: literature_path(conn, :rss)
   def css_path(conn), do: asset_path(conn, "css/app.css")
   def js_path(conn), do: asset_path(conn, "js/app.js")
 
