@@ -20,7 +20,8 @@ defmodule Literature.RSSController do
   defp render_feed(base_url, publication) do
     %{
       "status" => "published",
-      "publication_slug" => publication.slug
+      "publication_slug" => publication.slug,
+      "max" => 10
     }
     |> Literature.list_posts()
     |> build_feed(publication, base_url)
