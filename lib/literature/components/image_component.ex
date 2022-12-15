@@ -11,7 +11,7 @@ defmodule Literature.ImageComponent do
     assigns =
       assigns
       |> assign_new(:alt, fn -> "" end)
-      |> assign_new(:classes, fn -> "object-cover object-center absolute w-full" end)
+      |> assign_new(:classes, fn -> "object-cover object-center w-full" end)
 
     ~H"""
     <%= if file = Map.get(@post, @field) do %>
