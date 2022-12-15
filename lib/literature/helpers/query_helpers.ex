@@ -22,6 +22,11 @@ defmodule Literature.QueryHelpers do
     Enum.map(list, &{&1.name, &1.id})
   end
 
+  def set_limit(query, %{"max" => max}),
+    do: limit(query, ^max)
+
+  def set_limit(query, _), do: query
+
   def sort_by(query, attrs, default_sort \\ {:asc, :name}) do
     order_by(query, ^sort(attrs, default_sort))
   end
