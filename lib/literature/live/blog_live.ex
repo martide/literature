@@ -57,20 +57,17 @@ defmodule Literature.BlogLive do
           {assigns[:author], "author.html"}
         ]
         |> Enum.find(fn {assign, _} -> is_map(assign) end)
-        |> case do
-          nil ->
-            raise Literature.PageNotFound,
-              conn: %{path_info: assigns[:path_info], method: "GET"},
-              router: assigns[:application_router]
-
-          result ->
-            elem(result, 1)
-        end
+        |> elem(1)
 
       action ->
         "#{to_string(action)}.html"
     end
     |> then(&Phoenix.View.render(view_module, &1, assigns))
+  rescue
+    _ ->
+      raise Literature.PageNotFound,
+        conn: %{path_info: assigns[:path_info], method: "GET"},
+        router: assigns[:application_router]
   end
 
   @impl Phoenix.LiveView
