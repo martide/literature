@@ -74,6 +74,15 @@ defmodule Literature.BlogLive do
   end
 
   @impl Phoenix.LiveView
+  def handle_params(%{"page" => "1"}, url, socket) do
+    url
+    |> URI.parse()
+    |> Map.get(:path)
+    |> String.replace("/page/1", "")
+    |> then(&{:noreply, push_navigate(socket, to: &1, replace: true)})
+  end
+
+  @impl Phoenix.LiveView
   def handle_params(params, url, socket) do
     path_info = String.split(URI.parse(url).path, "/") |> Enum.reject(&(&1 == ""))
 
