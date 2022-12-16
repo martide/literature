@@ -26,6 +26,14 @@ defmodule Literature.BlogLiveTest do
   describe "Index" do
     setup [:create_blog]
 
+    test "redirects to / from /page/1", %{conn: conn} do
+      conn = get(conn, Routes.literature_path(conn, :index, 1))
+      assert redirected_to(conn) == Routes.literature_path(conn, :index)
+
+      conn = get(conn, Routes.literature_path(conn, :index, 2))
+      assert html_response(conn, 200)
+    end
+
     test "lists all blog posts", %{conn: conn, publication: publication, post: post} do
       {:ok, _view, html} = live(conn, Routes.literature_path(conn, :index))
 
