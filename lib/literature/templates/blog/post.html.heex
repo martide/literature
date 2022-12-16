@@ -1,5 +1,5 @@
 <section>
-  <article class="my-10">
+  <article class="my-10 mx-4">
     <div class="text-center max-w-5xl mx-auto">
       <h2 class="text-3xl font-extrabold mb-5 tracking-wide"><%= @post.title %></h2>
       <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-8">
@@ -228,7 +228,7 @@
       </div>
       <div class="mt-12">
         <p class="uppercase font-semibold mb-8 text-sm tracking-wider">You might also like...</p>
-        <div class="grid grid-cols-3 gap-5 font-semibold">
+        <div class="grid md:grid-cols-3 gap-5 font-semibold">
           <%= for similar_post <- @post.similar_posts do %>
             <%= link to: literature_path(@socket, :show, similar_post.slug), class: "space-y-4" do %>
               <%= img_tag literature_image_url(similar_post, :feature_image), alt: similar_post.title %>
