@@ -51,6 +51,22 @@ defmodule Literature.RouterTest do
     end
   end
 
+  describe "literature_api_path/2 for default path" do
+    test "generates helper for api routes", %{conn: conn} do
+      assert Routes.literature_api_path(conn, :author) == "/api/author"
+      assert Routes.literature_api_path(conn, :post) == "/api/post"
+      assert Routes.literature_api_path(conn, :tag) == "/api/tag"
+    end
+  end
+
+  describe "literature_api_path/2 for dynamic path" do
+    test "generates helper for api routes", %{conn: conn} do
+      assert DynamicPathRoutes.literature_api_path(conn, :author) == "/foo/bar/author"
+      assert DynamicPathRoutes.literature_api_path(conn, :post) == "/foo/bar/post"
+      assert DynamicPathRoutes.literature_api_path(conn, :tag) == "/foo/bar/tag"
+    end
+  end
+
   describe "literature_dashboard_path/2 for default path" do
     setup do
       %{publication: publication_fixture()}

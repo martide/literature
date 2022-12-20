@@ -16,6 +16,10 @@ defmodule Literature.Router do
         plug(:protect_from_forgery)
       end
 
+      pipeline :api_browser do
+        plug(:accepts, ["json"])
+      end
+
       pipeline :blog_browser do
         plug(:accepts, ["html"])
       end
@@ -46,8 +50,7 @@ defmodule Literature.Router do
 
       defmodule MyAppWeb.Router do
         use Phoenix.Router
-
-        import Literature.Router
+        use Literature.Router
 
         scope "/", MyAppWeb do
           pipe_through [:browser]
@@ -127,8 +130,7 @@ defmodule Literature.Router do
 
       defmodule MyAppWeb.Router do
         use Phoenix.Router
-
-        import Literature.Router
+        use Literature.Router
 
         scope "/", MyAppWeb do
           pipe_through [:browser]
@@ -188,6 +190,34 @@ defmodule Literature.Router do
               end
             end
           end
+        end
+      end
+    end
+  end
+
+  @doc """
+  Defines a Literature API route.
+
+  ## Examples
+
+      defmodule MyAppWeb.Router do
+        use Phoenix.Router
+        use Literature.Router
+
+        literature_api "/api"
+      end
+  """
+  defmacro literature_api(path, opts \\ []) do
+    session_name = Keyword.get(opts, :as, :literature)
+
+    quote bind_quoted: binding() do
+      scope path, alias: false, as: session_name do
+        scope "/", Literature do
+          pipe_through(:api_browser)
+
+          post("/author", ApiController, :author)
+          post("/tag", ApiController, :tag)
+          post("/post", ApiController, :post)
         end
       end
     end

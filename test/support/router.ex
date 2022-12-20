@@ -6,6 +6,7 @@ defmodule Literature.Test.Router do
 
   literature_assets("/blog")
   literature("/", publication_slug: "blog", view_module: @view_module)
+  literature_api("/api")
   literature_dashboard("/literature")
 end
 
@@ -17,5 +18,6 @@ defmodule Literature.Test.DynamicPathRouter do
 
   literature_assets("/foo/bar")
   literature("/foo/bar", publication_slug: "blog", view_module: @view_module)
+  literature_api("/foo/bar")
   literature_dashboard("/foo/bar")
 end
