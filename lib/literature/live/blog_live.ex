@@ -99,6 +99,7 @@ defmodule Literature.BlogLive do
 
     socket
     |> assign_meta_tags(publication)
+    |> override_title_with_page(page)
     |> assign(:publication, publication)
     |> assign(:page, page)
     |> assign(:posts, page.entries)
@@ -209,6 +210,14 @@ defmodule Literature.BlogLive do
     socket.assigns.view_module.meta_tags(action, publication) || %{}
   rescue
     _ -> %{}
+  end
+
+  defp override_title_with_page(%{assigns: %{meta_tags: meta_tags}} = socket, page) do
+    %{
+      meta_tags
+      | "title" => meta_tags["title"] <> " - Page #{page.page_number} of #{page.total_pages}"
+    }
+    |> then(&assign(socket, :meta_tags, &1))
   end
 end
 
