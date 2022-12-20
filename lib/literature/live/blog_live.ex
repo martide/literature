@@ -212,6 +212,8 @@ defmodule Literature.BlogLive do
     _ -> %{}
   end
 
+  defp override_title_with_page(socket, %{page_number: 1}), do: socket
+
   defp override_title_with_page(%{assigns: %{meta_tags: meta_tags}} = socket, page) do
     %{
       meta_tags
