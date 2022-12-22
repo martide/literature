@@ -74,16 +74,30 @@ defmodule Literature.BlogLive do
   end
 
   @impl Phoenix.LiveView
-  def handle_params(%{"page" => "1"}, url, socket) do
-    url
-    |> URI.parse()
-    |> Map.get(:path)
-    |> String.replace("/page/1", "")
-    |> then(&{:noreply, push_navigate(socket, to: &1, replace: true)})
+  def handle_params(params, url, socket) do
+    %{path: path} = URI.parse(url)
+
+    cond do
+      String.contains?(url, "?") ->
+        raise Literature.PageNotFound
+
+      is_nil(params["page"]) ->
+        do_handle_params(params, url, socket)
+
+      params["page"] == "1" ->
+        path
+        |> String.replace("/page/#{params["page"]}", "")
+        |> then(&{:noreply, push_navigate(socket, to: &1, replace: true)})
+
+      Integer.parse(params["page"]) == :error ->
+        raise Literature.PageNotFound
+
+      true ->
+        do_handle_params(params, url, socket)
+    end
   end
 
-  @impl Phoenix.LiveView
-  def handle_params(params, url, socket) do
+  defp do_handle_params(params, url, socket) do
     path_info = String.split(URI.parse(url).path, "/") |> Enum.reject(&(&1 == ""))
 
     socket
@@ -103,6 +117,7 @@ defmodule Literature.BlogLive do
     |> assign(:publication, publication)
     |> assign(:page, page)
     |> assign(:posts, page.entries)
+    |> path_not_found_when_page_number_exceeds_from_total_pages(params, page.total_pages)
   end
 
   defp apply_action(socket, :tags, slug, _params) do
@@ -221,6 +236,20 @@ defmodule Literature.BlogLive do
     }
     |> then(&assign(socket, :meta_tags, &1))
   end
+
+  defp path_not_found_when_page_number_exceeds_from_total_pages(
+         socket,
+         %{"page" => page},
+         total_pages
+       ) do
+    if String.to_integer(page) > total_pages do
+      raise Literature.PageNotFound
+    else
+      socket
+    end
+  end
+
+  defp path_not_found_when_page_number_exceeds_from_total_pages(socket, _, _), do: socket
 end
 
 defmodule Literature.PageNotFound do
