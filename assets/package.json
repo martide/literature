@@ -10,7 +10,7 @@
   "devDependencies": {
     "@editorjs/editorjs": "^2.26.0",
     "@editorjs/header": "^2.7.0",
-    "@editorjs/image": "^2.7.0",
+    "@editorjs/image": "^2.8.1",
     "@editorjs/list": "^1.8.0",
     "@tailwindcss/typography": "^0.5.8",
     "editorjs-html": "^3.4.2",
