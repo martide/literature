@@ -28,7 +28,7 @@ defmodule Literature.AuthorFormComponent do
     ~H"""
     <div>
       <.form
-        let={f}
+        :let={f}
         for={@changeset}
         id="author-form"
         phx-target={@myself}

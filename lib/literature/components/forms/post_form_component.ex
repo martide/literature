@@ -33,7 +33,7 @@ defmodule Literature.PostFormComponent do
     ~H"""
     <div>
       <.form
-        let={f}
+        :let={f}
         for={@changeset}
         id="post-form"
         multipart
@@ -57,7 +57,7 @@ defmodule Literature.PostFormComponent do
               <.form_field form={f} type="text_input" field={:feature_image_caption} label="Feature Image Caption" />
               <.form_field form={f} type="textarea" field={:excerpt} label="Excerpt" />
               <.form_field form={f} type="datetime_local_input" field={:published_at} label="Date Published" />
-            </div>  
+            </div>
             <.accordion title="Meta Tags" nogrid>
               <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
               <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" />
