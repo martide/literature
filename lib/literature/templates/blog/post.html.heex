@@ -7,7 +7,7 @@
         <span>·</span>
         <span><%= reading_time(@post.html) %></span>
         <span>·</span>
-        <%= for {tag, index} <- Enum.with_index(@post.tags) do %>     
+        <%= for {tag, index} <- Enum.with_index(@post.tags) do %>
           <%= link to: literature_path(@socket, :show, tag.slug), class: "text-primary-500 hover:text-primary-700 uppercase text-xs font-semibold transition duration-300 ease-in-out" do %>
             <%= tag.name %><%= if index < length(@post.tags) - 1, do: ", ", else: "" %>
           <% end %>
@@ -195,7 +195,7 @@
       </div>
       <%= for author <- @post.authors do %>
         <div class="mt-14 flex space-x-6">
-          <%= img_tag(literature_image_url(author, :profile_image), alt: author.name, class: "rounded-full w-16 h-16 flex-shrink-0") %>
+          <%= img_tag(literature_image_url(author, :profile_image), alt: author.name, loading: "lazy", class: "rounded-full w-16 h-16 flex-shrink-0") %>
           <div class="space-y-4">
             <p class="font-bold text-lg"><%= author.name %></p>
             <p class="text-gray-500"><%= author.bio %></p>
@@ -231,7 +231,7 @@
         <div class="grid md:grid-cols-3 gap-5 font-semibold">
           <%= for similar_post <- @post.similar_posts do %>
             <%= link to: literature_path(@socket, :show, similar_post.slug), class: "space-y-4" do %>
-              <%= img_tag literature_image_url(similar_post, :feature_image), alt: similar_post.title %>
+              <%= img_tag literature_image_url(similar_post, :feature_image), alt: similar_post.title, loading: "lazy" %>
               <p class="capitalize tracking-wide"><%= similar_post.title %></p>
               <p class="text-xs uppercase text-gray-500"><%= date_format(similar_post.published_at) %></p>
             <% end %>
