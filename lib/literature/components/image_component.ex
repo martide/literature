@@ -12,6 +12,7 @@ defmodule Literature.ImageComponent do
       assigns
       |> assign_new(:alt, fn -> "" end)
       |> assign_new(:classes, fn -> "object-cover object-center w-full" end)
+      |> assign_new(:lazy_load, fn -> true end)
 
     ~H"""
     <%= if file = Map.get(@post, @field) do %>
@@ -19,7 +20,7 @@ defmodule Literature.ImageComponent do
       <picture>
         <source srcset={load_srcset(file, literature_image_url(@post, @field, :jpg))} />
         <source srcset={load_srcset(file, literature_image_url(@post, @field, :webp))} />
-        <%= img_tag literature_image_url(@post, @field), class: @classes, alt: @alt, width: width, height: height, loading: "lazy" %>
+        <%= img_tag literature_image_url(@post, @field), [class: @classes, alt: @alt, width: width, height: height, ] ++ (if @lazy_load, do: [loading: "lazy"], else: []) %>
       </picture>
     <% end %>
     """
