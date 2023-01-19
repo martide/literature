@@ -14,7 +14,7 @@
         <% end %>
       </div>
       <div class="h-[32rem] overflow-hidden relative my-14">
-        <.responsive_img_tag post={@post} field={:feature_image} alt={@post.feature_image_alt} />
+        <.responsive_img_tag post={@post} field={:feature_image} alt={@post.feature_image_alt} lazy_load={false} />
       </div>
     </div>
     <div class="max-w-3xl mx-auto">
