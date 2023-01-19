@@ -19,7 +19,7 @@ defmodule Literature.ImageComponent do
       <picture>
         <source srcset={load_srcset(file, literature_image_url(@post, @field, :jpg))} />
         <source srcset={load_srcset(file, literature_image_url(@post, @field, :webp))} />
-        <%= img_tag literature_image_url(@post, @field), class: @classes, alt: @alt, width: width, height: height %>
+        <%= img_tag literature_image_url(@post, @field), class: @classes, alt: @alt, width: width, height: height, loading: "lazy" %>
       </picture>
     <% end %>
     """
@@ -33,7 +33,7 @@ defmodule Literature.ImageComponent do
       <picture>
         <source srcset="#{load_srcset(:jpg, find_img_attribute(tag, "src"))}" />
         <source srcset="#{load_srcset(:webp, find_img_attribute(tag, "src"))}" />
-        <img src="#{find_img_attribute(tag, "src")}" alt="#{find_img_attribute(tag, "alt")}" width="#{width}" height="#{height}" />
+        <img src="#{find_img_attribute(tag, "src")}" alt="#{find_img_attribute(tag, "alt")}" width="#{width}" height="#{height}" loading="lazy" />
       </picture>
       """
     else

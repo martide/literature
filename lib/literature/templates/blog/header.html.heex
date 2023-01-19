@@ -2,7 +2,7 @@
   <nav class="bg-white border-gray-200 px-2 sm:px-4 py-8 rounded">
     <div class="max-w-screen-xl flex flex-wrap items-center mx-auto px-16">
       <%= link to: "https://www.martide.com/" do %>
-        <%= img_tag logo(), alt: "#{title()} logo", class: "h-7" %>
+        <%= img_tag logo(), alt: "#{title()} logo", class: "h-7", loading: "lazy" %>
       <% end %>
       <button type="button" class="inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200" aria-expanded="false">
         <span class="sr-only">Open main menu</span>
