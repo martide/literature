@@ -54,4 +54,8 @@ defmodule Literature.Uploaders do
     suffix = String.split(file_name, "w") |> List.last()
     Slugy.slugify(String.replace_suffix(file_name, suffix, to_string(size)))
   end
+
+  def s3_object_headers(_version, _) do
+    [cache_control: "public, max-age=31536000"]
+  end
 end
