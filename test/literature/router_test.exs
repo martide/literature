@@ -34,7 +34,7 @@ defmodule Literature.RouterTest do
       assert Routes.literature_path(conn, :show, "author_or_tag_or_post") ==
                "/blog/author_or_tag_or_post"
 
-      assert Routes.literature_path(conn, :rss) == "/blog/posts/rss.xml"
+      assert Routes.literature_path(conn, :rss) == "/blog/rss.xml"
     end
   end
 
@@ -47,7 +47,7 @@ defmodule Literature.RouterTest do
       assert DynamicPathRoutes.literature_path(conn, :show, "author_or_tag_or_post") ==
                "/foo/bar/blog/author_or_tag_or_post"
 
-      assert DynamicPathRoutes.literature_path(conn, :rss) == "/foo/bar/blog/posts/rss.xml"
+      assert DynamicPathRoutes.literature_path(conn, :rss) == "/foo/bar/blog/rss.xml"
     end
   end
 

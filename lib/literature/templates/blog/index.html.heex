@@ -3,7 +3,7 @@
     <div class="text-center space-y-3 max-w-2xl mx-auto">
       <h2 class="text-4xl font-bold"><%= @publication.name %></h2>
       <p class="text-gray-500 text-xl font-light tracking-wide"><%= @publication.description %></p>
-    </div> 
+    </div>
     <div class="space-y-8 my-20 max-w-5xl px-6 mx-auto">
       <%= for post <- @posts do %>
         <article class="group">
@@ -20,14 +20,14 @@
                 <span>·</span>
                 <span><%= reading_time(post.html) %></span>
                 <span>·</span>
-                <%= for {tag, index} <- Enum.with_index(post.tags) do %>     
+                <%= for {tag, index} <- Enum.with_index(post.tags) do %>
                   <%= link to: literature_path(@socket, :show, tag.slug), class: "text-primary-500 hover:text-primary-700 uppercase text-xs font-semibold transition duration-300 ease-in-out" do %>
                     <%= tag.name %><%= if index < length(post.tags) - 1, do: ", ", else: "" %>
                   <% end %>
                 <% end %>
               </div>
               <p class="font-light tracking-wide text-gray-700">
-                <%= post.excerpt %>  
+                <%= post.excerpt %>
               </p>
             <% end %>
             <div class="flex items-center justify-between font-semibold text-xs border-t border-gray-300 mt-10 py-5">
@@ -47,7 +47,7 @@
               </div>
               <div class="flex items-center">
                 <%= for author <- post.authors do %>
-                  <%= img_tag literature_image_url(author, :profile_image), class: "rounded-full h-7 w-7 mr-2", alt: author.name %>
+                  <%= img_tag literature_image_url(author, :profile_image), class: "rounded-full h-7 w-7 mr-2", loading: "lazy", alt: author.name %>
                   <span class="mr-1 text-gray-400">By: </span>
                   <span class="text-gray-900">
                     <%= author.name %>
@@ -58,6 +58,53 @@
           </div>
         </article>
       <% end %>
-    </div>  
+      <div class="grid grid-cols-3">
+        <div class="justify-self-start">
+          <%= if @page.page_number > 1 do %>
+            <%= link to: literature_path(@socket, :index, @page.page_number - 1), class: "font-semibold flex items-center space-x-2 group", rel: "prev" do %>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="w-4 h-4 text-gray-400 group-hover:-translate-x-1 transition duration-300 ease-in-out"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75"
+                />
+              </svg>
+              <span>Older Post</span>
+            <% end %>
+          <% end %>
+        </div>
+        <div class="invisible sm:visible border rounded-full text-gray-400 font-semibold text-sm px-5 py-2 justify-self-center">
+          <%= "Page #{@page.page_number} to #{@page.total_pages}" %>
+        </div>
+        <div class="justify-self-end">
+          <%= if @page.page_number < @page.total_pages do %>
+            <%= link to: literature_path(@socket, :index, @page.page_number + 1), class: "font-semibold flex items-center space-x-2 group", rel: "next" do %>
+              <span>Next Post</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="w-4 h-4 text-gray-400 group-hover:translate-x-1 transition duration-300 ease-in-out"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
+                />
+              </svg>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
   </div>
 </section>

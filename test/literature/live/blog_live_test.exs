@@ -26,6 +26,29 @@ defmodule Literature.BlogLiveTest do
   describe "Index" do
     setup [:create_blog]
 
+    test "raise no route found when path is /page/:page which is not integer", %{conn: conn} do
+      assert_raise Literature.PageNotFound, "no route found", fn ->
+        get(conn, Routes.literature_path(conn, :index, :page))
+      end
+    end
+
+    test "raise no route found when page number exceeds from total pages", %{conn: conn} do
+      assert_raise Literature.PageNotFound, "no route found", fn ->
+        get(conn, Routes.literature_path(conn, :index, 2))
+      end
+    end
+
+    test "raise no route found when path contains ?/", %{conn: conn, post: post} do
+      assert_raise Literature.PageNotFound, "no route found", fn ->
+        get(conn, Routes.literature_path(conn, :show, post.slug) <> "?/")
+      end
+    end
+
+    test "redirects to / when path is /page/1", %{conn: conn} do
+      conn = get(conn, Routes.literature_path(conn, :index, 1))
+      assert redirected_to(conn) == Routes.literature_path(conn, :index)
+    end
+
     test "lists all blog posts", %{conn: conn, publication: publication, post: post} do
       {:ok, _view, html} = live(conn, Routes.literature_path(conn, :index))
 
@@ -50,7 +73,7 @@ defmodule Literature.BlogLiveTest do
       assert html =~ "1 post"
     end
 
-    test "render single tag page", %{conn: conn, tag: tag, post: post} do
+    test "renders single tag page", %{conn: conn, tag: tag, post: post} do
       {:ok, _view, html} = live(conn, Routes.literature_path(conn, :show, tag.slug))
 
       assert html =~ tag.name
@@ -58,7 +81,7 @@ defmodule Literature.BlogLiveTest do
       assert html =~ post.title
     end
 
-    test "render single author page", %{conn: conn, author: author, post: post} do
+    test "renders single author page", %{conn: conn, author: author, post: post} do
       {:ok, _view, html} = live(conn, Routes.literature_path(conn, :show, author.slug))
 
       assert html =~ author.name
@@ -66,12 +89,18 @@ defmodule Literature.BlogLiveTest do
       assert html =~ post.title
     end
 
-    test "render single post page", %{conn: conn, author: author, tag: tag, post: post} do
-      {:ok, _view, html} = live(conn, Routes.literature_path(conn, :show, author.slug))
+    test "renders single post page", %{conn: conn, author: author, tag: tag, post: post} do
+      {:ok, _view, html} = live(conn, Routes.literature_path(conn, :show, post.slug))
 
       assert html =~ post.title
       assert html =~ author.name
       assert html =~ tag.name
+    end
+
+    test "returns 404 error when page not found", %{conn: conn} do
+      assert_raise Literature.PageNotFound, "no route found", fn ->
+        get(conn, Routes.literature_path(conn, :show, "page-not-exists"))
+      end
     end
   end
 end

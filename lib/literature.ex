@@ -35,6 +35,7 @@ defmodule Literature do
   """
   def list_authors(attrs \\ []) do
     Author
+    |> sort_by(attrs)
     |> where_preload(attrs)
     |> where_publication(attrs)
     |> Repo.all()
@@ -162,6 +163,8 @@ defmodule Literature do
   """
   def list_posts(attrs \\ []) do
     Post
+    |> set_limit(attrs)
+    |> sort_by(attrs, {:desc, :published_at})
     |> where_preload(%{"preload" => ~w(authors tags)a})
     |> where_status(attrs)
     |> where_publication(attrs)
@@ -397,6 +400,7 @@ defmodule Literature do
   """
   def list_tags(attrs \\ []) do
     Tag
+    |> sort_by(attrs)
     |> where_preload(attrs)
     |> where_publication(attrs)
     |> Repo.all()

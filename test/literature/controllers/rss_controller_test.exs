@@ -5,11 +5,12 @@ defmodule Literature.RSSControllerTest do
   import Literature.Test.Fixtures
 
   test "build default rss feed xml", %{conn: conn} do
+    publication = publication_fixture(name: "Blog")
     rss_path = Routes.literature_path(conn, :rss)
     conn = get(conn, rss_path)
 
     assert response(conn, 200) =~ ~s(<?xml version="1.0" encoding="UTF-8"?>)
-    assert response(conn, 200) =~ "Literature RSS"
+    assert response(conn, 200) =~ publication.name
     assert response(conn, 200) =~ feed_author()
     assert response(conn, 200) =~ feed_email()
     assert response(conn, 200) =~ rss_path
@@ -45,7 +46,7 @@ defmodule Literature.RSSControllerTest do
     conn = get(conn, rss_path)
 
     assert response(conn, 200) =~ ~s(<?xml version="1.0" encoding="UTF-8"?>)
-    assert response(conn, 200) =~ "Literature RSS"
+    assert response(conn, 200) =~ publication.name
     assert response(conn, 200) =~ feed_author()
     assert response(conn, 200) =~ feed_email()
     assert response(conn, 200) =~ rss_path

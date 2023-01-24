@@ -28,7 +28,7 @@ defmodule Literature.PublicationFormComponent do
     ~H"""
     <div>
       <.form
-        let={f}
+        :let={f}
         for={@changeset}
         id="publication-form"
         multipart

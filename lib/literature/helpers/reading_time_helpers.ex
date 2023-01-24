@@ -4,6 +4,8 @@ defmodule Literature.ReadingTimeHelpers do
   @doc """
   Count the words of a setence
   """
+  def reading_time(nil), do: nil
+
   def reading_time(html, words_per_minute \\ 150) do
     html
     |> Enum.join("")

@@ -11,11 +11,21 @@ defmodule Literature.LayoutView do
   defp application_favicon_path(conn_or_socket, view_module),
     do: view_module.favicon_path(conn_or_socket)
 
+  defp application_rss_path(conn_or_socket, view_module),
+    do: view_module.rss_path(conn_or_socket)
+
   defp application_css_path(conn_or_socket, view_module),
     do: view_module.css_path(conn_or_socket)
 
   defp application_js_path(conn_or_socket, view_module),
     do: view_module.js_path(conn_or_socket)
+
+  defp canonical_path(conn) do
+    conn
+    |> current_url
+    |> String.split("?")
+    |> hd()
+  end
 
   def asset_path(conn_or_socket, path) do
     literature_path(conn_or_socket, :index) <> "/assets/" <> asset_file_name(path, Config.env())

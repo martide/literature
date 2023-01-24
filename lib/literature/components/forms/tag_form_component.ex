@@ -29,7 +29,7 @@ defmodule Literature.TagFormComponent do
     ~H"""
     <div>
       <.form
-        let={f}
+        :let={f}
         for={@changeset}
         id="tag-form"
         phx-target={@myself}
