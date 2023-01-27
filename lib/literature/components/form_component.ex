@@ -136,10 +136,17 @@ defmodule Literature.FormComponent do
   end
 
   defp text_input(assigns) do
-    assigns = assign_defaults(assigns, text_input_classes(assigns))
+    assigns =
+      assigns
+      |> assign_defaults(text_input_classes(assigns))
+      |> assign_new(:maxlength, fn -> nil end)
+      |> assign_new(:characters, fn -> "" end)
 
     ~H"""
-      <%= text_input @form, @field, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
+    <%= text_input @form, @field, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
+    <%= if @maxlength do %>
+      <small class="text-gray-500">Recommended: <span class="font-bold"><%= @maxlength %></span> characters. You've used <span class="font-bold text-green-500"><%= String.length(@characters || "") %></span>.</small>
+    <% end %>    
     """
   end
 
@@ -203,10 +210,17 @@ defmodule Literature.FormComponent do
   end
 
   defp textarea(assigns) do
-    assigns = assign_defaults(assigns, text_input_classes(assigns))
+    assigns =
+      assigns
+      |> assign_defaults(text_input_classes(assigns))
+      |> assign_new(:maxlength, fn -> nil end)
+      |> assign_new(:characters, fn -> "" end)
 
     ~H"""
     <%= textarea @form, @field, [class: @classes, rows: "6", phx_feedback_for: input_name(@form, @field)] ++ @rest %>
+    <%= if @maxlength do %>
+      <small class="text-gray-500">Recommended: <span class="font-bold"><%= @maxlength %></span> characters. You've used <span class="font-bold text-green-500"><%= String.length(@characters || "") %></span>.</small>
+    <% end %>    
     """
   end
 
