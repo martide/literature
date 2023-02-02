@@ -139,13 +139,24 @@ defmodule Literature.FormComponent do
     assigns =
       assigns
       |> assign_defaults(text_input_classes(assigns))
-      |> assign_new(:maxlength, fn -> nil end)
+      |> assign_new(:maxcharacters, fn -> nil end)
       |> assign_new(:characters, fn -> "" end)
 
     ~H"""
     <%= text_input @form, @field, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
-    <%= if @maxlength do %>
-      <small class="text-gray-500">Recommended: <span class="font-bold"><%= @maxlength %></span> characters. You've used <span class="font-bold text-green-500"><%= String.length(@characters || "") %></span>.</small>
+    <%= if @maxcharacters do %>
+      <small class="text-gray-500">
+        Recommended: <span class="font-bold"><%= @maxcharacters %></span> characters. You've used
+        <%= if @maxcharacters < String.length(@characters || "") do %>
+          <span class="font-bold text-red-500">
+            <%= String.length(@characters || "") %>.
+          </span>
+        <% else %>
+          <span class="font-bold text-green-500">
+            <%= String.length(@characters || "") %>.
+          </span>
+        <% end %>
+      </small>
     <% end %>    
     """
   end
@@ -213,13 +224,24 @@ defmodule Literature.FormComponent do
     assigns =
       assigns
       |> assign_defaults(text_input_classes(assigns))
-      |> assign_new(:maxlength, fn -> nil end)
+      |> assign_new(:maxcharacters, fn -> nil end)
       |> assign_new(:characters, fn -> "" end)
 
     ~H"""
     <%= textarea @form, @field, [class: @classes, rows: "6", phx_feedback_for: input_name(@form, @field)] ++ @rest %>
-    <%= if @maxlength do %>
-      <small class="text-gray-500">Recommended: <span class="font-bold"><%= @maxlength %></span> characters. You've used <span class="font-bold text-green-500"><%= String.length(@characters || "") %></span>.</small>
+    <%= if @maxcharacters do %>
+      <small class="text-gray-500">
+        Recommended: <span class="font-bold"><%= @maxcharacters %></span> characters. You've used
+        <%= if @maxcharacters < String.length(@characters || "") do %>
+          <span class="font-bold text-red-500">
+            <%= String.length(@characters || "") %>.
+          </span>
+        <% else %>
+          <span class="font-bold text-green-500">
+            <%= String.length(@characters || "") %>.
+          </span>
+        <% end %>
+      </small>
     <% end %>    
     """
   end

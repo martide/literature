@@ -49,7 +49,7 @@ defmodule Literature.PostFormComponent do
           </div>
           <div class="w-full md:w-2/3 md:border-l md:pl-8">
             <div class="space-y-5 mb-5">
-              <.form_field form={f} type="text_input" field={:title} label="Title" required={true} maxlength={60} characters={@post_params["title"] || @post.title} />
+              <.form_field form={f} type="text_input" field={:title} label="Title" required={true} maxcharacters={60} characters={@post_params["title"] || @post.title} />
               <.form_field form={f} type="text_input" field={:slug} label="Slug" required={true} disabled={@action == :new_post} placeholder={if @action == :new_post, do: "(auto-generate) you can change from edit page", else: ""} />
               <.form_field form={f} type="checkbox_group" field={:authors_ids} options={@authors} label="Authors" required={true} />
               <.form_field form={f} type="checkbox_group" field={:tags_ids} options={@tags} label="Tags" required={true} />
@@ -60,8 +60,8 @@ defmodule Literature.PostFormComponent do
               <.form_field form={f} type="datetime_local_input" field={:published_at} label="Date Published" />
             </div>
             <.accordion title="Meta Tags" nogrid>
-              <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" maxlength={60} characters={@post_params["meta_title"] || @post.meta_title} />
-              <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" maxlength={145} characters={@post_params["meta_description"] || @post.meta_description} />
+              <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" maxcharacters={60} characters={@post_params["meta_title"] || @post.meta_title} />
+              <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" maxcharacters={145} characters={@post_params["meta_description"] || @post.meta_description} />
               <.form_field form={f} type="text_input" field={:meta_keywords} label="Meta Keywords" />
             </.accordion>
             <.accordion title="Facebook Meta Tags" nogrid>
