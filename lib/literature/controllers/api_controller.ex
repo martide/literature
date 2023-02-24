@@ -22,13 +22,11 @@ defmodule Literature.ApiController do
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_resp_content_type("application/json")
-        |> send_resp(
-          400,
-          Jason.encode!(%{
-            status: "error",
-            message: format_errors(changeset.errors)
-          })
-        )
+        |> put_status(:unprocessable_entity)
+        |> json(%{
+          errors: format_errors(changeset.errors),
+          message: "Failed to create author"
+        })
 
       {:error, message} ->
         conn
@@ -57,16 +55,14 @@ defmodule Literature.ApiController do
         })
       )
     else
-      {:error, %Ecto.Changeset{}} ->
+      {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_resp_content_type("application/json")
-        |> send_resp(
-          400,
-          Jason.encode!(%{
-            status: "error",
-            message: "Missing required field [:name, :slug, :visibility]"
-          })
-        )
+        |> put_status(:unprocessable_entity)
+        |> json(%{
+          errors: format_errors(changeset.errors),
+          message: "Failed to create tag"
+        })
 
       {:error, message} ->
         conn
@@ -186,8 +182,16 @@ defmodule Literature.ApiController do
 
   defp parse_tags(data), do: data
 
-  defp format_errors(errors) do
+  def format_errors(errors) do
     errors
-    |> Enum.map(fn {field, message} -> %{field => message} end)
+    |> Enum.map(fn f ->
+      {field, {message, _} = _opts} = f
+
+      field =
+        field
+        |> Atom.to_string()
+
+      "#{field} #{message}"
+    end)
   end
 end

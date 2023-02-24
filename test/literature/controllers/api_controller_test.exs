@@ -50,9 +50,9 @@ defmodule Literature.ApiControllerTest do
           data: %{}
         )
 
-      assert json_response(conn, 400) == %{
-               "message" => "Missing required field [:name, :slug]",
-               "status" => "error"
+      assert json_response(conn, 422) == %{
+               "message" => "Failed to create author",
+               "errors" => ["slug This field is required", "name This field is required"]
              }
     end
   end
@@ -101,9 +101,13 @@ defmodule Literature.ApiControllerTest do
           data: %{}
         )
 
-      assert json_response(conn, 400) == %{
-               "message" => "Missing required field [:name, :slug, :visibility]",
-               "status" => "error"
+      assert json_response(conn, 422) == %{
+               "errors" => [
+                 "slug This field is required",
+                 "name This field is required",
+                 "visibility This field is required"
+               ],
+               "message" => "Failed to create tag"
              }
     end
   end
@@ -151,9 +155,9 @@ defmodule Literature.ApiControllerTest do
           data: %{}
         )
 
-      assert json_response(conn, 400) == %{
-               "message" => "Missing required field [:title, :slug]",
-               "status" => "error"
+      assert json_response(conn, 422) == %{
+               "message" => "Failed to create post",
+               "errors" => ["slug This field is required", "title This field is required"]
              }
     end
   end
