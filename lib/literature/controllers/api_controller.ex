@@ -19,14 +19,14 @@ defmodule Literature.ApiController do
         })
       )
     else
-      {:error, %Ecto.Changeset{}} ->
+      {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_resp_content_type("application/json")
         |> send_resp(
           400,
           Jason.encode!(%{
             status: "error",
-            message: "Missing required field [:name, :slug]"
+            message: format_errors(changeset.errors)
           })
         )
 
@@ -95,19 +95,18 @@ defmodule Literature.ApiController do
         })
       )
     else
-      {:error, %Ecto.Changeset{}} ->
+      {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_resp_content_type("application/json")
-        |> send_resp(
-          400,
-          Jason.encode!(%{
-            status: "error",
-            message: "Missing required field [:title, :slug]"
-          })
-        )
+        |> put_status(:unprocessable_entity)
+        |> json(%{
+          errors: format_errors(changeset.errors),
+          message: "Failed to create post"
+        })
 
       {:error, message} ->
         conn
+        |> put_resp_content_type("application/json")
         |> put_resp_content_type("application/json")
         |> send_resp(
           400,
@@ -162,23 +161,33 @@ defmodule Literature.ApiController do
         path: path
       })
     else
-      _ -> data
+      _ ->
+        Map.put(data, field, nil)
     end
   end
 
   defp parse_image(data, _, _), do: data
 
-  defp parse_authors(%{"authors_names" => authors} = data) when is_list(authors) do
-    authors_ids = Enum.map(authors, &Literature.get_author!(name: &1).id)
+  defp parse_authors(%{"authors_names" => authors, "publication_id" => publication_id} = data)
+       when is_list(authors) do
+    authors_ids =
+      Enum.map(authors, &Literature.get_author!(name: &1, publication_id: publication_id).id)
+
     Map.put(data, "authors_ids", authors_ids)
   end
 
   defp parse_authors(data), do: data
 
-  defp parse_tags(%{"tags_names" => tags} = data) when is_list(tags) do
-    tags_ids = Enum.map(tags, &Literature.get_tag!(name: &1).id)
+  defp parse_tags(%{"tags_names" => tags, "publication_id" => publication_id} = data)
+       when is_list(tags) do
+    tags_ids = Enum.map(tags, &Literature.get_tag!(name: &1, publication_id: publication_id).id)
     Map.put(data, "tags_ids", tags_ids)
   end
 
   defp parse_tags(data), do: data
+
+  defp format_errors(errors) do
+    errors
+    |> Enum.map(fn {field, message} -> %{field => message} end)
+  end
 end
