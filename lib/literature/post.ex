@@ -79,7 +79,10 @@ defmodule Literature.Post do
     |> maybe_generate_slug(post)
     |> cast_attachments(params, @attachments)
     |> validate_required(@required_params, message: "This field is required")
-    |> unique_constraint(:slug, name: :literature_posts_publication_id_slug_index)
+    |> unique_constraint(:slug,
+      name: :literature_posts_publication_id_slug_index,
+      message: "#{params["slug"]} slug is duplicated}"
+    )
     |> put_assocs(params)
   end
 
