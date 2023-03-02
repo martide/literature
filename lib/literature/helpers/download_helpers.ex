@@ -30,7 +30,7 @@ defmodule Literature.DownloadHelpers do
   def download_image(url, opts \\ []) do
     file_name = url |> String.split("/") |> List.last()
     path = Keyword.get(opts, :path, get_default_download_path(file_name))
-    receive_timeout = Application.get_env(:waffle, :receive_timeout) || 15_000
+    receive_timeout = Application.get_env(:waffle, :version_timeout) || 15_000
 
     with {:ok, file} <- create_file(path),
          {:ok, path} <- start_download(url, file, path, receive_timeout) do
