@@ -32,7 +32,7 @@ defmodule Literature.Workers.DownloadWorker do
             {:reply, {:error, :invalid_file}, state}
         end
 
-      {:error, _reason} ->
+      _reason ->
         :file.delete(path)
         :file.close(file_pid)
         {:reply, {:error, :download_failed}, state}
