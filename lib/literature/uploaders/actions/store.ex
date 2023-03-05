@@ -77,7 +77,7 @@ defmodule Literature.Uploaders.Actions.Store do
   end
 
   defp version_timeout do
-    Application.get_env(:waffle, :version_timeout) || 15_000
+    Application.get_env(:waffle, :version_timeout) || 90_000
   end
 
   defp async_process_version(definition, version, {file, scope}) do

@@ -3,6 +3,8 @@ defmodule Literature do
 
   import Literature.QueryHelpers
   alias Literature.{Author, Post, Publication, Repo, Tag}
+  alias Literature.DownloadHelpers
+  alias Literature.ImageComponent
 
   ## Author Context
 
@@ -494,4 +496,72 @@ defmodule Literature do
   def delete_tag(%Tag{} = tag) do
     Repo.delete(tag)
   end
+
+  def validate_params(params) do
+    cond do
+      is_nil(params["publication_id"]) ->
+        {:error, "Missing parameter :publication_id"}
+
+      is_nil(params["data"]) ->
+        {:error, "Missing parameter :data"}
+
+      true ->
+        {:ok, true}
+    end
+  end
+
+  def build_params(%{"publication_id" => publication_id, "data" => data}) do
+    data
+    |> Map.put("publication_id", publication_id)
+    |> parse_image("og_image", data["og_image"])
+    |> parse_image("twitter_image", data["twitter_image"])
+    |> parse_image("feature_image", data["feature_image"])
+    |> parse_image("profile_image", data["profile_image"])
+    |> parse_image("cover_image", data["cover_image"])
+    |> ImageComponent.build_images()
+    |> parse_authors()
+    |> parse_tags()
+  end
+
+  defp parse_image(data, field, url) when is_binary(url) do
+    filename = String.split(url, "/") |> List.last()
+
+    type =
+      filename
+      |> Path.extname()
+      |> String.trim_leading(".")
+      |> String.downcase()
+
+    with {:ok, path} <- DownloadHelpers.download_image(url),
+         true <- type in ~w(jpg png jpeg) do
+      Map.put(data, field, %Plug.Upload{
+        content_type: "image/#{type}",
+        filename: filename,
+        path: path
+      })
+    else
+      _error ->
+        Map.put(data, field, nil)
+    end
+  end
+
+  defp parse_image(data, _, _), do: data
+
+  defp parse_authors(%{"authors_names" => authors, "publication_id" => publication_id} = data)
+       when is_list(authors) do
+    authors_ids =
+      Enum.map(authors, &Literature.get_author!(name: &1, publication_id: publication_id).id)
+
+    Map.put(data, "authors_ids", authors_ids)
+  end
+
+  defp parse_authors(data), do: data
+
+  defp parse_tags(%{"tags_names" => tags, "publication_id" => publication_id} = data)
+       when is_list(tags) do
+    tags_ids = Enum.map(tags, &Literature.get_tag!(name: &1, publication_id: publication_id).id)
+    Map.put(data, "tags_ids", tags_ids)
+  end
+
+  defp parse_tags(data), do: data
 end

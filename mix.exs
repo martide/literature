@@ -29,7 +29,7 @@ defmodule Literature.MixProject do
   def application do
     [
       mod: {Literature.Application, []},
-      extra_applications: [:logger]
+      extra_applications: [:logger, :poolboy]
     ]
   end
 
@@ -64,6 +64,7 @@ defmodule Literature.MixProject do
       {:sitemapper, "~> 0.7"},
       {:slugy, "~> 4.1"},
       {:timex, "~> 3.7"},
+      {:poolboy, "~> 1.5"},
 
       # Test
       {:credo, "~> 1.6", only: [:test, :dev], runtime: false},

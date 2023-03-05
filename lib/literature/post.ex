@@ -86,6 +86,18 @@ defmodule Literature.Post do
     |> put_assocs(params)
   end
 
+  defp maybe_generate_slug(%{changes: %{title: title, slug: slug}} = changeset, _post)
+       when title != slug,
+       do: changeset
+
+  defp maybe_generate_slug(changeset, %{title: title, slug: slug}) when title != slug,
+    do: changeset
+
+  defp maybe_generate_slug(changeset, %{slug: nil}),
+    do: slugify(changeset, :title)
+
+  defp maybe_generate_slug(changeset, _), do: changeset
+
   def resolve(post) when is_struct(post) do
     %{
       post
@@ -137,14 +149,6 @@ defmodule Literature.Post do
       Timex.compare(published_at, datetime) == 1 -> "scheduled"
     end
   end
-
-  defp maybe_generate_slug(changeset, %{title: title, slug: slug}) when title != slug,
-    do: changeset
-
-  defp maybe_generate_slug(changeset, %{slug: nil}),
-    do: slugify(changeset, :title)
-
-  defp maybe_generate_slug(changeset, _), do: changeset
 
   defp put_assocs(changeset, %{"authors_ids" => ""}),
     do: add_error(changeset, :authors_ids, "Required at least one author")
