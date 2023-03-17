@@ -28,15 +28,19 @@ defmodule Literature.ImageComponent do
 
   def parse_image_tag(tag) do
     if tag =~ "<img" do
-      [width, height] = get_img_size(tag)
+      case get_img_size(tag) do
+        [width, height] ->
+          ~s"""
+          <picture>
+            <source srcset="#{load_srcset(:jpg, find_img_attribute(tag, "src"))}"/>
+            <source srcset="#{load_srcset(:webp, find_img_attribute(tag, "src"))}"/>
+            <img src="#{find_img_attribute(tag, "src")}" alt="#{find_img_attribute(tag, "alt")}" width="#{width}" height="#{height}" loading="lazy" />
+          </picture>
+          """
 
-      ~s"""
-      <picture>
-        <source srcset="#{load_srcset(:jpg, find_img_attribute(tag, "src"))}" />
-        <source srcset="#{load_srcset(:webp, find_img_attribute(tag, "src"))}" />
-        <img src="#{find_img_attribute(tag, "src")}" alt="#{find_img_attribute(tag, "alt")}" width="#{width}" height="#{height}" loading="lazy" />
-      </picture>
-      """
+        _missing_size ->
+          tag
+      end
     else
       tag
     end
