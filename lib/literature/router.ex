@@ -21,7 +21,7 @@ defmodule Literature.Router do
       end
 
       pipeline :blog_browser do
-        plug(:accepts, ["html"])
+        plug(:accepts, ["html", "xml"])
       end
 
       pipeline :cloudflare_cdn do
