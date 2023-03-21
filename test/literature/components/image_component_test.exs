@@ -17,7 +17,21 @@ defmodule Literature.ImageComponentTest do
   end
 
   test "it does not convert image tags missing size attributes on file name" do
-    tag = "<img src=/path/to/image.jpg alt='An image'>"
+    tag = "<img src=/path/to/image.jpg alt='An image' />"
+
+    assert ImageComponent.parse_image_tag(tag) == tag
+  end
+
+  test "it does not convert image tags based on integergers set in the file name" do
+    tag =
+      "<img src=https://images.martide.com/en-employers/2022/07/aframax-tanker-1.jpg alt='Image' />"
+
+    assert ImageComponent.parse_image_tag(tag) == tag
+  end
+
+  test "it does not convert image tags if only part of the string matches" do
+    tag =
+      "<img src=https://images.martide.com/en-employers/2022/07/aframax-tanker-x1-200.jpg alt='Image' />"
 
     assert ImageComponent.parse_image_tag(tag) == tag
   end
