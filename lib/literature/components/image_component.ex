@@ -15,14 +15,18 @@ defmodule Literature.ImageComponent do
       |> assign_new(:lazy_load, fn -> true end)
 
     ~H"""
-    <%= if file = Map.get(@post, @field) do %>
-      <% [width, height] = get_img_size(@post, @field) %>
-      <picture>
-        <source srcset={load_srcset(file, literature_image_url(@post, @field, :jpg))} />
-        <source srcset={load_srcset(file, literature_image_url(@post, @field, :webp))} />
-        <%= img_tag literature_image_url(@post, @field), [class: @classes, alt: @alt, width: width, height: height, ] ++ (if @lazy_load, do: [loading: "lazy"], else: []) %>
-      </picture>
-    <% end %>
+      <%= if file = Map.get(@post, @field) do %>
+        <%= case get_img_size(@post, @field) do %>
+          <% [width, height] -> %>
+            <picture>
+              <source srcset={load_srcset(file, literature_image_url(@post, @field, :jpg))} />
+              <source srcset={load_srcset(file, literature_image_url(@post, @field, :webp))} />
+              <%= img_tag literature_image_url(@post, @field), [class: @classes, alt: @alt, width: width, height: height, ] ++ (if @lazy_load, do: [loading: "lazy"], else: []) %>
+            </picture>
+          <% _nil -> %>
+            <%= img_tag literature_image_url(@post, @field), [class: @classes, alt: @alt] ++ (if @lazy_load, do: [loading: "lazy"], else: []) %>
+        <% end %>
+      <% end %>
     """
   end
 
@@ -98,11 +102,12 @@ defmodule Literature.ImageComponent do
   end
 
   defp get_width_and_height(url) do
-    url
-    |> String.replace(~r/\.(jpeg|jpg|png|webp)$/, "")
-    |> String.split("w")
-    |> List.last()
-    |> String.split("x")
+    regex = ~r/-w(\d+)x(\d+)\.\w+$/
+
+    case Regex.run(regex, url) do
+      [_, width, height] -> [width, height]
+      _ -> nil
+    end
   end
 
   defp rename_filename({field, file}) do
