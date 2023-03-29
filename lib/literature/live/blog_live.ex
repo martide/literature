@@ -76,7 +76,7 @@ defmodule Literature.BlogLive do
   @impl Phoenix.LiveView
   def handle_params(params, url, socket) do
     %{path: path} = URI.parse(url)
-    
+
     cond do
       is_nil(params["page"]) ->
         do_handle_params(params, url, socket)
@@ -96,6 +96,7 @@ defmodule Literature.BlogLive do
 
   defp do_handle_params(params, url, socket) do
     path_info = String.split(URI.parse(url).path, "/") |> Enum.reject(&(&1 == ""))
+
     socket
     |> assign(:current_url, url)
     |> assign(:path_info, path_info)
@@ -106,7 +107,7 @@ defmodule Literature.BlogLive do
   defp apply_action(socket, :index, slug, params) do
     publication = Literature.get_publication!(slug: slug)
     page = paginate_posts(socket, params)
-    
+
     socket
     |> assign_meta_tags(publication)
     |> override_title_with_page(page)
