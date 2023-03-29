@@ -61,7 +61,7 @@
       <div class="grid grid-cols-3">
         <div class="justify-self-start">
           <%= if @page.page_number > 1 do %>
-            <%= link to: literature_path(@socket, :index, @page.page_number - 1), class: "font-semibold flex items-center space-x-2 group", rel: "prev" do %>
+            <%= link to: literature_path(@socket, :index, page: @page.page_number - 1), class: "font-semibold flex items-center space-x-2 group", rel: "prev" do %>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -85,7 +85,7 @@
         </div>
         <div class="justify-self-end">
           <%= if @page.page_number < @page.total_pages do %>
-            <%= link to: literature_path(@socket, :index, @page.page_number + 1), class: "font-semibold flex items-center space-x-2 group", rel: "next" do %>
+            <%= link to: literature_path(@socket, :index, page: @page.page_number + 1), class: "font-semibold flex items-center space-x-2 group", rel: "next" do %>
               <span>Next Post</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"

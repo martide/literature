@@ -26,7 +26,7 @@ defmodule Literature.BlogLiveTest do
   describe "Index" do
     setup [:create_blog]
 
-    test "raise no route found when path is /page/:page which is not integer", %{conn: conn} do
+    test "raise no route found when path is ?page=:page which is not integer", %{conn: conn} do
       assert_raise Literature.PageNotFound, "no route found", fn ->
         get(conn, Routes.literature_path(conn, :index, :page))
       end
@@ -38,15 +38,9 @@ defmodule Literature.BlogLiveTest do
       end
     end
 
-    test "raise no route found when path contains ?/", %{conn: conn, post: post} do
-      assert_raise Literature.PageNotFound, "no route found", fn ->
-        get(conn, Routes.literature_path(conn, :show, post.slug) <> "?/")
-      end
-    end
-
-    test "redirects to / when path is /page/1", %{conn: conn} do
-      conn = get(conn, Routes.literature_path(conn, :index, 1))
-      assert redirected_to(conn) == Routes.literature_path(conn, :index)
+    test "redirects to / when path is ?page=1", %{conn: conn} do
+      conn = get(conn, Routes.literature_path(conn, :index, page: 1))
+      assert conn.assigns.path_info == ["blog"]
     end
 
     test "lists all blog posts", %{conn: conn, publication: publication, post: post} do
