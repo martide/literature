@@ -73,7 +73,7 @@ defmodule Literature.TableComponent do
           </tbody>
         </table>
       </div>
-      <%= paginate @socket, @page, fn socket, [page: page] -> literature_dashboard_path(socket, @live_action, @slug, page, @params) end %>
+      <%= paginate @socket, @page, fn socket, [page: page] -> literature_dashboard_path(socket, @live_action, @slug, %{page: page}) end %>
     </div>
     """
   end
