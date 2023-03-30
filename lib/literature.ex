@@ -1,6 +1,5 @@
 defmodule Literature do
   @moduledoc false
-
   import Literature.QueryHelpers
   alias Literature.{Author, Post, Publication, Repo, Tag}
   alias Literature.DownloadHelpers
@@ -23,6 +22,7 @@ defmodule Literature do
     |> search(:slug, attrs)
     |> sort_by(attrs)
     |> where_publication(attrs)
+    |> where_preload(%{"preload" => ~w(posts)a})
     |> Repo.paginate(attrs)
   end
 
@@ -388,6 +388,7 @@ defmodule Literature do
     |> sort_by(attrs)
     |> where_status(attrs)
     |> where_publication(attrs)
+    |> where_preload(%{"preload" => ~w(posts)a})
     |> Repo.paginate(attrs)
   end
 

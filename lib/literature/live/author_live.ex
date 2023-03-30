@@ -132,7 +132,8 @@ defmodule Literature.AuthorLive do
   defp columns do
     [
       {:name, "Name"},
-      {:slug, "Slug"}
+      {:slug, "Slug"},
+      {:posts, "Posts"}
     ]
   end
 end
