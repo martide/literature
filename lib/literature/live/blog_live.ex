@@ -78,15 +78,12 @@ defmodule Literature.BlogLive do
     %{path: path} = URI.parse(url)
 
     cond do
-      String.contains?(url, "?") ->
-        raise Literature.PageNotFound
-
       is_nil(params["page"]) ->
         do_handle_params(params, url, socket)
 
       params["page"] == "1" ->
         path
-        |> String.replace("/page/#{params["page"]}", "")
+        |> String.replace("/?page=#{params["page"]}", "")
         |> then(&{:noreply, push_navigate(socket, to: &1, replace: true)})
 
       Integer.parse(params["page"]) == :error ->

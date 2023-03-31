@@ -95,21 +95,18 @@ defmodule Literature.Router do
 
             scope "/:publication_slug", Literature do
               # Post routes
-              live("/posts/page/1", PostLive, :list_posts, route_opts)
-              live("/posts/page/:page", PostLive, :list_posts, route_opts)
+              live("/posts", PostLive, :list_posts, route_opts)
               live("/posts/new", PostLive, :new_post, route_opts)
               live("/posts/:slug/edit", PostLive, :edit_post, route_opts)
               post("/posts/:slug/*path", PostController, :upload_image, route_opts)
 
               # Tag routes
-              live("/tags/page/1", TagLive, :list_tags, route_opts)
-              live("/tags/page/:page", TagLive, :list_tags, route_opts)
+              live("/tags", TagLive, :list_tags, route_opts)
               live("/tags/new", TagLive, :new_tag, route_opts)
               live("/tags/:slug/edit", TagLive, :edit_tag, route_opts)
 
               # Author routes
-              live("/authors/page/1", AuthorLive, :list_authors, route_opts)
-              live("/authors/page/:page", AuthorLive, :list_authors, route_opts)
+              live("/authors", AuthorLive, :list_authors, route_opts)
               live("/authors/new", AuthorLive, :new_author, route_opts)
               live("/authors/:slug/edit", AuthorLive, :edit_author, route_opts)
             end
@@ -173,7 +170,6 @@ defmodule Literature.Router do
               # Blog routes
               if :index in routes do
                 live("/", BlogLive, :index, route_opts)
-                live("/page/:page", BlogLive, :index, route_opts)
               end
 
               if :tags in routes do

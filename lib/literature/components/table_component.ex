@@ -73,7 +73,7 @@ defmodule Literature.TableComponent do
           </tbody>
         </table>
       </div>
-      <%= paginate @socket, @page, fn socket, [page: page] -> literature_dashboard_path(socket, @live_action, @slug, page, @params) end %>
+      <%= paginate @socket, @page, fn socket, [page: page] -> literature_dashboard_path(socket, @live_action, @slug, %{page: page}) end %>
     </div>
     """
   end
@@ -106,7 +106,7 @@ defmodule Literature.TableComponent do
 
   defp actions(assigns) do
     assigns =
-      Map.put(assigns, :base_path, String.replace_suffix(assigns.base_path, "/page/1", ""))
+      Map.put(assigns, :base_path, String.replace_suffix(assigns.base_path, "?page=1", ""))
 
     ~H"""
     <div class="flex items-center space-x-2">
@@ -204,7 +204,6 @@ defmodule Literature.TableComponent do
   end
 
   defp table_sort(base_path, params, {field, text}) do
-    base_path = String.replace_suffix(base_path, "/page/1", "/page/#{params["page"] || 1}")
     direction = params["sort_direction"]
 
     sort_direction =
@@ -222,6 +221,7 @@ defmodule Literature.TableComponent do
     params = params |> Query.encode() |> URI.decode_query()
 
     opts = %{
+      "page" => opts[:page] || params["page"] || nil,
       "sort_field" => opts[:sort_field] || params["sort_field"] || nil,
       "sort_direction" => opts[:sort_direction] || params["sort_direction"] || nil
     }

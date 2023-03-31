@@ -85,7 +85,7 @@ defmodule Literature.RouterTest do
 
     test "generates helper for posts", %{conn: conn, publication: publication} do
       assert Routes.literature_dashboard_path(conn, :list_posts, publication.slug) ==
-               "/literature/#{publication.slug}/posts/page/1"
+               "/literature/#{publication.slug}/posts"
 
       assert Routes.literature_dashboard_path(conn, :new_post, publication.slug) ==
                "/literature/#{publication.slug}/posts/new"
@@ -101,7 +101,7 @@ defmodule Literature.RouterTest do
 
     test "generates helper for tags", %{conn: conn, publication: publication} do
       assert Routes.literature_dashboard_path(conn, :list_tags, publication.slug) ==
-               "/literature/#{publication.slug}/tags/page/1"
+               "/literature/#{publication.slug}/tags"
 
       assert Routes.literature_dashboard_path(conn, :new_tag, publication.slug) ==
                "/literature/#{publication.slug}/tags/new"
@@ -112,7 +112,7 @@ defmodule Literature.RouterTest do
 
     test "generates helper for authors", %{conn: conn, publication: publication} do
       assert Routes.literature_dashboard_path(conn, :list_authors, publication.slug) ==
-               "/literature/#{publication.slug}/authors/page/1"
+               "/literature/#{publication.slug}/authors"
 
       assert Routes.literature_dashboard_path(conn, :new_author, publication.slug) ==
                "/literature/#{publication.slug}/authors/new"
@@ -140,7 +140,7 @@ defmodule Literature.RouterTest do
 
     test "generates helper for posts", %{conn: conn, publication: publication} do
       assert DynamicPathRoutes.literature_dashboard_path(conn, :list_posts, publication.slug) ==
-               "/foo/bar/#{publication.slug}/posts/page/1"
+               "/foo/bar/#{publication.slug}/posts"
 
       assert DynamicPathRoutes.literature_dashboard_path(conn, :new_post, publication.slug) ==
                "/foo/bar/#{publication.slug}/posts/new"
@@ -165,7 +165,7 @@ defmodule Literature.RouterTest do
 
     test "generates helper for tags", %{conn: conn, publication: publication} do
       assert DynamicPathRoutes.literature_dashboard_path(conn, :list_tags, publication.slug) ==
-               "/foo/bar/#{publication.slug}/tags/page/1"
+               "/foo/bar/#{publication.slug}/tags"
 
       assert DynamicPathRoutes.literature_dashboard_path(conn, :new_tag, publication.slug) ==
                "/foo/bar/#{publication.slug}/tags/new"
@@ -176,7 +176,7 @@ defmodule Literature.RouterTest do
 
     test "generates helper for authors", %{conn: conn, publication: publication} do
       assert DynamicPathRoutes.literature_dashboard_path(conn, :list_authors, publication.slug) ==
-               "/foo/bar/#{publication.slug}/authors/page/1"
+               "/foo/bar/#{publication.slug}/authors"
 
       assert DynamicPathRoutes.literature_dashboard_path(conn, :new_author, publication.slug) ==
                "/foo/bar/#{publication.slug}/authors/new"
