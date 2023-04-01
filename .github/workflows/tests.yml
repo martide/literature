@@ -2,8 +2,6 @@ name: Elixir
 on: push
 
 env:
-  COVERALLS_PARALLEL: true
-  COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   MIX_ENV: test
 
