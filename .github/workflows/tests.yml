@@ -11,6 +11,20 @@ env:
 jobs:
   tests:
     runs-on: ubuntu-20.04
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_literature
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
     - uses: actions/checkout@v3
     - uses: erlef/setup-beam@v1
@@ -35,6 +49,8 @@ jobs:
     - run: mix format --dry-run --check-formatted
     - run: mix credo --strict
     - run: mix dialyzer
+    - run: elixir --logger-sasl-reports true -S mix coveralls.json
+    - uses: codecov/codecov-action@v3
 
   elixir_1_14:
     runs-on: ubuntu-20.04
