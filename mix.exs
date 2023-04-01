@@ -18,8 +18,9 @@ defmodule Literature.MixProject do
       preferred_cli_env: [
         coveralls: :test,
         "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test
+        "coveralls.html": :test,
+        "coveralls.json": :test,
+        "coveralls.post": :test
       ],
       dialyzer: [plt_add_apps: [:mix, :ex_unit]],
       description: "A simple CMS / Blog"
