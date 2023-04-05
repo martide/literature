@@ -6,6 +6,11 @@ let Hooks = {}
 Hooks.EditorJS = {
   loadEditorJS() {
     const element = this.el
+    element.addEventListener("click", (event) => {
+      if (event.target.tagName === "A") {
+        event.stopImmediatePropagation();
+      }
+    });
 
     import('./editor').then(
       ({ HTMLEditorJS }) => {
