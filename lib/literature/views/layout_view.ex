@@ -14,11 +14,10 @@ defmodule Literature.LayoutView do
   defp application_rss_path(conn_or_socket, view_module),
     do: view_module.rss_path(conn_or_socket)
 
-  defp application_css_path(conn_or_socket, view_module),
-    do: view_module.css_path(conn_or_socket)
-
-  defp application_js_path(conn_or_socket, view_module),
-    do: view_module.js_path(conn_or_socket)
+  defp csp_nonce(conn, type) when type in [:script, :style, :img] do
+    csp_nonce_assign_key = conn.private.csp_nonce_assign_key[type]
+    conn.assigns[csp_nonce_assign_key]
+  end
 
   defp canonical_path(conn) do
     conn
