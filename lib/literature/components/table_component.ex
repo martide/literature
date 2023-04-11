@@ -211,9 +211,7 @@ defmodule Literature.TableComponent do
     """
   end
 
-  defp table_sort(base_path, params, {:posts, text}) do
-    text
-  end
+  defp table_sort(_base_path, _params, {:posts, text}), do: text
 
   defp table_sort(base_path, params, {field, text}) do
     direction = params["sort_direction"]
