@@ -160,9 +160,7 @@ defmodule Literature.TableComponent do
   defp render_item(item, :posts = field) do
     posts = Map.get(item, field)
 
-    content_tag(:span, length(posts),
-      class: "text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg"
-    )
+    content_tag(:span, length(posts), class: "text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg")
   end
 
   defp render_item(item, field), do: Map.get(item, field)
