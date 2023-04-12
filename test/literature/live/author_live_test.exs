@@ -4,8 +4,6 @@ defmodule Literature.AuthorLiveTest do
   import Phoenix.LiveViewTest
   import Literature.Test.Fixtures
 
-  alias Literature.Repo
-
   @create_attrs %{name: "some new name"}
   @update_attrs %{name: "some updated name"}
   @invalid_attrs %{name: nil}
