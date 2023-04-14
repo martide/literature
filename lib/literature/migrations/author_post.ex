@@ -10,16 +10,12 @@ defmodule Literature.Migrations.AuthorPost do
       add(:post_id, references(:literature_posts, on_delete: :delete_all, type: :binary_id))
     end
 
-    create(
-      unique_index("literature_authors_posts", [:post_id, :author_id], concurrently: true)
-    )
+    create(unique_index("literature_authors_posts", [:post_id, :author_id], concurrently: true))
   end
 
   def down do
     drop_if_exists(table(:literature_authors_posts))
 
-    drop_if_exists(
-      index("literature_authors_posts", [:post_id, :author_id], concurrently: true)
-    )
+    drop_if_exists(index("literature_authors_posts", [:post_id, :author_id], concurrently: true))
   end
 end

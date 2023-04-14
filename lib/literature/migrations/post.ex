@@ -37,9 +37,7 @@ defmodule Literature.Migrations.Post do
 
     create_if_not_exists(unique_index(:literature_posts, [:publication_id, :slug]))
 
-    create(
-      unique_index("literature_posts", [:publication_id, :published_at], concurrently: true)
-    )
+    create(unique_index("literature_posts", [:publication_id, :published_at], concurrently: true))
   end
 
   def down do
