@@ -3,6 +3,8 @@ defmodule Literature.Migrations.Postgres.V02 do
     Adds more indexes
   """
   use Ecto.Migration
+  @disable_ddl_transaction true
+  @disable_migration_lock true
 
   def up(_opts) do
     create_if_not_exists(unique_index("literature_authors_posts", [:post_id, :author_id], concurrently: true))
