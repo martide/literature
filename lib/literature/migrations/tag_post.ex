@@ -10,16 +10,12 @@ defmodule Literature.Migrations.TagPost do
       add(:post_id, references(:literature_posts, on_delete: :delete_all, type: :binary_id))
     end
 
-    create(
-      unique_index("literature_tags_posts", [:post_id, :tag_id], concurrently: true)
-    )
+    create(unique_index("literature_tags_posts", [:post_id, :tag_id], concurrently: true))
   end
 
   def down do
     drop_if_exists(table(:literature_tags_posts))
 
-    drop_if_exists(
-      index("literature_tags_posts", [:post_id, :tag_id], concurrently: true)
-    )
+    drop_if_exists(index("literature_tags_posts", [:post_id, :tag_id], concurrently: true))
   end
 end
