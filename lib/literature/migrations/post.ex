@@ -1,6 +1,8 @@
 defmodule Literature.Migrations.Post do
   @moduledoc false
   use Ecto.Migration
+  @disable_ddl_transaction true
+  @disable_migration_lock true
 
   def up do
     create_if_not_exists table(:literature_posts, primary_key: false) do
@@ -34,9 +36,17 @@ defmodule Literature.Migrations.Post do
     end
 
     create_if_not_exists(unique_index(:literature_posts, [:publication_id, :slug]))
+
+    create(
+      unique_index("literature_posts", [:publication_id, :published_at], concurrently: true)
+    )
   end
 
   def down do
     drop_if_exists(table(:literature_posts))
+
+    drop_if_exists(
+      index("literature_posts", [:publication_id, :published_at], concurrently: true)
+    )
   end
 end
