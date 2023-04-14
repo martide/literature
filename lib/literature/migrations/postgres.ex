@@ -84,7 +84,7 @@ defmodule Literature.Migrations.Postgres do
   defp record_version(_opts, 0), do: :ok
 
   defp record_version(%{prefix: prefix}, version) do
-    execute "COMMENT ON TABLE #{inspect(prefix)}.literature_publications IS '#{version}'"
+    execute("COMMENT ON TABLE #{inspect(prefix)}.literature_publications IS '#{version}'")
   end
 
   defp with_defaults(opts, version) do
