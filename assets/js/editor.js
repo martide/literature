@@ -10,6 +10,9 @@ const HTMLEditorJS = element => {
   const inputEditorJSON = document.querySelector('#post-form_editor_json')
   const inputHTML = document.querySelector('#post-form_html')
 
+  inputHTML.value = element.dataset.postData ? 
+    JSON.stringify(editorParser().parse(JSON.parse(element.dataset.postData))) : ""
+
   const editor = new EditorJS({
     tools: { 
       header: Header,
@@ -25,13 +28,16 @@ const HTMLEditorJS = element => {
           }
         }
       },
-      list: List
+      list: {
+        class: List,
+        inlineToolbar: true
+      },
     },
     data: JSON.parse(element.dataset.postData || '{}'),
     onChange: () => {
       editor.save().then((outputData) => {
         inputEditorJSON.value = JSON.stringify(outputData)
-        inputHTML.value = editorParser().parse(outputData)
+        inputHTML.value = JSON.stringify(editorParser().parse(outputData))
       })
     }
   })

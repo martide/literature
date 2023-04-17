@@ -99,7 +99,11 @@ defmodule Literature.PostFormComponent do
 
   @impl Phoenix.LiveComponent
   def handle_event("save", %{"post" => post_params}, socket) do
-    post_params = Map.put(post_params, "html", String.split(post_params["html"], ","))
+    html = post_params["html"]
+
+    html = if is_binary(html) and html != "", do: Jason.decode!(post_params["html"]), else: []
+
+    post_params = Map.put(post_params, "html", html)
     save_post(socket, socket.assigns.action, post_params)
   end
 

@@ -67,6 +67,45 @@ defmodule Literature.PostLiveTest do
       assert flash["success"] == "Post created successfully"
     end
 
+    test "saves new post with html", %{
+      conn: conn,
+      publication: publication,
+      author: author,
+      tag: tag
+    } do
+      {:ok, index_live, html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_posts, publication.slug))
+
+      assert html =~ "Posts"
+
+      {:ok, new_live, html} =
+        index_live
+        |> element("a", "Create new")
+        |> render_click()
+        |> follow_redirect(
+          conn,
+          Routes.literature_dashboard_path(conn, :new_post, publication.slug)
+        )
+
+      assert html =~ "New Post"
+
+      html = Jason.encode!(["<p>some html</p>"])
+
+      new_live
+      |> form("#post-form",
+        post: %{@create_attrs | authors_ids: [author.id], tags_ids: [tag.id]}
+      )
+      |> render_submit(%{post: %{"html" => html}})
+
+      {path, flash} = assert_redirect(new_live)
+
+      assert path == Routes.literature_dashboard_path(conn, :list_posts, publication.slug)
+      assert flash["success"] == "Post created successfully"
+
+      {:ok, _view, html} = live(conn, path)
+      assert html =~ @create_attrs.title
+    end
+
     test "updates post in listing", %{conn: conn, publication: publication, post: post} do
       {:ok, view, html} =
         live(conn, Routes.literature_dashboard_path(conn, :list_posts, publication.slug))
@@ -88,6 +127,41 @@ defmodule Literature.PostLiveTest do
       {path, flash} = assert_redirect(view)
       assert path == Routes.literature_dashboard_path(conn, :list_posts, publication.slug)
       assert flash["success"] == "Post updated successfully"
+
+      {:ok, _, html} = follow_redirect(result, conn, path)
+      assert html =~ @update_attrs.title
+    end
+
+    test "updates post in listing with html", %{
+      conn: conn,
+      publication: publication,
+      post: post
+    } do
+      {:ok, view, html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_posts, publication.slug))
+
+      assert html =~ "Posts"
+
+      assert view |> element("#edit-#{post.id}") |> render_click() =~ "Post Settings"
+
+      assert_patch(
+        view,
+        Routes.literature_dashboard_path(conn, :edit_post, publication.slug, post.slug)
+      )
+
+      html = Jason.encode!(["<p>some html</p>"])
+
+      result =
+        view
+        |> form("#post-form", post: @update_attrs)
+        |> render_submit(%{post: %{"html" => html}})
+
+      {path, flash} = assert_redirect(view)
+
+      assert path == Routes.literature_dashboard_path(conn, :list_posts, publication.slug)
+      assert flash["success"] == "Post updated successfully"
+
+      assert Literature.get_post!(post.id).html == Jason.decode!(html)
 
       {:ok, _, html} = follow_redirect(result, conn, path)
       assert html =~ @update_attrs.title
