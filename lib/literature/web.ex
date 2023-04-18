@@ -12,7 +12,11 @@ defmodule Literature.Web do
       import Ecto.Changeset
       import Slugy
 
-      alias Literature.{Author, Post, Publication, Tag, Uploaders}
+      alias Literature.Author
+      alias Literature.Post
+      alias Literature.Publication
+      alias Literature.Tag
+      alias Literature.Uploaders
 
       @primary_key {:id, :binary_id, autogenerate: false}
       @foreign_key_type :binary_id

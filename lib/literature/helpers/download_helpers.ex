@@ -1,6 +1,4 @@
 defmodule Literature.DownloadHelpers do
-  require Logger
-
   @moduledoc """
 
   Returns:
@@ -11,7 +9,7 @@ defmodule Literature.DownloadHelpers do
     * `{:error, :eexist}` if file exists already
 
   Options:
-    
+
     * `max_file_size` - max available file size for downloading (in bytes). Default is `1024 * 1024 * 1000` (1GB)
     * `path` - absolute file path for the saved file. Default is `pwd <> requested file name`
 
@@ -26,6 +24,7 @@ defmodule Literature.DownloadHelpers do
       iex> Literature.DownloadHelpers.download_image("http://speedtest.ftp.otenet.gr/files/test100k.db", [path: "/custom/absolute/file/path.db"])
       {:ok, "/custom/absolute/file/path.db"}
   """
+  require Logger
 
   def download_image(url, opts \\ []) do
     file_name = url |> String.split("/") |> List.last()

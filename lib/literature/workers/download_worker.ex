@@ -2,9 +2,9 @@ defmodule Literature.Workers.DownloadWorker do
   @moduledoc """
   pool boy worker that handles image proccessing and stores it in temp file
   """
+  use GenServer
 
   require Logger
-  use GenServer
 
   def start_link(otps \\ []) do
     GenServer.start_link(__MODULE__, [], otps)

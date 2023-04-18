@@ -1,7 +1,8 @@
 defmodule Literature.RSSController do
   use Literature.Web, :controller
 
-  alias Atomex.{Entry, Feed}
+  alias Atomex.Entry
+  alias Atomex.Feed
   alias Literature.Config
 
   @default_path "/rss.xml"

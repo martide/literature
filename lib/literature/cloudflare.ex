@@ -2,9 +2,9 @@ defmodule Literature.Cloudflare do
   @moduledoc """
     Literature Cloudflare
   """
-  require Logger
-
   alias Literature.Config
+
+  require Logger
 
   @doc """
   Purge cloudflare files.
