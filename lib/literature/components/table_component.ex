@@ -157,6 +157,12 @@ defmodule Literature.TableComponent do
     )
   end
 
+  defp render_item(item, :posts = field) do
+    posts = Map.get(item, field)
+
+    content_tag(:span, length(posts), class: "text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg")
+  end
+
   defp render_item(item, field), do: Map.get(item, field)
 
   defp filter_status(%{published_at: _}, %{params: params} = assigns) do
@@ -202,6 +208,8 @@ defmodule Literature.TableComponent do
     </li>
     """
   end
+
+  defp table_sort(_base_path, _params, {:posts, text}), do: text
 
   defp table_sort(base_path, params, {field, text}) do
     direction = params["sort_direction"]

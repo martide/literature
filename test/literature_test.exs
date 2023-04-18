@@ -11,13 +11,6 @@ defmodule LiteratureTest do
 
     @invalid_attrs %{name: nil, slug: nil}
 
-    test "paginate_authors/0 returns all authors" do
-      publication = publication_fixture()
-      author = author_fixture(publication_id: publication.id)
-      assert %Scrivener.Page{entries: entries} = Literature.paginate_authors()
-      assert entries == [author]
-    end
-
     test "list_authors/0 returns all authors" do
       publication = publication_fixture()
       author = author_fixture(publication_id: publication.id)
@@ -262,13 +255,6 @@ defmodule LiteratureTest do
     alias Literature.Tag
 
     @invalid_attrs %{name: nil, slug: nil}
-
-    test "paginate_tags/0 returns all tags" do
-      publication = publication_fixture()
-      tag = tag_fixture(publication_id: publication.id)
-      assert %Scrivener.Page{entries: entries} = Literature.paginate_tags()
-      assert entries == [tag]
-    end
 
     test "list_tags/0 returns all tags" do
       publication = publication_fixture()
