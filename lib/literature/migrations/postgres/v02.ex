@@ -12,20 +12,12 @@ defmodule Literature.Migrations.Postgres.V02 do
     )
 
     create_if_not_exists(
-      unique_index("literature_posts", [:publication_id, :published_at], concurrently: true)
-    )
-
-    create_if_not_exists(
       unique_index("literature_tags_posts", [:post_id, :tag_id], concurrently: true)
     )
   end
 
   def down(_opts) do
     drop_if_exists(index("literature_authors_posts", [:post_id, :author_id], concurrently: true))
-
-    drop_if_exists(
-      index("literature_posts", [:publication_id, :published_at], concurrently: true)
-    )
 
     drop_if_exists(index("literature_tags_posts", [:post_id, :tag_id], concurrently: true))
   end
