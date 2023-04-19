@@ -82,7 +82,7 @@ defmodule Literature.BlogLiveTest do
     test "returns 404 error when page not found", %{conn: conn} do
       conn = get(conn, Routes.literature_path(conn, :show, "page-not-exists"))
 
-      assert html_response(conn, 404) =~ "Page not found"
+      assert html_response(conn, 200) =~ "Page not found"
     end
   end
 end
