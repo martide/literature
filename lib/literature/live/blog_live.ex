@@ -140,7 +140,7 @@ defmodule Literature.BlogLive do
 
   defp apply_action(socket, _, slug, _) do
     publication = Literature.get_publication!(slug: slug)
-    assign(socket, :publication, publication)
+    assign(socket, :publication, publication || %{name: nil})
   end
 
   defp paginate_posts(%{assigns: %{publication_slug: slug}}, params) do
