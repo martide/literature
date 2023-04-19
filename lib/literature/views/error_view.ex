@@ -30,7 +30,6 @@ defmodule Literature.ErrorView do
     <div
       class="error-content py-12 flex flex-col bg-white"
       id="error-page-component"
-      phx-hook="UpdateAlert"
     >
       <main class="flex-grow flex flex-col justify-center max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex-shrink-0 flex justify-center">
