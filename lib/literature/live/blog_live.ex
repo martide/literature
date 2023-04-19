@@ -68,12 +68,10 @@ defmodule Literature.BlogLive do
     |> then(&Phoenix.View.render(view_module, &1, assigns))
   rescue
     _ ->
-      reraise Literature.PageNotFound,
-              [
-                conn: %{path_info: assigns[:path_info], method: "GET"},
-                router: assigns[:application_router]
-              ],
-              __STACKTRACE__
+      layout = {Literature.LayoutView, "error.html"}
+      assigns = [layout: layout, publication: %{name: "404"}, view_module: Literature.ErrorView]
+
+      Phoenix.View.render(Literature.ErrorView, "404.html", assigns)
   end
 
   @impl Phoenix.LiveView
