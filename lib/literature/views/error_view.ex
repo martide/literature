@@ -1,5 +1,6 @@
 defmodule Literature.ErrorView do
   use Literature.Web, :view
+  use Phoenix.Component
 
   # If you want to customize a particular status code
   # for a certain format, you may uncomment below.
