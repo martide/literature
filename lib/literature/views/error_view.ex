@@ -1,6 +1,5 @@
 defmodule Literature.ErrorView do
   use Literature.Web, :view
-  use Phoenix.Component
 
   # If you want to customize a particular status code
   # for a certain format, you may uncomment below.
@@ -16,8 +15,6 @@ defmodule Literature.ErrorView do
   end
 
   def render("404.html", _assigns) do
-    ~H"""
-    Page not found. Sorry, we couldn't find the page you are looking for.
-    """
+    "Page not found. Sorry, we couldn't find the page you are looking for."
   end
 end
