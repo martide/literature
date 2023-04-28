@@ -14,7 +14,7 @@ defmodule Literature.ErrorView do
     Phoenix.Controller.status_message_from_template(template)
   end
 
-  def render("404.html", assigns) do
+  def render("404.html", _assigns) do
     ~H"""
     Page not found. Sorry, we couldn't find the page you are looking for.
     """
