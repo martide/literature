@@ -68,12 +68,7 @@ defmodule Literature.BlogLive do
     |> then(&Phoenix.View.render(view_module, &1, assigns))
   rescue
     _ ->
-      reraise Literature.PageNotFound,
-              [
-                conn: %{path_info: assigns[:path_info], method: "GET"},
-                router: assigns[:application_router]
-              ],
-              __STACKTRACE__
+      reraise Literature.PageNotFound, __STACKTRACE__
   end
 
   @impl Phoenix.LiveView
@@ -142,7 +137,7 @@ defmodule Literature.BlogLive do
 
   defp apply_action(socket, _, slug, _) do
     publication = Literature.get_publication!(slug: slug)
-    assign(socket, :publication, publication)
+    assign(socket, :publication, publication || %{name: nil})
   end
 
   defp paginate_posts(%{assigns: %{publication_slug: slug}}, params) do
@@ -250,25 +245,4 @@ defmodule Literature.BlogLive do
   end
 
   defp path_not_found_when_page_number_exceeds_from_total_pages(socket, _, _), do: socket
-end
-
-defmodule Literature.PageNotFound do
-  @moduledoc """
-    Exception raised when no route is found.
-  """
-  defexception plug_status: 404, message: "no route found", conn: nil, router: nil
-
-  if Mix.env() == :dev do
-    def exception(opts) do
-      conn = Keyword.fetch!(opts, :conn)
-      router = Keyword.fetch!(opts, :router)
-      path = "/" <> Enum.join(conn.path_info, "/")
-
-      %Phoenix.Router.NoRouteError{
-        message: "no route found for #{conn.method} #{path} (#{inspect(router)})",
-        conn: conn,
-        router: router
-      }
-    end
-  end
 end
