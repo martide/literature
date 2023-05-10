@@ -68,10 +68,7 @@ defmodule Literature.BlogLive do
     |> then(&Phoenix.View.render(view_module, &1, assigns))
   rescue
     _ ->
-      layout = {Literature.LayoutView, "error.html"}
-      assigns = [layout: layout, publication: %{name: "404"}, view_module: Literature.ErrorView]
-
-      Phoenix.View.render(Literature.ErrorView, "404.html", assigns)
+      raise Literature.PageNotFoundError, message: "Page not found"
   end
 
   @impl Phoenix.LiveView
