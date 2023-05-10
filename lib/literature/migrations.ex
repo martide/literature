@@ -1,4 +1,11 @@
 defmodule Literature.Migrations do
+  @moduledoc false
+
+  defdelegate up(opts \\ []), to: Literature.Migration
+  defdelegate down(opts \\ []), to: Literature.Migration
+end
+
+defmodule Literature.Migration do
   @moduledoc """
   Migrations create the database tables Literature needs.
 
@@ -17,9 +24,9 @@ defmodule Literature.Migrations do
   defmodule MyApp.Repo.Migrations.AddLiterature do
     use Ecto.Migration
     
-    def up, do: Literature.Migrations.up()
+    def up, do: Literature.Migrations.up(version: 1)
     
-    def down, do: Literature.Migrations.down()
+    def down, do: Literature.Migrations.down(version: 1)
   end
   ```
 
@@ -33,36 +40,23 @@ defmodule Literature.Migrations do
   """
   use Ecto.Migration
 
-  @tables ~w(Publication Author Tag Post AuthorPost TagPost)
+  @callback up(Keyword.t()) :: :ok
+  @callback down(Keyword.t()) :: :ok
+  @callback migrated_version(Keyword.t()) :: non_neg_integer()
 
-  @doc """
-  Run the `up` changes for all migrations
+  def up(opts \\ []) when is_list(opts) do
+    migrator().up(opts)
+  end
 
-  ## Example
+  def down(opts \\ []) when is_list(opts) do
+    migrator().down(opts)
+  end
 
-  Run all migrations up:
-    
-    Literature.Migrations.up()
-  """
-  def up, do: change(:up, @tables)
+  def migrated_version(opts \\ []) when is_list(opts) do
+    migrator().migrated_version(opts)
+  end
 
-  @doc """
-  Run the `down` changes for all migrations
-
-  ## Example
-
-  Run all migrations down:
-    
-    Literature.Migrations.down()
-  """
-  def down, do: change(:down, Enum.reverse(@tables))
-
-  defp change(direction, tables) do
-    for table_name <- tables do
-      [__MODULE__, table_name]
-      |> Module.concat()
-      # credo:disable-for-next-line
-      |> apply(direction, [])
-    end
+  defp migrator do
+    Literature.Migrations.Postgres
   end
 end
