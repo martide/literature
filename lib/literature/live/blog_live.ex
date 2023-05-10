@@ -68,7 +68,7 @@ defmodule Literature.BlogLive do
     |> then(&Phoenix.View.render(view_module, &1, assigns))
   rescue
     _ ->
-      reraise Literature.PageNotFoundError, __STACKTRACE__
+      reraise Literature.PageNotFound, __STACKTRACE__
   end
 
   @impl Phoenix.LiveView
