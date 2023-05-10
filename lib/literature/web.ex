@@ -101,7 +101,7 @@ defmodule Literature.Web do
   end
 end
 
-defimpl Plug.Exception, for: Literature.PageNotFoundError do
+defimpl Plug.Exception, for: Literature.PageNotFound do
   def status(_exception), do: 404
   def actions(_exception), do: []
 end
