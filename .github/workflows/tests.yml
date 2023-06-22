@@ -8,10 +8,10 @@ env:
 # https://github.com/elixir-lang/elixir/blob/master/lib/elixir/pages/compatibility-and-deprecations.md
 jobs:
   tests:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:14
+        image: postgres
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -27,8 +27,8 @@ jobs:
     - uses: actions/checkout@v3
     - uses: erlef/setup-beam@v1
       with:
-        otp-version: "25.x"
-        elixir-version: "1.14.x"
+        otp-version: "26.x"
+        elixir-version: "1.15.x"
     - uses: actions/cache@v3
       with:
         path: |
@@ -50,8 +50,38 @@ jobs:
     - run: elixir --logger-sasl-reports true -S mix coveralls.json
     - uses: codecov/codecov-action@v3
 
+  elixir_1_15:
+    runs-on: ubuntu-latest
+    name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
+    strategy:
+      matrix:
+        otp: [24.x, 25.x, 26.x]
+        elixir: [1.15.x]
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_literature
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v3
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir}}
+      - run: mix do deps.get, compile --all-warnings --warnings-as-errors
+      - run: mix coveralls.github
+
   elixir_1_14:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     strategy:
       matrix:
@@ -59,7 +89,7 @@ jobs:
         elixir: [1.14.x]
     services:
       postgres:
-        image: postgres:14
+        image: postgres
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -81,7 +111,7 @@ jobs:
       - run: mix coveralls.github
 
   elixir_1_13:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     strategy:
       matrix:
@@ -89,7 +119,7 @@ jobs:
         elixir: [1.13.x]
     services:
       postgres:
-        image: postgres:14
+        image: postgres
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
