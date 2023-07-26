@@ -13,6 +13,16 @@ defmodule Literature.BlogLive do
 
   @impl Phoenix.LiveView
   def mount(%{"slug" => slug} = params, session, socket) do
+    socket =
+      assign(socket,
+        application_router: session["application_router"],
+        locale: params["locale"],
+        publication_slug: session["publication_slug"],
+        view_module: session["view_module"],
+        error_view_module: session["error_view_module"],
+        error_code: nil
+      )
+
     [&Literature.get_post!/1, &Literature.get_tag!/1, &Literature.get_author!/1]
     |> Enum.map(fn fun -> fun.(slug: slug, publication_slug: session["publication_slug"]) end)
     |> Enum.find(&is_struct/1)
@@ -27,14 +37,8 @@ defmodule Literature.BlogLive do
         assign_to_socket(socket, :author, preload_author(author))
 
       _ ->
-        socket
+        render_not_found(socket)
     end
-    |> assign(%{
-      application_router: session["application_router"],
-      locale: params["locale"],
-      publication_slug: session["publication_slug"],
-      view_module: session["view_module"]
-    })
     |> then(&{:ok, &1, layout: @layout})
   end
 
@@ -44,13 +48,22 @@ defmodule Literature.BlogLive do
     |> assign(%{
       locale: params["locale"],
       publication_slug: session["publication_slug"],
-      view_module: session["view_module"]
+      view_module: session["view_module"],
+      error_view_module: session["error_view_module"],
+      error_code: nil
     })
     |> then(&{:ok, &1, layout: @layout})
   end
 
   @impl Phoenix.LiveView
-  def render(%{view_module: view_module, live_action: live_action} = assigns) do
+  def render(
+        %{
+          view_module: view_module,
+          live_action: live_action,
+          error_code: error_code
+        } = assigns
+      )
+      when is_nil(error_code) do
     live_action
     |> case do
       :show ->
@@ -71,6 +84,9 @@ defmodule Literature.BlogLive do
       reraise Literature.PageNotFound, __STACKTRACE__
   end
 
+  def render(%{error_view_module: error_view_module, error_code: error_code} = assigns),
+    do: Phoenix.View.render(error_view_module, "#{error_code}.html", assigns)
+
   @impl Phoenix.LiveView
   def handle_params(params, url, socket) do
     %{path: path} = URI.parse(url)
@@ -83,9 +99,6 @@ defmodule Literature.BlogLive do
         path
         |> String.replace("/?page=#{params["page"]}", "")
         |> then(&{:noreply, push_navigate(socket, to: &1, replace: true)})
-
-      Integer.parse(params["page"]) == :error ->
-        raise Literature.PageNotFound
 
       true ->
         do_handle_params(params, url, socket)
@@ -237,12 +250,22 @@ defmodule Literature.BlogLive do
          %{"page" => page},
          total_pages
        ) do
-    if String.to_integer(page) > total_pages do
-      raise Literature.PageNotFound
-    else
+    with {page, _} <- Integer.parse(page),
+         true <- page <= total_pages do
       socket
+    else
+      _ ->
+        render_not_found(socket)
     end
   end
 
   defp path_not_found_when_page_number_exceeds_from_total_pages(socket, _, _), do: socket
+
+  def render_not_found(%Phoenix.LiveView.Socket{} = socket) do
+    if socket.assigns.error_view_module do
+      assign(socket, error_code: 404)
+    else
+      raise Literature.PageNotFound
+    end
+  end
 end
