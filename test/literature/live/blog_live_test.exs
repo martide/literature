@@ -85,4 +85,20 @@ defmodule Literature.BlogLiveTest do
       end
     end
   end
+
+  describe "Error view" do
+    setup do
+      publication = publication_fixture(name: "Error View", description: "Blog description")
+
+      %{publication: publication}
+    end
+
+    test "Display 404 page when page not found", %{conn: conn} do
+      {:ok, view, _html} = live(conn, Routes.error_view_path(conn, :show, "page-not-exists"))
+      html = render(view)
+
+      assert html =~ "Page not found"
+      assert html =~ "Sorry, we could not find the page you are looking for."
+    end
+  end
 end
