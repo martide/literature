@@ -21,9 +21,24 @@ defmodule Literature.AuthorLive do
   def render(assigns) do
     ~H"""
     <.sidebar id="author-sidebar" live_action={@live_action}>
-      <:tab title="Posts" path={literature_dashboard_path(@socket, :list_posts, @slug)} icon="pencil" actions={~w(list_posts new_post edit_post)a} />
-      <:tab title="Tags" path={literature_dashboard_path(@socket, :list_tags, @slug)} icon="tag" actions={~w(list_tags new_tag edit_tag)a} />
-      <:tab title="Authors" path={literature_dashboard_path(@socket, :list_authors, @slug)} icon="users" actions={~w(list_authors new_author edit_author)a} />
+      <:tab
+        title="Posts"
+        path={literature_dashboard_path(@socket, :list_posts, @slug)}
+        icon="pencil"
+        actions={~w(list_posts new_post edit_post)a}
+      />
+      <:tab
+        title="Tags"
+        path={literature_dashboard_path(@socket, :list_tags, @slug)}
+        icon="tag"
+        actions={~w(list_tags new_tag edit_tag)a}
+      />
+      <:tab
+        title="Authors"
+        path={literature_dashboard_path(@socket, :list_authors, @slug)}
+        icon="users"
+        actions={~w(list_authors new_author edit_author)a}
+      />
     </.sidebar>
     <.container>
       <.h1><%= @page_title %></.h1>
@@ -55,10 +70,7 @@ defmodule Literature.AuthorLive do
         />
       <% end %>
       <%= if @live_action == :page_layout do %>
-        <.live_component
-          module={AuthorPageComponent}
-          id="author-page"
-        />
+        <.live_component module={AuthorPageComponent} id="author-page" />
       <% end %>
     </.container>
     """
