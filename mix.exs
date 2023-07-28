@@ -45,9 +45,9 @@ defmodule Literature.MixProject do
 
       # Phoenix
       {:ecto_sql, "~> 3.9"},
-      {:phoenix, "~> 1.7.6"},
+      {:phoenix, "~> 1.7"},
       {:phoenix_ecto, "~> 4.4"},
-      {:phoenix_live_view, "~> 0.18.18"},
+      {:phoenix_live_view, "~> 0.18"},
       {:phoenix_view, "~> 2.0"},
       {:postgrex, ">= 0.0.0", only: :test},
 
