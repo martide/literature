@@ -62,12 +62,17 @@ defmodule Literature.FormComponent do
     <p
       class="text-primary-700 font-semibold uppercase py-5 cursor-pointer"
       phx-click={
-        JS.toggle(to: "##{@id}", in: {"ease-out duration-300", "opacity-0", "opacity-100"}, out: {"ease-in duration-300", "opacity-100", "opacity-0"})}
-      >
+        JS.toggle(
+          to: "##{@id}",
+          in: {"ease-out duration-300", "opacity-0", "opacity-100"},
+          out: {"ease-in duration-300", "opacity-100", "opacity-0"}
+        )
+      }
+    >
       <%= @title %>
     </p>
     <div id={@id}>
-      <div class={assigns[:nogrid] && "space-y-5" || "grid grid-cols-2 gap-5 pb-5"}>
+      <div class={(assigns[:nogrid] && "space-y-5") || "grid grid-cols-2 gap-5 pb-5"}>
         <%= render_block(@inner_block) %>
       </div>
     </div>
@@ -109,13 +114,21 @@ defmodule Literature.FormComponent do
 
   def back_button(assigns) do
     ~H"""
-    <%= live_patch @label, to: @return_to, class: "w-full md:w-auto text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 md:mr-2 mb-2 text-center order-last md:order-first" %>
+    <%= live_patch(@label,
+      to: @return_to,
+      class:
+        "w-full md:w-auto text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 md:mr-2 mb-2 text-center order-last md:order-first"
+    ) %>
     """
   end
 
   def submit_button(assigns) do
     ~H"""
-    <%= submit @label, class: "w-full md:w-auto text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 md:mr-2 mb-2 focus:outline-none disabled:bg-opacity-70", phx_disable_with: "Saving..." %>
+    <%= submit(@label,
+      class:
+        "w-full md:w-auto text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 md:mr-2 mb-2 focus:outline-none disabled:bg-opacity-70",
+      phx_disable_with: "Saving..."
+    ) %>
     """
   end
 
@@ -143,10 +156,15 @@ defmodule Literature.FormComponent do
       |> assign_new(:characters, fn -> "" end)
 
     ~H"""
-    <%= text_input @form, @field, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
+    <%= text_input(
+      @form,
+      @field,
+      [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest
+    ) %>
     <%= if @maxcharacters do %>
       <small class="text-gray-500">
-        Recommended: <span class="font-bold"><%= @maxcharacters %></span> characters. You've used
+        Recommended: <span class="font-bold"><%= @maxcharacters %></span>
+        characters. You've used
         <%= if @maxcharacters < String.length(@characters || "") do %>
           <span class="font-bold text-red-500">
             <%= String.length(@characters || "") %>.
@@ -157,7 +175,7 @@ defmodule Literature.FormComponent do
           </span>
         <% end %>
       </small>
-    <% end %>    
+    <% end %>
     """
   end
 
@@ -165,7 +183,11 @@ defmodule Literature.FormComponent do
     assigns = assign_defaults(assigns, text_input_classes(assigns))
 
     ~H"""
-    <%= url_input @form, @field, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
+    <%= url_input(
+      @form,
+      @field,
+      [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest
+    ) %>
     """
   end
 
@@ -173,7 +195,12 @@ defmodule Literature.FormComponent do
     assigns = assign_defaults(assigns, radio_classes(assigns))
 
     ~H"""
-    <%= radio_button @form, @field, @value, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
+    <%= radio_button(
+      @form,
+      @field,
+      @value,
+      [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest
+    ) %>
     """
   end
 
@@ -181,16 +208,35 @@ defmodule Literature.FormComponent do
     assigns = assign_new(assigns, :upload_field, fn -> image_field(assigns) end)
 
     ~H"""
-    <div class="w-full border border-gray-300 rounded-lg group hover:border-primary-300 transition duration-300 ease-in-out cursor-pointer relative overflow-hidden group" phx-drop-target={@upload_field.ref}>
-      <div class="relative z-30 py-20 bg-white bg-opacity-60 opacity-10 group-hover:opacity-90 transition-all duration-300 ease-in-out" phx-click={JS.dispatch("click", to: "##{@upload_field.ref}")}>
+    <div
+      class="w-full border border-gray-300 rounded-lg group hover:border-primary-300 transition duration-300 ease-in-out cursor-pointer relative overflow-hidden group"
+      phx-drop-target={@upload_field.ref}
+    >
+      <div
+        class="relative z-30 py-20 bg-white bg-opacity-60 opacity-10 group-hover:opacity-90 transition-all duration-300 ease-in-out"
+        phx-click={JS.dispatch("click", to: "##{@upload_field.ref}")}
+      >
         <div class="rounded-full h-14 w-14 bg-primary-100 text-primary-600 flex items-center justify-center mb-3 mx-auto group-hover:scale-110 transition duration-300 ease-in-out">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-8 h-8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="3"
+            stroke="currentColor"
+            class="w-8 h-8"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75"
+            />
           </svg>
         </div>
         <p class="uppercase font-semibold text-xs text-center">Drag & Drop or Click to upload</p>
       </div>
-      <%= img_tag literature_image_url(@form.data, @field), class: "object-cover object-center absolute top-0" %>
+      <%= img_tag(literature_image_url(@form.data, @field),
+        class: "object-cover object-center absolute top-0"
+      ) %>
       <%= for entry <- @upload_field.entries do %>
         <.live_img_preview entry={entry} class="object-cover object-center absolute top-0" />
         <%= if entry.progress < 100 do %>
@@ -202,7 +248,7 @@ defmodule Literature.FormComponent do
           <p class="absolute top-0"><%= err %></p>
         <% end %>
       <% end %>
-      <%= live_file_input @upload_field, class: "hidden" %>
+      <%= live_file_input(@upload_field, class: "hidden") %>
     </div>
     """
   end
@@ -215,7 +261,11 @@ defmodule Literature.FormComponent do
 
     ~H"""
     <div class="datetime-select-wrapper">
-      <%= datetime_local_input @form, @field, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
+      <%= datetime_local_input(
+        @form,
+        @field,
+        [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest
+      ) %>
     </div>
     """
   end
@@ -228,10 +278,15 @@ defmodule Literature.FormComponent do
       |> assign_new(:characters, fn -> "" end)
 
     ~H"""
-    <%= textarea @form, @field, [class: @classes, rows: "6", phx_feedback_for: input_name(@form, @field)] ++ @rest %>
+    <%= textarea(
+      @form,
+      @field,
+      [class: @classes, rows: "6", phx_feedback_for: input_name(@form, @field)] ++ @rest
+    ) %>
     <%= if @maxcharacters do %>
       <small class="text-gray-500">
-        Recommended: <span class="font-bold"><%= @maxcharacters %></span> characters. You've used
+        Recommended: <span class="font-bold"><%= @maxcharacters %></span>
+        characters. You've used
         <%= if @maxcharacters < String.length(@characters || "") do %>
           <span class="font-bold text-red-500">
             <%= String.length(@characters || "") %>.
@@ -242,7 +297,7 @@ defmodule Literature.FormComponent do
           </span>
         <% end %>
       </small>
-    <% end %>    
+    <% end %>
     """
   end
 
@@ -250,7 +305,12 @@ defmodule Literature.FormComponent do
     assigns = assign_defaults(assigns, text_input_classes(assigns))
 
     ~H"""
-    <%= select @form, @field, @options, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
+    <%= select(
+      @form,
+      @field,
+      @options,
+      [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest
+    ) %>
     """
   end
 
@@ -258,7 +318,11 @@ defmodule Literature.FormComponent do
     assigns = assign_defaults(assigns, checkbox_classes(assigns))
 
     ~H"""
-    <%= checkbox @form, @field, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest %>
+    <%= checkbox(
+      @form,
+      @field,
+      [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest
+    ) %>
     """
   end
 
@@ -281,7 +345,7 @@ defmodule Literature.FormComponent do
 
     ~H"""
     <div class="">
-      <%= hidden_input @form, @field, name: input_name(@form, @field), value: "" %>
+      <%= hidden_input(@form, @field, name: input_name(@form, @field), value: "") %>
       <%= for {label, value} <- @options do %>
         <label class="flex items-center space-x-3 space-y-1">
           <.checkbox
@@ -294,7 +358,8 @@ defmodule Literature.FormComponent do
             value={value}
             checked={to_string(value) in @checked}
             hidden_input={false}
-            {@rest} />
+            {@rest}
+          />
           <div class="font-medium"><%= label %></div>
         </label>
       <% end %>
@@ -309,7 +374,10 @@ defmodule Literature.FormComponent do
     ~H"""
     <div class="mt-1">
       <%= for {message, _} <- Keyword.get_values(@form.errors, @field) do %>
-        <div class="text-xs text-red-500 invalid-feedback" phx-feedback-for={input_name(@form, @field)}>
+        <div
+          class="text-xs text-red-500 invalid-feedback"
+          phx-feedback-for={input_name(@form, @field)}
+        >
           <%= message %>
         </div>
       <% end %>

@@ -15,18 +15,25 @@ defmodule Literature.ImageComponent do
       |> assign_new(:lazy_load, fn -> true end)
 
     ~H"""
-      <%= if file = Map.get(@post, @field) do %>
-        <%= case get_img_size(@post, @field) do %>
-          <% [width, height] -> %>
-            <picture>
-              <source srcset={load_srcset(file, literature_image_url(@post, @field, :jpg))} />
-              <source srcset={load_srcset(file, literature_image_url(@post, @field, :webp))} />
-              <%= img_tag literature_image_url(@post, @field), [class: @classes, alt: @alt, width: width, height: height, ] ++ (if @lazy_load, do: [loading: "lazy"], else: []) %>
-            </picture>
-          <% _nil -> %>
-            <%= img_tag literature_image_url(@post, @field), [class: @classes, alt: @alt] ++ (if @lazy_load, do: [loading: "lazy"], else: []) %>
-        <% end %>
+    <%= if file = Map.get(@post, @field) do %>
+      <%= case get_img_size(@post, @field) do %>
+        <% [width, height] -> %>
+          <picture>
+            <source srcset={load_srcset(file, literature_image_url(@post, @field, :jpg))} />
+            <source srcset={load_srcset(file, literature_image_url(@post, @field, :webp))} />
+            <%= img_tag(
+              literature_image_url(@post, @field),
+              [class: @classes, alt: @alt, width: width, height: height] ++
+                if(@lazy_load, do: [loading: "lazy"], else: [])
+            ) %>
+          </picture>
+        <% _nil -> %>
+          <%= img_tag(
+            literature_image_url(@post, @field),
+            [class: @classes, alt: @alt] ++ if(@lazy_load, do: [loading: "lazy"], else: [])
+          ) %>
       <% end %>
+    <% end %>
     """
   end
 
