@@ -73,7 +73,7 @@ defmodule Literature.FormComponent do
     </p>
     <div id={@id}>
       <div class={(assigns[:nogrid] && "space-y-5") || "grid grid-cols-2 gap-5 pb-5"}>
-        <%= render_block(@inner_block) %>
+        <%= render_slot(@inner_block) %>
       </div>
     </div>
     """
@@ -92,7 +92,7 @@ defmodule Literature.FormComponent do
     <hr class="mb-6 border-gray-200 sm:mx-auto" />
     <p class="text-primary-700 font-semibold uppercase mb-3"><%= @title %></p>
     <div class="grid grid-cols-2 gap-5 pb-5">
-      <%= render_block(@inner_block) %>
+      <%= render_slot(@inner_block) %>
     </div>
     """
   end
@@ -248,7 +248,7 @@ defmodule Literature.FormComponent do
           <p class="absolute top-0"><%= err %></p>
         <% end %>
       <% end %>
-      <%= live_file_input(@upload_field, class: "hidden") %>
+      <.live_file_input upload={@upload_field} class="hidden" />
     </div>
     """
   end
