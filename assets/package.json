@@ -18,6 +18,6 @@
     "npm-run-all": "^4.1.5",
     "phoenix": "^1.7.7",
     "phoenix_live_view": "^0.18.18",
-    "tailwindcss": "^3.3.2"
+    "tailwindcss": "^3.3.3"
   }
 }
