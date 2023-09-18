@@ -7,6 +7,8 @@
 
     <%= render_all_tags(assigns[:meta_tags] || %{}, current_url(@conn)) %>
 
+    <meta name="generator" content={Application.spec(:literature, :vsn)} />
+
     <link rel="canonical" href={canonical_path(@conn)} />
     <link
       rel="shortcut icon"
