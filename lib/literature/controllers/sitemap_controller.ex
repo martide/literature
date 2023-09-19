@@ -4,8 +4,7 @@ defmodule Literature.SitemapController do
   alias Literature.Config
 
   def sitemap(conn, _params) do
-    base_path = String.replace(current_path(conn), "/sitemap.xml", "")
-    publication_slug = String.split(base_path, "/") |> List.last()
+    publication_slug = conn.path_info |> Enum.at(-2)
 
     with sitemap_path <- Path.join(Config.sitemap_path(), "sitemap-#{publication_slug}.xml"),
          {:ok, sitemap_xml} <- File.read(sitemap_path) do
@@ -16,8 +15,7 @@ defmodule Literature.SitemapController do
   end
 
   def sitemap_1(conn, _params) do
-    base_path = String.replace(current_path(conn), "/sitemap-00001.xml", "")
-    publication_slug = String.split(base_path, "/") |> List.last()
+    publication_slug = conn.path_info |> Enum.at(-2)
 
     with sitemap_path <-
            Path.join(Config.sitemap_path(), "sitemap-#{publication_slug}-00001.xml"),

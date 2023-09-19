@@ -36,7 +36,7 @@ defmodule Literature.RouterTest do
 
       assert Routes.literature_path(conn, :rss) == "/blog/rss.xml"
       assert Routes.literature_path(conn, :sitemap) == "/blog/sitemap.xml"
-      assert Routes.literature_path(conn, :sitemap_1) == "/blog/sitemap-00001.xml"
+      assert Routes.literature_path(conn, :sitemap_1) == "/blog/sitemap-blog-00001.xml"
     end
   end
 
@@ -53,7 +53,7 @@ defmodule Literature.RouterTest do
       assert DynamicPathRoutes.literature_path(conn, :sitemap) == "/foo/bar/blog/sitemap.xml"
 
       assert DynamicPathRoutes.literature_path(conn, :sitemap_1) ==
-               "/foo/bar/blog/sitemap-00001.xml"
+               "/foo/bar/blog/sitemap-blog-00001.xml"
     end
   end
 

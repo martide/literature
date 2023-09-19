@@ -166,7 +166,10 @@ defmodule Literature.Router do
           scope "/#{publication_slug}", Literature do
             get("/rss.xml", RSSController, :rss, as: session_name)
             get("/sitemap.xml", SitemapController, :sitemap, as: session_name)
-            get("/sitemap-00001.xml", SitemapController, :sitemap_1, as: session_name)
+
+            get("/sitemap-#{publication_slug}-00001.xml", SitemapController, :sitemap_1,
+              as: session_name
+            )
 
             live_session session_name, session_opts do
               # Blog routes
