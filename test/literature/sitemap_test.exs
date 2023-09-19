@@ -50,13 +50,18 @@ defmodule Literature.SitemapTest do
       |> Stream.map(&(&1 |> to_string()))
       |> Enum.to_list()
 
-    assert Routes.literature_path(@endpoint, :index) in urls
-    assert Routes.literature_path(@endpoint, :authors) in urls
-    assert Routes.literature_path(@endpoint, :tags) in urls
-    assert Routes.literature_path(@endpoint, :show, post.slug) in urls
-    assert Routes.literature_path(@endpoint, :show, author.slug) in urls
-    assert Routes.literature_path(@endpoint, :show, tag.slug) in urls
+    assert endpoint(Routes.literature_path(@endpoint, :index)) in urls
+    assert endpoint(Routes.literature_path(@endpoint, :authors)) in urls
+    assert endpoint(Routes.literature_path(@endpoint, :tags)) in urls
+    assert endpoint(Routes.literature_path(@endpoint, :show, post.slug)) in urls
+    assert endpoint(Routes.literature_path(@endpoint, :show, author.slug)) in urls
+    assert endpoint(Routes.literature_path(@endpoint, :show, tag.slug)) in urls
   end
+
+  defp endpoint("/"), do: @host
+
+  defp endpoint(path),
+    do: "#{@host}#{path}"
 
   defp xml_dir, do: Config.sitemap_path()
 end

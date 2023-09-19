@@ -11,39 +11,28 @@ defmodule Literature.Sitemap do
   alias Sitemapper.URL
 
   def generate(sitemap_opts \\ []) do
-    # Get opts from args sitemap_opts or config
-    sitemap_url = Keyword.get(sitemap_opts, :sitemap_url, Config.sitemap_url())
-    changefreq = Keyword.get(sitemap_opts, :changefreq, Config.sitemap_changefreq())
     ping? = Keyword.get(sitemap_opts, :ping, false)
     name = Keyword.get(sitemap_opts, :name, nil)
-
-    # If paths stream are passed in, use them, otherwise generate them
-    paths =
-      Keyword.get(
-        sitemap_opts,
-        :paths,
-        literature_sitemap_paths(with: :updated_at)
-        |> Stream.map(fn {path, updated_at} ->
-          %URL{
-            loc: path,
-            priority: 0.5,
-            lastmod: updated_at,
-            changefreq: changefreq
-          }
-        end)
-      )
 
     opts = [
       name: name,
       gzip: false,
-      sitemap_url: sitemap_url,
+      sitemap_url: Config.sitemap_url(),
       store: Sitemapper.FileStore,
       store_config: [
         path: Config.sitemap_path()
       ]
     ]
 
-    paths
+    literature_sitemap_paths(with: :updated_at)
+    |> Stream.map(fn {path, updated_at} ->
+      %URL{
+        loc: Config.sitemap_url() <> path,
+        priority: 0.5,
+        lastmod: updated_at,
+        changefreq: Config.sitemap_changefreq()
+      }
+    end)
     |> Sitemapper.generate(opts)
     |> Sitemapper.persist(opts)
     |> ping(ping?, opts)
