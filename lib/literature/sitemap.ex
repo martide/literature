@@ -10,28 +10,43 @@ defmodule Literature.Sitemap do
   alias Literature.Tag
   alias Sitemapper.URL
 
-  def generate do
+  def generate(sitemap_opts \\ []) do
+    # Get opts from args sitemap_opts or config
+    sitemap_url = Keyword.get(sitemap_opts, :sitemap_url, Config.sitemap_url())
+    changefreq = Keyword.get(sitemap_opts, :changefreq, Config.sitemap_changefreq())
+    ping? = Keyword.get(sitemap_opts, :ping, false)
+    name = Keyword.get(sitemap_opts, :name, nil)
+
+    # If paths stream are passed in, use them, otherwise generate them
+    paths =
+      Keyword.get(
+        sitemap_opts,
+        :paths,
+        literature_sitemap_paths(with: :updated_at)
+        |> Stream.map(fn {path, updated_at} ->
+          %URL{
+            loc: path,
+            priority: 0.5,
+            lastmod: updated_at,
+            changefreq: changefreq
+          }
+        end)
+      )
+
     opts = [
+      name: name,
       gzip: false,
-      sitemap_url: Config.sitemap_url(),
+      sitemap_url: sitemap_url,
       store: Sitemapper.FileStore,
       store_config: [
         path: Config.sitemap_path()
       ]
     ]
 
-    literature_sitemap_paths(with: :updated_at)
-    |> Stream.map(fn {path, updated_at} ->
-      %URL{
-        loc: Config.sitemap_url() <> path,
-        priority: 0.5,
-        lastmod: updated_at,
-        changefreq: Config.sitemap_changefreq()
-      }
-    end)
+    paths
     |> Sitemapper.generate(opts)
     |> Sitemapper.persist(opts)
-    |> Sitemapper.ping(opts)
+    |> ping(ping?, opts)
     |> Stream.run()
   end
 
@@ -101,4 +116,7 @@ defmodule Literature.Sitemap do
     |> Stream.map(&{String.replace(path, ":slug", &1.slug), NaiveDateTime.to_date(&1.updated_at)})
     |> Enum.to_list()
   end
+
+  defp ping(sitemap, true, opts), do: Sitemapper.ping(sitemap, opts)
+  defp ping(sitemap, false, _), do: sitemap
 end

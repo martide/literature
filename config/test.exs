@@ -28,7 +28,8 @@ config :literature, :metatags,
 config :literature, :sitemap,
   router: Literature.Test.Router,
   changefreq: :daily,
-  path: "priv/static"
+  path: Path.join(Path.dirname(__DIR__), "priv/static/"),
+  url: "https://www.example.com"
 
 config :literature, :rss,
   url: "https://www.example.com",

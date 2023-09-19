@@ -74,7 +74,8 @@ defmodule Literature.MixProject do
       {:dialyxir, "~> 1.2", only: [:test, :dev], runtime: false},
       {:excoveralls, "~> 0.15", only: :test},
       {:floki, "~> 0.33", only: :test},
-      {:sobelow, "~> 0.11", only: [:test, :dev], runtime: false}
+      {:sobelow, "~> 0.11", only: [:test, :dev], runtime: false},
+      {:sweet_xml, "~> 0.6"}
     ]
   end
 
