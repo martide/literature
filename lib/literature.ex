@@ -152,6 +152,7 @@ defmodule Literature do
     Post
     |> search(:title, attrs)
     |> search(:slug, attrs)
+    |> search(:excerpt, attrs)
     |> sort_by(attrs, {:desc, :published_at})
     |> where_preload(attrs)
     |> where_status(attrs)
@@ -390,6 +391,7 @@ defmodule Literature do
     Tag
     |> search(:name, attrs)
     |> search(:slug, attrs)
+    |> search(:description, attrs)
     |> sort_by(attrs)
     |> where_status(attrs)
     |> where_publication(attrs)
