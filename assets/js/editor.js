@@ -16,7 +16,6 @@ const customImageParser = ({ data }) => {
 
 const parser = editorParser({ image: customImageParser });
 
-
 const HTMLEditorJS = element => {
   const inputEditorJSON = document.querySelector('#post-form_editor_json')
   const inputHTML = document.querySelector('#post-form_html')
