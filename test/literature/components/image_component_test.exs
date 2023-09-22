@@ -3,13 +3,13 @@ defmodule Literature.ImageComponentTest do
   alias Literature.ImageComponent
 
   test "it converts image tags with size attributes to picture tags" do
-    tag = "<img src=/path/to/image-w300x453.jpg alt='An image'>"
+    tag = "<img src=\"/path/to/image-w300x453.jpg\" alt=\"An image\">"
 
     expected = ~s"""
     <picture>
       <source srcset=\"/path/to/image-w100.jpg 100w, /path/to/image-w200.jpg 200w, /path/to/image-w300.jpg 300w\"/>
       <source srcset=\"/path/to/image-w100.webp 100w, /path/to/image-w200.webp 200w, /path/to/image-w300.webp 300w\"/>
-      <img src=\"/path/to/image-w300x453.jpg\" alt=\"'An\" width=\"300\" height=\"453\" loading=\"lazy\" />
+      <img src=\"/path/to/image-w300x453.jpg\" alt=\"An image\" width=\"300\" height=\"453\" loading=\"lazy\" />
     </picture>
     """
 
