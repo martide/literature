@@ -40,39 +40,136 @@ defmodule Literature.PostFormComponent do
         multipart
         phx-target={@myself}
         phx-change="validate"
-        phx-submit="save">
+        phx-submit="save"
+      >
         <div class="md:flex">
           <div id="ignore-updates" class="w-full" phx-update="ignore">
-            <div id="editorjs" data-post-data={f.params["editor_json"] || @post.editor_json} phx-hook="EditorJS"></div>
-            <%= hidden_input f, :editor_json %>
-            <%= hidden_input f, :html %>
+            <div
+              id="editorjs"
+              data-post-data={f.params["editor_json"] || @post.editor_json}
+              phx-hook="EditorJS"
+            >
+            </div>
+            <%= hidden_input(f, :editor_json) %>
+            <%= hidden_input(f, :html) %>
           </div>
           <div class="w-full md:w-2/3 md:border-l md:pl-8">
             <div class="space-y-5 mb-5">
-              <.form_field form={f} type="text_input" field={:title} label="Title" required={true} maxcharacters={60} characters={@post_params["title"] || @post.title} />
-              <.form_field form={f} type="text_input" field={:slug} label="Slug" required={true} disabled={@action == :new_post} placeholder={if @action == :new_post, do: "(auto-generate) you can change from edit page", else: ""} />
-              <.form_field form={f} type="checkbox_group" field={:authors_ids} options={@authors} label="Authors" required={true} />
-              <.form_field form={f} type="checkbox_group" field={:tags_ids} options={@tags} label="Tags" required={true} />
-              <.form_field form={f} type="image_upload" field={:feature_image} label="Feature Image" uploads={@uploads} />
-              <.form_field form={f} type="text_input" field={:feature_image_alt} label="Feature Image Alt" />
-              <.form_field form={f} type="text_input" field={:feature_image_caption} label="Feature Image Caption" />
+              <.form_field
+                form={f}
+                type="text_input"
+                field={:title}
+                label="Title"
+                required={true}
+                maxcharacters={60}
+                characters={@post_params["title"] || @post.title}
+              />
+              <.form_field
+                form={f}
+                type="text_input"
+                field={:slug}
+                label="Slug"
+                required={true}
+                disabled={@action == :new_post}
+                placeholder={
+                  if @action == :new_post,
+                    do: "(auto-generate) you can change from edit page",
+                    else: ""
+                }
+              />
+              <.form_field
+                form={f}
+                type="checkbox_group"
+                field={:authors_ids}
+                options={@authors}
+                label="Authors"
+                required={true}
+              />
+              <.form_field
+                form={f}
+                type="checkbox_group"
+                field={:tags_ids}
+                options={@tags}
+                label="Tags"
+                required={true}
+              />
+              <.form_field
+                form={f}
+                type="image_upload"
+                field={:feature_image}
+                label="Feature Image"
+                uploads={@uploads}
+              />
+              <.form_field
+                form={f}
+                type="text_input"
+                field={:feature_image_alt}
+                label="Feature Image Alt"
+              />
+              <.form_field
+                form={f}
+                type="text_input"
+                field={:feature_image_caption}
+                label="Feature Image Caption"
+              />
               <.form_field form={f} type="textarea" field={:excerpt} label="Excerpt" />
-              <.form_field form={f} type="datetime_local_input" field={:published_at} label="Date Published" />
+              <.form_field
+                form={f}
+                type="datetime_local_input"
+                field={:published_at}
+                label="Date Published"
+              />
             </div>
             <.accordion title="Meta Tags" nogrid>
-              <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" maxcharacters={60} characters={@post_params["meta_title"] || @post.meta_title} />
-              <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" maxcharacters={145} characters={@post_params["meta_description"] || @post.meta_description} />
+              <.form_field
+                form={f}
+                type="text_input"
+                field={:meta_title}
+                label="Meta Title"
+                maxcharacters={60}
+                characters={@post_params["meta_title"] || @post.meta_title}
+              />
+              <.form_field
+                form={f}
+                type="textarea"
+                field={:meta_description}
+                label="Meta Description"
+                maxcharacters={145}
+                characters={@post_params["meta_description"] || @post.meta_description}
+              />
               <.form_field form={f} type="text_input" field={:meta_keywords} label="Meta Keywords" />
             </.accordion>
             <.accordion title="Facebook Meta Tags" nogrid>
-              <.form_field form={f} type="image_upload" field={:og_image} label="Facebook Image" uploads={@uploads} />
+              <.form_field
+                form={f}
+                type="image_upload"
+                field={:og_image}
+                label="Facebook Image"
+                uploads={@uploads}
+              />
               <.form_field form={f} type="text_input" field={:og_title} label="Facebook Title" />
-              <.form_field form={f} type="textarea" field={:og_description} label="Facebook Description" />
+              <.form_field
+                form={f}
+                type="textarea"
+                field={:og_description}
+                label="Facebook Description"
+              />
             </.accordion>
             <.accordion title="Twitter Meta Tags" nogrid>
-              <.form_field form={f} type="image_upload" field={:twitter_image} label="Twitter Image" uploads={@uploads} />
+              <.form_field
+                form={f}
+                type="image_upload"
+                field={:twitter_image}
+                label="Twitter Image"
+                uploads={@uploads}
+              />
               <.form_field form={f} type="text_input" field={:twitter_title} label="Twitter Title" />
-              <.form_field form={f} type="textarea" field={:twitter_description} label="Twitter Description" />
+              <.form_field
+                form={f}
+                type="textarea"
+                field={:twitter_description}
+                label="Twitter Description"
+              />
             </.accordion>
             <div class="mt-5">
               <.button_group>
@@ -99,7 +196,11 @@ defmodule Literature.PostFormComponent do
 
   @impl Phoenix.LiveComponent
   def handle_event("save", %{"post" => post_params}, socket) do
-    post_params = Map.put(post_params, "html", String.split(post_params["html"], ","))
+    html = post_params["html"]
+
+    html = if is_binary(html) and html != "", do: Jason.decode!(post_params["html"]), else: []
+
+    post_params = Map.put(post_params, "html", html)
     save_post(socket, socket.assigns.action, post_params)
   end
 

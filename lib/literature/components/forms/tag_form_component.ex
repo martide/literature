@@ -34,13 +34,37 @@ defmodule Literature.TagFormComponent do
         id="tag-form"
         phx-target={@myself}
         phx-change="validate"
-        phx-submit="save">
+        phx-submit="save"
+      >
         <.form_group title="Details">
           <.form_field form={f} type="text_input" field={:name} label="Name" required={true} />
-          <.form_field form={f} type="text_input" field={:slug} label="Slug" required={true} disabled={@action == :new_tag} placeholder={if @action == :new_tag, do: "(auto-generate) you can change from edit page", else: ""} />
+          <.form_field
+            form={f}
+            type="text_input"
+            field={:slug}
+            label="Slug"
+            required={true}
+            disabled={@action == :new_tag}
+            placeholder={
+              if @action == :new_tag, do: "(auto-generate) you can change from edit page", else: ""
+            }
+          />
           <.form_field form={f} type="textarea" field={:description} label="Description" />
-          <.form_field form={f} type="image_upload" field={:feature_image} label="Feature Image" uploads={@uploads} />
-          <.form_field form={f} type="radio_group" field={:visibility} label="Visibility" required={true} options={[{"true", "Public"}, {"false", "Private"}]} />
+          <.form_field
+            form={f}
+            type="image_upload"
+            field={:feature_image}
+            label="Feature Image"
+            uploads={@uploads}
+          />
+          <.form_field
+            form={f}
+            type="radio_group"
+            field={:visibility}
+            label="Visibility"
+            required={true}
+            options={[{"true", "Public"}, {"false", "Private"}]}
+          />
         </.form_group>
         <.accordion title="Meta Tags">
           <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
@@ -48,14 +72,31 @@ defmodule Literature.TagFormComponent do
           <.form_field form={f} type="text_input" field={:meta_keywords} label="Meta Keywords" />
         </.accordion>
         <.accordion title="Facebook Meta Tags">
-          <.form_field form={f} type="image_upload" field={:og_image} label="Facebook Image" uploads={@uploads} />
+          <.form_field
+            form={f}
+            type="image_upload"
+            field={:og_image}
+            label="Facebook Image"
+            uploads={@uploads}
+          />
           <.form_field form={f} type="text_input" field={:og_title} label="Facebook Title" />
           <.form_field form={f} type="textarea" field={:og_description} label="Facebook Description" />
         </.accordion>
         <.accordion title="Twitter Meta Tags">
-          <.form_field form={f} type="image_upload" field={:twitter_image} label="Twitter Image" uploads={@uploads} />
+          <.form_field
+            form={f}
+            type="image_upload"
+            field={:twitter_image}
+            label="Twitter Image"
+            uploads={@uploads}
+          />
           <.form_field form={f} type="text_input" field={:twitter_title} label="Twitter Title" />
-          <.form_field form={f} type="textarea" field={:twitter_description} label="Twitter Description" />
+          <.form_field
+            form={f}
+            type="textarea"
+            field={:twitter_description}
+            label="Twitter Description"
+          />
         </.accordion>
         <.button_group>
           <.back_button label="Cancel" return_to={@return_to} />

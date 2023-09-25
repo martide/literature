@@ -12,7 +12,11 @@ defmodule Literature.Web do
       import Ecto.Changeset
       import Slugy
 
-      alias Literature.{Author, Post, Publication, Tag, Uploaders}
+      alias Literature.Author
+      alias Literature.Post
+      alias Literature.Publication
+      alias Literature.Tag
+      alias Literature.Uploaders
 
       @primary_key {:id, :binary_id, autogenerate: false}
       @foreign_key_type :binary_id
@@ -95,4 +99,9 @@ defmodule Literature.Web do
   defmacro __using__(which) when is_atom(which) do
     apply(__MODULE__, which, [])
   end
+end
+
+defimpl Plug.Exception, for: Literature.PageNotFound do
+  def status(_exception), do: 404
+  def actions(_exception), do: []
 end

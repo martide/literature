@@ -25,6 +25,33 @@ defmodule Literature.TagLiveTest do
       assert html =~ tag.name
     end
 
+    test "have tags count", %{conn: conn, publication: publication, tag: tag} do
+      {:ok, _view, html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_tags, publication.slug))
+
+      assert html =~ "Tags"
+
+      assert html =~
+               ~s"<span class=\"text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg\">0</span>"
+
+      author = author_fixture(publication_id: publication.id)
+
+      post =
+        post_fixture(
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      {:ok, _view, html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_tags, publication.slug))
+
+      assert html =~ "Tags"
+
+      assert html =~
+               ~s"<span class=\"text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg\">1</span>"
+    end
+
     test "saves new tag", %{conn: conn, publication: publication} do
       {:ok, index_live, html} =
         live(conn, Routes.literature_dashboard_path(conn, :list_tags, publication.slug))

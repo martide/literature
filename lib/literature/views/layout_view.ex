@@ -8,15 +8,36 @@ defmodule Literature.LayoutView do
   alias Literature.AssetHelpers
   alias Literature.Config
 
-  defp application_favicon_path(conn_or_socket, view_module),
-    do: view_module.favicon_path(conn_or_socket)
+  defp application_favicon_path(conn_or_socket, view_module) do
+    if function_exported?(view_module, :favicon_path, 1) do
+      view_module.favicon_path(conn_or_socket)
+    else
+      asset_path(conn_or_socket, "favicon/favicon.ico")
+    end
+  end
 
-  defp application_rss_path(conn_or_socket, view_module),
-    do: view_module.rss_path(conn_or_socket)
+  defp application_rss_path(conn_or_socket, view_module) do
+    if function_exported?(view_module, :rss_path, 1) do
+      view_module.rss_path(conn_or_socket)
+    else
+      literature_path(conn_or_socket, :rss)
+    end
+  end
 
-  defp csp_nonce(conn, type) when type in [:script, :style, :img] do
-    csp_nonce_assign_key = conn.private.csp_nonce_assign_key[type]
-    conn.assigns[csp_nonce_assign_key]
+  defp application_css_path(conn_or_socket, view_module) do
+    if function_exported?(view_module, :css_path, 1) do
+      view_module.css_path(conn_or_socket)
+    else
+      asset_path(conn_or_socket, "css/app.css")
+    end
+  end
+
+  defp application_js_path(conn_or_socket, view_module) do
+    if function_exported?(view_module, :js_path, 1) do
+      view_module.js_path(conn_or_socket)
+    else
+      asset_path(conn_or_socket, "js/app.js")
+    end
   end
 
   defp canonical_path(conn) do

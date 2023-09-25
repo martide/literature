@@ -226,7 +226,8 @@ defmodule Literature.Router do
       session: %{
         "application_router" => Keyword.get(opts, :application_router),
         "publication_slug" => Keyword.get(opts, :publication_slug),
-        "view_module" => Keyword.get(opts, :view_module)
+        "view_module" => Keyword.get(opts, :view_module),
+        "error_view_module" => Keyword.get(opts, :error_view_module)
       }
     ]
 

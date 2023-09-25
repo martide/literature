@@ -80,9 +80,25 @@ defmodule Literature.BlogLiveTest do
     end
 
     test "returns 404 error when page not found", %{conn: conn} do
-      assert_raise Literature.PageNotFound, "no route found", fn ->
+      assert_raise Literature.PageNotFound, fn ->
         get(conn, Routes.literature_path(conn, :show, "page-not-exists"))
       end
+    end
+  end
+
+  describe "Error view" do
+    setup do
+      publication = publication_fixture(name: "Error View", description: "Blog description")
+
+      %{publication: publication}
+    end
+
+    test "Display 404 page when page not found", %{conn: conn} do
+      {:ok, view, _html} = live(conn, Routes.error_view_path(conn, :show, "page-not-exists"))
+      html = render(view)
+
+      assert html =~ "Page not found"
+      assert html =~ "Sorry, we could not find the page you are looking for."
     end
   end
 end

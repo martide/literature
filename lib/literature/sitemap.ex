@@ -4,7 +4,10 @@ defmodule Literature.Sitemap do
   import Literature.QueryHelpers,
     only: [where_publication: 2, where_status: 2]
 
-  alias Literature.{Author, Config, Post, Tag}
+  alias Literature.Author
+  alias Literature.Config
+  alias Literature.Post
+  alias Literature.Tag
   alias Sitemapper.URL
 
   def generate do

@@ -11,6 +11,7 @@ defmodule Literature.AuthorLiveTest do
   defp create_author(_) do
     publication = publication_fixture()
     author = author_fixture(publication_id: publication.id)
+
     %{publication: publication, author: author}
   end
 
@@ -23,6 +24,39 @@ defmodule Literature.AuthorLiveTest do
 
       assert html =~ "Authors"
       assert html =~ author.name
+    end
+
+    test "have author post count", %{conn: conn, publication: publication, author: author} do
+      tag = tag_fixture(publication_id: publication.id)
+
+      post =
+        post_fixture(
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      {:ok, _view, html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_authors, publication.slug))
+
+      assert html =~ "Posts"
+
+      assert html =~
+               ~s"<span class=\"text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg\">1</span>"
+
+      post =
+        post_fixture(
+          title: "second post",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      {:ok, _view, html} =
+        live(conn, Routes.literature_dashboard_path(conn, :list_authors, publication.slug))
+
+      assert html =~
+               ~s"<span class=\"text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg\">2</span>"
     end
 
     test "saves new author", %{conn: conn, publication: publication} do
