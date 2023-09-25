@@ -120,6 +120,15 @@ defmodule Literature.RouterTest do
       assert Routes.literature_dashboard_path(conn, :edit_author, publication.slug, "123") ==
                "/literature/#{publication.slug}/authors/123/edit"
     end
+
+    test "generates helper for js/css assets", %{conn: conn} do
+      for asset <- [:js, :css] do
+        hash = Literature.Assets.current_hash(asset)
+
+        assert Routes.literature_dashboard_path(conn, asset, hash) ==
+                 "/literature/#{asset}-#{hash}"
+      end
+    end
   end
 
   describe "literature_dashboard_path/2 for dynamic path" do
@@ -188,6 +197,15 @@ defmodule Literature.RouterTest do
                "123"
              ) ==
                "/foo/bar/#{publication.slug}/authors/123/edit"
+    end
+
+    test "generates helper for js/css assets", %{conn: conn} do
+      for asset <- [:js, :css] do
+        hash = Literature.Assets.current_hash(asset)
+
+        assert DynamicPathRoutes.literature_dashboard_path(conn, asset, hash) ==
+                 "/foo/bar/#{asset}-#{hash}"
+      end
     end
   end
 end
