@@ -94,7 +94,7 @@ defmodule LiteratureTest do
 
       post =
         post_fixture(
-          title: "Contains Keyword",
+          title: "Contains Keyword phrase in the title",
           publication_id: publication.id,
           authors_ids: [author.id],
           tags_ids: [tag.id]
@@ -102,7 +102,16 @@ defmodule LiteratureTest do
 
       other_post =
         post_fixture(
-          excerpt: "other post contains Keyword in excerpt",
+          excerpt: "Other post contains Keyword phrase in excerpt",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      post_with_html =
+        post_fixture(
+          title: "Post with html",
+          html: ["Test content", "Other post contains Keyword Phrase in html"],
           publication_id: publication.id,
           authors_ids: [author.id],
           tags_ids: [tag.id]
@@ -110,13 +119,15 @@ defmodule LiteratureTest do
 
       another_post =
         post_fixture(
-          title: "Another post",
+          title: "Another post without keyword",
+          excerpt: "Not in excerpt",
+          html: ["Test content", "Without keyword in html"],
           publication_id: publication.id,
           authors_ids: [author.id],
           tags_ids: [tag.id]
         )
 
-      attrs = %{"q" => "keyword", "preload" => ~w(authors tags)a}
+      attrs = %{"q" => "keyword phrase", "preload" => ~w(authors tags)a}
 
       assert %Scrivener.Page{entries: entries} = Literature.paginate_posts(attrs)
 
@@ -124,6 +135,7 @@ defmodule LiteratureTest do
 
       assert post.id in post_ids
       assert other_post.id in post_ids
+      assert post_with_html.id in post_ids
       assert another_post.id not in post_ids
     end
 

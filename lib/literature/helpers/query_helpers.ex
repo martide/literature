@@ -24,6 +24,15 @@ defmodule Literature.QueryHelpers do
     or_where(query, [q], ilike(q.description, ^"%#{search}%"))
   end
 
+  def search(query, :html, %{"q" => search}) do
+    # ilike on each html content
+    or_where(
+      query,
+      [q],
+      fragment("EXISTS (SELECT * FROM UNNEST(?) html WHERE html ILIKE ?)", q.html, ^"%#{search}%")
+    )
+  end
+
   def search(query, _, _), do: query
 
   def select_options(list) when is_list(list) do
