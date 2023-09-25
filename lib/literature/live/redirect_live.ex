@@ -1,4 +1,4 @@
-defmodule Literature.TagLive do
+defmodule Literature.RedirectLive do
   use Literature.Web, :live_view
 
   alias Literature.TableComponent
@@ -8,7 +8,7 @@ defmodule Literature.TagLive do
   @impl Phoenix.LiveView
   def mount(%{"publication_slug" => slug}, _session, socket) do
     socket
-    |> assign(:return_to, literature_dashboard_path(socket, :list_tags, slug))
+    |> assign(:return_to, literature_dashboard_path(socket, :list_redirects, slug))
     |> assign(:slug, slug)
     |> then(&{:ok, &1})
   end
@@ -19,36 +19,9 @@ defmodule Literature.TagLive do
   @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
-    <.sidebar_default id="tag-sidebar" live_action={@live_action} slug={@slug} socket={@socket} />
+    <.sidebar_default id="redirect-sidebar" live_action={@live_action} slug={@slug} socket={@socket} />
     <.container>
       <.h1><%= @page_title %></.h1>
-      <%= if @live_action == :list_tags do %>
-        <.live_component
-          module={TableComponent}
-          id="tags-table"
-          slug={@slug}
-          items={@tags}
-          page={@page}
-          params={@params}
-          live_action={@live_action}
-          columns={columns()}
-          base_path={@return_to}
-          new_path={literature_dashboard_path(@socket, :new_tag, @slug)}
-        />
-        <%= if @tag do %>
-          <.delete_modal label={@tag.name} item={@tag} return_to={@return_to} />
-        <% end %>
-      <% end %>
-      <%= if @live_action in [:new_tag, :edit_tag] do %>
-        <.live_component
-          module={TagFormComponent}
-          id={@tag.id || :new_tag}
-          tag={@tag}
-          slug={@slug}
-          action={@live_action}
-          return_to={@return_to}
-        />
-      <% end %>
     </.container>
     """
   end
@@ -85,24 +58,18 @@ defmodule Literature.TagLive do
     {:noreply, socket}
   end
 
-  defp apply_action(socket, :list_tags, params) do
+  defp apply_action(socket, :list_redirects, params) do
     socket
     |> assign(paginate_tags(params))
     |> assign(:params, params)
-    |> assign(:page_title, "Tags")
-    |> assign(:tag, nil)
+    |> assign(:page_title, "Redirects")
+    |> assign(:redirect, nil)
   end
 
   defp apply_action(socket, :new_tag, _params) do
     socket
     |> assign(:page_title, "New Tag")
     |> assign(:tag, %Tag{})
-  end
-
-  defp apply_action(socket, :edit_tag, %{"slug" => slug}) do
-    socket
-    |> assign(:page_title, "Edit Tag")
-    |> assign(:tag, Literature.get_tag!(slug: slug, publication_slug: socket.assigns.slug))
   end
 
   defp paginate_tags(params) do

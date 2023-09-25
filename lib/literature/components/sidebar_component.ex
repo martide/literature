@@ -2,6 +2,8 @@ defmodule Literature.SidebarComponent do
   @moduledoc false
   use Phoenix.Component
 
+  alias Literature.Helpers
+
   def sidebar(assigns) do
     ~H"""
     <aside aria-label="Sidebar">
@@ -23,6 +25,37 @@ defmodule Literature.SidebarComponent do
         </ul>
       </div>
     </aside>
+    """
+  end
+
+  def sidebar_default(assigns) do
+    ~H"""
+    <.sidebar id={@id} live_action={@live_action}>
+      <:tab
+        title="Posts"
+        path={Helpers.literature_dashboard_path(@socket, :list_posts, @slug)}
+        icon="pencil"
+        actions={~w(list_posts new_post edit_post)a}
+      />
+      <:tab
+        title="Tags"
+        path={Helpers.literature_dashboard_path(@socket, :list_tags, @slug)}
+        icon="tag"
+        actions={~w(list_tags new_tag edit_tag)a}
+      />
+      <:tab
+        title="Authors"
+        path={Helpers.literature_dashboard_path(@socket, :list_authors, @slug)}
+        icon="users"
+        actions={~w(list_authors new_author edit_author)a}
+      />
+      <:tab
+        title="Redirects"
+        path={Helpers.literature_dashboard_path(@socket, :list_redirects, @slug)}
+        icon="users"
+        actions={~w(list_redirects)a}
+      />
+    </.sidebar>
     """
   end
 

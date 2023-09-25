@@ -112,6 +112,9 @@ defmodule Literature.Router do
               live("/authors", AuthorLive, :list_authors, route_opts)
               live("/authors/new", AuthorLive, :new_author, route_opts)
               live("/authors/:slug/edit", AuthorLive, :edit_author, route_opts)
+
+              # Redirect routes
+              live("/redirects", RedirectLive, :list_redirects, route_opts)
             end
           end
         end
