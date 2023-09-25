@@ -93,6 +93,9 @@ defmodule Literature.Router do
               route_opts
             )
 
+            get("/css-:md5", Literature.Assets, :css, route_opts)
+            get("/js-:md5", Literature.Assets, :js, route_opts)
+
             scope "/:publication_slug", Literature do
               # Post routes
               live("/posts", PostLive, :list_posts, route_opts)

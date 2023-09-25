@@ -47,6 +47,12 @@ defmodule Literature.LayoutView do
     |> hd()
   end
 
+  def asset_path(conn_or_socket, asset) when asset in [:css, :js] do
+    hash = Literature.Assets.current_hash(asset)
+
+    literature_dashboard_path(conn_or_socket, asset, hash)
+  end
+
   def asset_path(conn_or_socket, path) do
     literature_path(conn_or_socket, :index) <> "/assets/" <> asset_file_name(path, Config.env())
   end

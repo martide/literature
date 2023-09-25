@@ -36,6 +36,10 @@ defmodule Literature.Helpers do
     routes(socket).literature_dashboard_path(socket, action, params)
   end
 
+  def literature_dashboard_path(conn_or_socket, action, params) when action in [:js, :css] do
+    routes(conn_or_socket).literature_dashboard_path(conn_or_socket, action, params)
+  end
+
   def literature_dashboard_path(%Plug.Conn{} = conn, action, params, opts) do
     routes(conn).literature_dashboard_path(conn, action, params, opts)
   end
