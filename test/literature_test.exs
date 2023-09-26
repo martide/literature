@@ -87,6 +87,58 @@ defmodule LiteratureTest do
       assert entries == [%{post | status: nil, authors_ids: nil, tags_ids: nil}]
     end
 
+    test "paginate_posts/1 returns filtered posts" do
+      publication = publication_fixture()
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+
+      post =
+        post_fixture(
+          title: "Contains Keyword phrase in the title",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      other_post =
+        post_fixture(
+          excerpt: "Other post contains Keyword phrase in excerpt",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      post_with_html =
+        post_fixture(
+          title: "Post with html",
+          html: ["Test content", "Other post contains Keyword Phrase in html"],
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      another_post =
+        post_fixture(
+          title: "Another post without keyword",
+          excerpt: "Not in excerpt",
+          html: ["Test content", "Without keyword in html"],
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      attrs = %{"q" => "keyword phrase", "preload" => ~w(authors tags)a}
+
+      assert %Scrivener.Page{entries: entries} = Literature.paginate_posts(attrs)
+
+      post_ids = Enum.map(entries, & &1.id)
+
+      assert post.id in post_ids
+      assert other_post.id in post_ids
+      assert post_with_html.id in post_ids
+      assert another_post.id not in post_ids
+    end
+
     test "list_posts/0 returns all posts" do
       publication = publication_fixture()
       author = author_fixture(publication_id: publication.id)
