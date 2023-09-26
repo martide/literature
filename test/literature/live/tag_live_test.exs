@@ -36,12 +36,11 @@ defmodule Literature.TagLiveTest do
 
       author = author_fixture(publication_id: publication.id)
 
-      post =
-        post_fixture(
-          publication_id: publication.id,
-          authors_ids: [author.id],
-          tags_ids: [tag.id]
-        )
+      post_fixture(
+        publication_id: publication.id,
+        authors_ids: [author.id],
+        tags_ids: [tag.id]
+      )
 
       {:ok, _view, html} =
         live(conn, Routes.literature_dashboard_path(conn, :list_tags, publication.slug))

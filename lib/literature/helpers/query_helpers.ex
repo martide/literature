@@ -5,15 +5,32 @@ defmodule Literature.QueryHelpers do
   import Literature.Helpers, only: [atomize_keys_to_string: 1]
 
   def search(query, :title, %{"q" => search}) do
-    or_where(query, [q], ilike(q.title, ^"#{search}%"))
+    or_where(query, [q], ilike(q.title, ^"%#{search}%"))
   end
 
   def search(query, :name, %{"q" => search}) do
-    or_where(query, [q], ilike(q.name, ^"#{search}%"))
+    or_where(query, [q], ilike(q.name, ^"%#{search}%"))
   end
 
   def search(query, :slug, %{"q" => search}) do
-    or_where(query, [q], ilike(q.slug, ^"#{search}%"))
+    or_where(query, [q], ilike(q.slug, ^"%#{search}%"))
+  end
+
+  def search(query, :excerpt, %{"q" => search}) do
+    or_where(query, [q], ilike(q.excerpt, ^"%#{search}%"))
+  end
+
+  def search(query, :description, %{"q" => search}) do
+    or_where(query, [q], ilike(q.description, ^"%#{search}%"))
+  end
+
+  def search(query, :html, %{"q" => search}) do
+    # ilike on each html content
+    or_where(
+      query,
+      [q],
+      fragment("EXISTS (SELECT * FROM UNNEST(?) html WHERE html ILIKE ?)", q.html, ^"%#{search}%")
+    )
   end
 
   def search(query, _, _), do: query
