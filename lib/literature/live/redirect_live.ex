@@ -2,8 +2,7 @@ defmodule Literature.RedirectLive do
   use Literature.Web, :live_view
 
   alias Literature.TableComponent
-  alias Literature.Tag
-  alias Literature.TagFormComponent
+  alias Literature.Redirect
 
   @impl Phoenix.LiveView
   def mount(%{"publication_slug" => slug}, _session, socket) do
@@ -64,12 +63,6 @@ defmodule Literature.RedirectLive do
     |> assign(:params, params)
     |> assign(:page_title, "Redirects")
     |> assign(:redirect, nil)
-  end
-
-  defp apply_action(socket, :new_tag, _params) do
-    socket
-    |> assign(:page_title, "New Tag")
-    |> assign(:tag, %Tag{})
   end
 
   defp paginate_tags(params) do
