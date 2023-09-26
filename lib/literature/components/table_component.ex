@@ -11,6 +11,8 @@ defmodule Literature.TableComponent do
     socket
     |> assign(assigns)
     |> assign_new(:params, fn -> Map.new() end)
+    |> assign_new(:edit_modal?, fn -> false end)
+    |> assign_new(:create_modal?, fn -> false end)
     |> then(&{:ok, &1})
   end
 
@@ -47,20 +49,19 @@ defmodule Literature.TableComponent do
           </form>
           <%= filter_status(Enum.into(@columns, %{}), assigns) %>
         </div>
-        <%= live_redirect to: @new_path, class: "text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center" do %>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="w-5 h-5"
+        <%= if @create_modal? do %>
+          <div
+            phx-click="open_create_modal"
+            class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center"
           >
-            <path
-              fill-rule="evenodd"
-              d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <span class="flex-1 ml-2 whitespace-nowrap">Create new</span>
+            <.create_icon />
+            <span class="flex-1 ml-2 whitespace-nowrap">Create new</span>
+          </div>
+        <% else %>
+          <%= live_redirect to: @new_path, class: "text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center" do %>
+            <.create_icon />
+            <span class="flex-1 ml-2 whitespace-nowrap">Create new</span>
+          <% end %>
         <% end %>
       </div>
       <div class="overflow-x-auto">
@@ -87,7 +88,7 @@ defmodule Literature.TableComponent do
                     </td>
                   <% end %>
                   <td class="py-4 px-6">
-                    <.actions item={item} base_path={@base_path} />
+                    <.actions item={item} base_path={@base_path} edit_modal?={@edit_modal?} />
                   </td>
                 </tr>
               <% end %>
@@ -140,21 +141,19 @@ defmodule Literature.TableComponent do
 
     ~H"""
     <div class="flex items-center space-x-2">
-      <%= live_patch to: "#{@base_path}/#{@item.slug}/edit", id: "edit-#{@item.id}", class: "hover:text-primary-600 transition duration-300 ease-in-out" do %>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="w-6 h-6"
+      <%= if(@edit_modal?) do %>
+        <div
+          id={"edit-#{@item.id}"}
+          phx-click="open_edit_modal"
+          phx-value-id={@item.id}
+          class="hover:text-primary-600 transition duration-300 ease-in-out"
         >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-          />
-        </svg>
+          <.edit_icon />
+        </div>
+      <% else %>
+        <%= live_patch to: "#{@base_path}/#{@item.slug}/edit", id: "edit-#{@item.id}", class: "hover:text-primary-600 transition duration-300 ease-in-out" do %>
+          <.edit_icon />
+        <% end %>
       <% end %>
       <%= link to: "#", phx_click: "open_delete_modal", phx_value_id: @item.id, id: "delete-#{@item.id}", class: "hover:text-red-600 transition duration-300 ease-in-out" do %>
         <svg
@@ -173,6 +172,37 @@ defmodule Literature.TableComponent do
         </svg>
       <% end %>
     </div>
+    """
+  end
+
+  defp create_icon(assigns) do
+    ~H"""
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+      <path
+        fill-rule="evenodd"
+        d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 9a.75.75 0 00-1.5 0v2.25H9a.75.75 0 000 1.5h2.25V15a.75.75 0 001.5 0v-2.25H15a.75.75 0 000-1.5h-2.25V9z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    """
+  end
+
+  defp edit_icon(assigns) do
+    ~H"""
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      class="w-6 h-6"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+      />
+    </svg>
     """
   end
 

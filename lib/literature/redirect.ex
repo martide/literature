@@ -5,8 +5,8 @@ defmodule Literature.Redirect do
   use Literature.Web, :model
 
   @available_types [
-    :"301",
-    :"302"
+    "301": 301,
+    "302": 302
   ]
 
   schema "literature_redirects" do
@@ -26,10 +26,25 @@ defmodule Literature.Redirect do
     type
   )a
 
-  def changeset(redirect, params) do
+  def changeset(redirect, params \\ %{}) do
     redirect
     |> maybe_generate_id()
     |> cast(params, @required)
+    |> maybe_put_slash(:from)
+    |> maybe_put_slash(:to)
     |> validate_required(@required, message: "This field is required")
+  end
+
+  defp maybe_put_slash(changeset, field) do
+    case get_change(changeset, field) do
+      nil ->
+        changeset
+
+      "/" <> _value ->
+        changeset
+
+      value ->
+        put_change(changeset, field, "/" <> value)
+    end
   end
 end

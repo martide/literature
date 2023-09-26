@@ -22,15 +22,56 @@ defmodule Literature.LayoutComponent do
 
   def delete_modal(assigns) do
     ~H"""
+    <.modal id="delete-modal" on_close="close_delete_modal">
+      <svg
+        aria-hidden="true"
+        class="mx-auto mb-4 w-14 h-14 text-gray-400"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        >
+        </path>
+      </svg>
+      <h3 class="mb-5 text-lg font-normal text-gray-500">
+        Are you sure you want to delete <span class="font-medium text-red-500"><%= @label %></span>?
+      </h3>
+      <:footer>
+        <%= link("Yes, I'm sure",
+          to: "#",
+          phx_click: "delete",
+          phx_value_id: @item.id,
+          class:
+            "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
+        ) %>
+        <%= link("No, cancel",
+          to: "#",
+          phx_click: "close_delete_modal",
+          class:
+            "text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10"
+        ) %>
+      </:footer>
+    </.modal>
+    """
+  end
+
+  def modal(assigns) do
+    ~H"""
     <div
-      id="delete-modal"
+      id={@id}
       tabindex="-1"
       class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 md:inset-0 h-modal md:h-full flex justify-center items-center bg-black bg-opacity-50"
       aria-hidden="true"
     >
       <div class="relative p-4 w-full max-w-md h-full md:h-auto">
         <div class="relative bg-white rounded-lg shadow">
-          <%= link to: "#", phx_click: "close_delete_modal", class: "absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" do %>
+          <%= link to: "#", phx_click: @on_close, class: "absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" do %>
             <svg
               aria-hidden="true"
               class="w-5 h-5"
@@ -47,39 +88,13 @@ defmodule Literature.LayoutComponent do
             </svg>
             <span class="sr-only">Close modal</span>
           <% end %>
-          <div class="p-6 text-center">
-            <svg
-              aria-hidden="true"
-              class="mx-auto mb-4 w-14 h-14 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              >
-              </path>
-            </svg>
-            <h3 class="mb-5 text-lg font-normal text-gray-500">
-              Are you sure you want to delete <span class="font-medium text-red-500"><%= @label %></span>?
-            </h3>
-            <%= link("Yes, I'm sure",
-              to: "#",
-              phx_click: "delete",
-              phx_value_id: @item.id,
-              class:
-                "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
-            ) %>
-            <%= link("No, cancel",
-              to: "#",
-              phx_click: "close_delete_modal",
-              class:
-                "text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10"
-            ) %>
+          <div class="p-6">
+            <div class="text-center">
+              <%= render_slot(@inner_block) %>
+            </div>
+            <div class="text-center">
+              <%= render_slot(@footer) %>
+            </div>
           </div>
         </div>
       </div>

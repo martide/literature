@@ -319,4 +319,84 @@ defmodule LiteratureTest do
       assert %Ecto.Changeset{} = Literature.change_tag(tag)
     end
   end
+
+  describe "redirects" do
+    alias Literature.Redirect
+
+    @invalid_attrs %{from: nil, to: nil, type: nil}
+
+    test "list_redirects/0 returns all redirects" do
+      publication = publication_fixture()
+      redirect = redirect_fixture(publication_id: publication.id)
+      assert Literature.list_redirects() == [redirect]
+    end
+
+    test "get_redirect!/1 returns the redirect with given id" do
+      publication = publication_fixture()
+      redirect = redirect_fixture(publication_id: publication.id)
+      assert Literature.get_redirect!(redirect.id) == redirect
+    end
+
+    test "create_redirect/1 with valid data creates an redirect" do
+      publication = publication_fixture()
+
+      valid_attrs = %{
+        from: "/from-create",
+        to: "/to-create",
+        type: 301,
+        publication_id: publication.id
+      }
+
+      assert {:ok, %Redirect{} = redirect} = Literature.create_redirect(valid_attrs)
+      assert redirect.publication_id == publication.id
+      assert redirect.from == "/from-create"
+      assert redirect.to == "/to-create"
+    end
+
+    test "create_redirect/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Literature.create_redirect(@invalid_attrs)
+    end
+
+    test "update_redirect/2 with valid data updates the redirect" do
+      publication = publication_fixture()
+      redirect = redirect_fixture(publication_id: publication.id)
+      update_attrs = %{from: "update-from", to: "update-to", type: 302}
+
+      assert {:ok, %Redirect{} = redirect} = Literature.update_redirect(redirect, update_attrs)
+      assert redirect.publication_id == publication.id
+      assert redirect.from == "/update-from"
+      assert redirect.to == "/update-to"
+      assert redirect.type == :"302"
+    end
+
+    test "update_redirect/2 with invalid data returns error changeset" do
+      publication = publication_fixture()
+      redirect = redirect_fixture(publication_id: publication.id)
+      assert {:error, %Ecto.Changeset{}} = Literature.update_redirect(redirect, @invalid_attrs)
+      assert redirect == Literature.get_redirect!(redirect.id)
+    end
+
+    test "delete_redirect/1 deletes the redirect" do
+      publication = publication_fixture()
+      redirect = redirect_fixture(publication_id: publication.id)
+      assert {:ok, %Redirect{}} = Literature.delete_redirect(redirect)
+      assert is_nil(Literature.get_redirect!(redirect.id))
+    end
+
+    test "change_redirect/1 returns redirect changeset" do
+      publication = publication_fixture()
+
+      redirect =
+        redirect_fixture(
+          publication_id: publication.id,
+          from: "from-with-slash",
+          to: "to-with-slash"
+        )
+
+      assert %Ecto.Changeset{} = changeset = Literature.change_redirect(redirect)
+
+      assert Ecto.Changeset.get_field(changeset, :from) == "/from-with-slash"
+      assert Ecto.Changeset.get_field(changeset, :to) == "/to-with-slash"
+    end
+  end
 end
