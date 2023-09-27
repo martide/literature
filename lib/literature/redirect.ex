@@ -5,14 +5,14 @@ defmodule Literature.Redirect do
   use Literature.Web, :model
 
   @available_types [
-    "301": 301,
-    "302": 302
+    301,
+    302
   ]
 
   schema "literature_redirects" do
     field(:from, :string)
     field(:to, :string)
-    field(:type, Ecto.Enum, values: @available_types)
+    field(:type, :integer)
 
     belongs_to(:publication, Publication)
 
@@ -30,12 +30,15 @@ defmodule Literature.Redirect do
     redirect
     |> maybe_generate_id()
     |> cast(params, @required)
-    |> maybe_put_slash(:from)
-    |> maybe_put_slash(:to)
+    |> validate_inclusion(:type, @available_types)
+    |> maybe_put_initial_slash(:from)
+    |> maybe_put_initial_slash(:to)
     |> validate_required(@required, message: "This field is required")
   end
 
-  defp maybe_put_slash(changeset, field) do
+  def available_types, do: @available_types
+
+  defp maybe_put_initial_slash(changeset, field) do
     case get_change(changeset, field) do
       nil ->
         changeset

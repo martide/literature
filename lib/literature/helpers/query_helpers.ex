@@ -33,6 +33,14 @@ defmodule Literature.QueryHelpers do
     )
   end
 
+  def search(query, :from, %{"q" => search}) do
+    or_where(query, [q], ilike(q.from, ^"%#{search}%"))
+  end
+
+  def search(query, :to, %{"q" => search}) do
+    or_where(query, [q], ilike(q.to, ^"%#{search}%"))
+  end
+
   def search(query, _, _), do: query
 
   def select_options(list) when is_list(list) do

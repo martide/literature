@@ -522,7 +522,7 @@ defmodule Literature do
     Redirect
     |> search(:from, attrs)
     |> search(:to, attrs)
-    # |> sort_by(attrs)
+    |> sort_by(attrs, {:asc, :from})
     |> where_publication(attrs)
     |> where_preload(attrs)
     |> Repo.paginate(attrs)
@@ -539,7 +539,7 @@ defmodule Literature do
   """
   def list_redirects(attrs \\ []) do
     Redirect
-    # |> sort_by(attrs)
+    |> sort_by(attrs, {:asc, :from})
     |> where_publication(attrs)
     |> where_preload(attrs)
     |> Repo.all()

@@ -11,8 +11,7 @@ defmodule Literature.TableComponent do
     socket
     |> assign(assigns)
     |> assign_new(:params, fn -> Map.new() end)
-    |> assign_new(:edit_modal?, fn -> false end)
-    |> assign_new(:create_modal?, fn -> false end)
+    |> assign_new(:actions_modal?, fn -> false end)
     |> then(&{:ok, &1})
   end
 
@@ -49,14 +48,14 @@ defmodule Literature.TableComponent do
           </form>
           <%= filter_status(Enum.into(@columns, %{}), assigns) %>
         </div>
-        <%= if @create_modal? do %>
-          <div
+        <%= if @actions_modal? do %>
+          <button
             phx-click="open_create_modal"
             class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center"
           >
             <.create_icon />
             <span class="flex-1 ml-2 whitespace-nowrap">Create new</span>
-          </div>
+          </button>
         <% else %>
           <%= live_redirect to: @new_path, class: "text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center" do %>
             <.create_icon />
@@ -88,7 +87,7 @@ defmodule Literature.TableComponent do
                     </td>
                   <% end %>
                   <td class="py-4 px-6">
-                    <.actions item={item} base_path={@base_path} edit_modal?={@edit_modal?} />
+                    <.actions item={item} base_path={@base_path} actions_modal?={@actions_modal?} />
                   </td>
                 </tr>
               <% end %>
@@ -141,7 +140,7 @@ defmodule Literature.TableComponent do
 
     ~H"""
     <div class="flex items-center space-x-2">
-      <%= if(@edit_modal?) do %>
+      <%= if(@actions_modal?) do %>
         <div
           id={"edit-#{@item.id}"}
           phx-click="open_edit_modal"

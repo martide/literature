@@ -377,6 +377,45 @@ defmodule LiteratureTest do
 
     @invalid_attrs %{from: nil, to: nil, type: nil}
 
+    test "paginate_redirects/0 returns all redirects" do
+      publication = publication_fixture()
+      redirect = redirect_fixture(publication_id: publication.id)
+
+      assert %Scrivener.Page{entries: entries} =
+               Literature.paginate_redirects(%{"publication_slug" => publication.slug})
+
+      assert entries == [redirect]
+    end
+
+    test "paginate_posts/1 returns filtered posts" do
+      publication = publication_fixture()
+
+      redirect =
+        redirect_fixture(
+          from: "with-from-keyword",
+          publication_id: publication.id
+        )
+
+      other_redirect =
+        redirect_fixture(
+          to: "with-to-keyword",
+          publication_id: publication.id
+        )
+
+      another_redirect = redirect_fixture(publication_id: publication.id)
+
+      attrs = %{"q" => "keyword", "publication_slug" => publication.slug}
+
+      assert %Scrivener.Page{entries: entries} =
+               Literature.paginate_redirects(attrs)
+
+      redirect_ids = Enum.map(entries, & &1.id)
+
+      assert redirect.id in redirect_ids
+      assert other_redirect.id in redirect_ids
+      assert another_redirect.id not in redirect_ids
+    end
+
     test "list_redirects/0 returns all redirects" do
       publication = publication_fixture()
       redirect = redirect_fixture(publication_id: publication.id)
@@ -418,7 +457,7 @@ defmodule LiteratureTest do
       assert redirect.publication_id == publication.id
       assert redirect.from == "/update-from"
       assert redirect.to == "/update-to"
-      assert redirect.type == :"302"
+      assert redirect.type == 302
     end
 
     test "update_redirect/2 with invalid data returns error changeset" do
