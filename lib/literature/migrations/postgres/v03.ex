@@ -18,9 +18,20 @@ defmodule Literature.Migrations.Postgres.V03 do
 
       timestamps()
     end
+
+    # from and to should not be equal
+    create(
+      constraint(:literature_redirects, :from_must_not_be_equal_to_to,
+        check: "literature_redirects.from <> literature_redirects.to"
+      )
+    )
+
+    create(unique_index(:literature_redirects, [:publication_id, :from, :to]))
   end
 
   def down(_opts) do
+    drop_if_exists(constraint(:literature_redirects, :from_must_not_be_equal_to_to))
+    drop_if_exists(unique_index(:literature_redirects, [:publication_id, :from, :to]))
     drop_if_exists(table(:literature_redirects))
   end
 end

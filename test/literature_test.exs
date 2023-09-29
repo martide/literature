@@ -444,6 +444,51 @@ defmodule LiteratureTest do
       assert redirect.to == "/to-create"
     end
 
+    test "create_redirect/1 should check unqiue publication, from, to" do
+      publication = publication_fixture()
+
+      valid_attrs = %{
+        from: "/from-create",
+        to: "/to-create",
+        type: 301,
+        publication_id: publication.id
+      }
+
+      assert {:ok, %Redirect{}} =
+               Literature.create_redirect(valid_attrs)
+
+      assert {:error, %Ecto.Changeset{} = changeset} = Literature.create_redirect(valid_attrs)
+
+      assert [
+               from:
+                 {"has already been taken",
+                  [
+                    constraint: :unique,
+                    constraint_name: "literature_redirects_publication_id_from_to_index"
+                  ]}
+             ] = changeset.errors
+    end
+
+    test "create_redirect/1 should check from must not be equal to to" do
+      publication = publication_fixture()
+
+      valid_attrs = %{
+        from: "/redirect-same",
+        to: "/redirect-same",
+        type: 301,
+        publication_id: publication.id
+      }
+
+      assert {:error, %Ecto.Changeset{} = changeset} =
+               Literature.create_redirect(valid_attrs)
+
+      assert [
+               from:
+                 {"From and To must not be equal",
+                  [constraint: :check, constraint_name: "from_must_not_be_equal_to_to"]}
+             ] = changeset.errors
+    end
+
     test "create_redirect/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Literature.create_redirect(@invalid_attrs)
     end
