@@ -91,13 +91,20 @@ defmodule Literature.BlogLive do
   def handle_params(params, url, socket) do
     %{path: path} = URI.parse(url)
 
-    cond do
-      is_nil(params["page"]) ->
-        do_handle_params(params, url, socket)
+    with_page_number? =
+      String.contains?(path, "#{socket.assigns.publication_slug}/page/")
 
-      params["page"] == "1" ->
+    params =
+      if with_page_number? do
+        params
+      else
+        Map.delete(params, "page")
+      end
+
+    cond do
+      with_page_number? and params["page"] == "1" ->
         path
-        |> String.replace("/?page=#{params["page"]}", "")
+        |> String.replace("/page/#{params["page"]}", "")
         |> then(&{:noreply, push_navigate(socket, to: &1, replace: true)})
 
       true ->
@@ -240,7 +247,7 @@ defmodule Literature.BlogLive do
   defp override_title_with_page(%{assigns: %{meta_tags: meta_tags}} = socket, page) do
     %{
       meta_tags
-      | "title" => meta_tags["title"] <> " - Page #{page.page_number} of #{page.total_pages}"
+      | "title" => meta_tags["title"] <> " Page (#{page.page_number})"
     }
     |> then(&assign(socket, :meta_tags, &1))
   end
