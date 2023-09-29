@@ -101,14 +101,12 @@ defmodule Literature.BlogLive do
         Map.delete(params, "page")
       end
 
-    cond do
-      with_page_number? and params["page"] == "1" ->
-        path
-        |> String.replace("/page/#{params["page"]}", "")
-        |> then(&{:noreply, push_navigate(socket, to: &1, replace: true)})
-
-      true ->
-        do_handle_params(params, url, socket)
+    if with_page_number? and params["page"] == "1" do
+      path
+      |> String.replace("/page/#{params["page"]}", "")
+      |> then(&{:noreply, push_navigate(socket, to: &1, replace: true)})
+    else
+      do_handle_params(params, url, socket)
     end
   end
 
