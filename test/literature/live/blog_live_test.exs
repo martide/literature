@@ -5,7 +5,7 @@ defmodule Literature.BlogLiveTest do
   import Literature.Test.Fixtures
 
   defp create_blog(_) do
-    publication = publication_fixture(name: "Blog", description: "Blog description")
+    publication = publication_fixture(name: "Blog", description: "Blog description", locale: "en")
 
     author =
       author_fixture(publication_id: publication.id, name: "Author", bio: "Author description")
@@ -96,6 +96,16 @@ defmodule Literature.BlogLiveTest do
 
       conn = get(conn, Routes.literature_path(conn, :show, "some-post"))
       assert redirected_to(conn, redirect.type) == "/blog/"
+    end
+
+    test "language tags", %{conn: conn} do
+      {:ok, view, html} = live(conn, Routes.literature_path(conn, :index))
+
+      IO.inspect(html)
+      IO.inspect("link[href='#{conn.host}/en'][hreflang='en'][rel='alternate']")
+
+      assert view
+             |> has_element?("link[href='#{@endpoint}/en'][hreflang='en'][rel='alternate']")
     end
   end
 

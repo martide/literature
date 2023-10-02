@@ -21,7 +21,10 @@
       href={application_rss_path(@conn, @view_module)}
     />
     <link phx-track-static rel="stylesheet" href={application_css_path(@conn, @view_module)} />
-
+    <!-- Language tag -->
+    <%= render_publication_language_tags(@publication, @conn.host) %>
+    <%= render_post_language_tags(assigns[:post]) %>
+    <!-- END Language tag -->
     <script
       defer
       phx-track-static

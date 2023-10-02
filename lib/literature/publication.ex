@@ -17,6 +17,7 @@ defmodule Literature.Publication do
     field(:twitter_image, Uploaders.Type)
     field(:twitter_title, :string)
     field(:twitter_description, :string)
+    field(:locale, :string)
 
     has_many(:authors, Author)
     has_many(:tags, Tag)
@@ -51,6 +52,7 @@ defmodule Literature.Publication do
     og_description
     twitter_title
     twitter_description
+    locale
   )a
 
   @attachments ~w(

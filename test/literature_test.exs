@@ -173,7 +173,11 @@ defmodule LiteratureTest do
           publication_id: publication.id,
           status: "publish",
           authors_ids: [author.id],
-          tags_ids: [tag.id]
+          tags_ids: [tag.id],
+          locales: [
+            %{locale: "en", url: "http://example.com/en"},
+            %{locale: "de", url: "http://example.com/de"}
+          ]
         }
         |> atomize_keys_to_string()
 
@@ -183,6 +187,8 @@ defmodule LiteratureTest do
       assert post.tags == [tag]
       assert post.title == "some title"
       assert post.slug == "some-title"
+      assert Enum.find(post.locales, &(&1.locale == "en"))
+      assert Enum.find(post.locales, &(&1.locale == "de"))
     end
 
     test "create_post/1 with invalid data returns error changeset" do
@@ -260,11 +266,12 @@ defmodule LiteratureTest do
     end
 
     test "create_publication/1 with valid data creates an publication" do
-      valid_attrs = %{name: "some name", slug: "some-name"}
+      valid_attrs = %{name: "some name", slug: "some-name", locale: "en"}
 
       assert {:ok, %Publication{} = publication} = Literature.create_publication(valid_attrs)
       assert publication.name == "some name"
       assert publication.slug == "some-name"
+      assert publication.locale == "en"
     end
 
     test "create_publication/1 with invalid data returns error changeset" do

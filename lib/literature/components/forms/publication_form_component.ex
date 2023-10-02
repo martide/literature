@@ -57,6 +57,7 @@ defmodule Literature.PublicationFormComponent do
           <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
           <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" />
           <.form_field form={f} type="text_input" field={:meta_keywords} label="Meta Keywords" />
+          <.form_field form={f} type="text_input" field={:language} label="Language" />
         </.accordion>
         <.accordion title="Facebook Meta Tags">
           <.form_field
