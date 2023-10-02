@@ -32,6 +32,8 @@ defmodule Literature.Publication do
       where: [published_at: {:fragment, "?::date < current_date"}]
     )
 
+    has_many(:redirects, Redirect)
+
     timestamps()
   end
 
