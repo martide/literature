@@ -109,10 +109,10 @@ defmodule Literature.MetaTagHelpers do
   @doc """
   Render post language tags
   """
-  def render_post_language_tags(%Literature.Post{locales: locales})
+  def render_post_language_tags(%{locales: locales})
       when is_list(locales) and locales != [] do
     Enum.map(locales, fn locale ->
-      tag(:link, href: locale.url, hreflang: locale, rel: "alternate")
+      tag(:link, href: locale.url, hreflang: locale.locale, rel: "alternate")
     end)
   end
 
