@@ -9,7 +9,7 @@
     <%= render_all_tags(assigns[:meta_tags] || %{}, current_url(@conn)) %>
 
     <link rel="canonical" href={canonical_path(@conn)} />
-    <%= render_pagination_link_tags(assigns, current_url(@conn)) %>
+    <%= render_pagination_link_tags(assigns, current_url(@conn, %{})) %>
     <link
       rel="shortcut icon"
       type="image/png"

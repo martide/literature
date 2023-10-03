@@ -94,19 +94,17 @@ defmodule Literature.BlogLive do
     with_page_number? =
       String.contains?(path, "#{socket.assigns.publication_slug}/page/")
 
-    params =
-      if with_page_number? do
-        params
-      else
-        Map.delete(params, "page")
-      end
+    cond do
+      with_page_number? and params["page"] == "1" ->
+        path
+        |> String.replace("/page/#{params["page"]}", "")
+        |> then(&{:noreply, push_navigate(socket, to: &1, replace: true)})
 
-    if with_page_number? and params["page"] == "1" do
-      path
-      |> String.replace("/page/#{params["page"]}", "")
-      |> then(&{:noreply, push_navigate(socket, to: &1, replace: true)})
-    else
-      do_handle_params(params, url, socket)
+      not with_page_number? and Map.has_key?(params, "page") ->
+        render_not_found(socket)
+
+      true ->
+        do_handle_params(params, url, socket)
     end
   end
 
