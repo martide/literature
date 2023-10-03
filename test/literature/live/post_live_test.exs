@@ -149,6 +149,13 @@ defmodule Literature.PostLiveTest do
         Routes.literature_dashboard_path(conn, :edit_post, publication.slug, post.slug)
       )
 
+      # Delete locales
+      view
+      |> form("#post-form",
+        post: %{"locales_delete" => ["0"]}
+      )
+      |> render_change()
+
       view
       |> form("#post-form",
         post: %{"locales_delete" => ["0"]}
@@ -168,8 +175,8 @@ defmodule Literature.PostLiveTest do
       assert html =~ @update_attrs.title
 
       assert post = Literature.get_post!(title: @update_attrs.title)
-      assert Enum.find(post.locales, &(&1.locale == "de"))
 
+      refute Enum.find(post.locales, &(&1.locale == "de"))
       refute Enum.find(post.locales, &(&1.locale == "en"))
     end
 

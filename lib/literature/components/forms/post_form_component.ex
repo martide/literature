@@ -250,6 +250,7 @@ defmodule Literature.PostFormComponent do
       |> Map.merge(build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a))
       |> build_images()
       |> build_html()
+      |> Map.put_new("locales", [])
 
     case Literature.update_post(socket.assigns.post, post_params) do
       {:ok, post} ->
