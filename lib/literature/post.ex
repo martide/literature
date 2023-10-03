@@ -100,7 +100,10 @@ defmodule Literature.Post do
     |> cast(params, @required_params ++ @optional_params)
     |> maybe_generate_slug(post)
     |> cast_attachments(params, @attachments)
-    |> cast_embed(:locales)
+    |> cast_embed(:locales,
+      sort_param: :locales_order,
+      drop_param: :locales_delete
+    )
     |> validate_required(@required_params, message: "This field is required")
     |> unique_constraint(:slug,
       name: :literature_posts_publication_id_slug_index,

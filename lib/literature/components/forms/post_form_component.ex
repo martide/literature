@@ -142,24 +142,42 @@ defmodule Literature.PostFormComponent do
                 <div class="text-gray-900 block mb-2 text-sm font-medium">
                   Languages
                 </div>
-                <div class="flex justify-between">
-                  <.form_field
-                    form={f}
-                    type="text_input"
-                    field={:meta_keywords}
-                    label={false}
-                    placeholder="Language"
-                    container_class="flex-1 mr-2"
-                  />
-                  <.form_field
-                    form={f}
-                    type="text_input"
-                    field={:meta_keywords}
-                    label={false}
-                    placeholder="URL"
-                    container_class="flex-1"
-                  />
-                </div>
+                <.inputs_for :let={locale_form} field={f[:locales]}>
+                  <input type="hidden" name="post[locales_order][]" value={locale_form.index} />
+                  <div class="flex justify-between">
+                    <.form_field
+                      form={locale_form}
+                      type="text_input"
+                      field={:locale}
+                      label={false}
+                      placeholder="Language"
+                      container_class="flex-1 mr-2"
+                    />
+                    <.form_field
+                      form={locale_form}
+                      type="text_input"
+                      field={:url}
+                      label={false}
+                      placeholder="URL"
+                      container_class="flex-1 mr-2"
+                    />
+
+                    <label class="cursor-pointer py-2.5">
+                      <input
+                        type="checkbox"
+                        name="post[locales_delete][]"
+                        class="hidden"
+                        value={locale_form.index}
+                      />
+                      <span class="h-5 w-5 text-gray-300 hover:text-blue-500">x</span>
+                    </label>
+                  </div>
+                </.inputs_for>
+
+                <label class="mt-2 flex cursor-pointer items-center text-base text-blue-500">
+                  <input type="checkbox" name="post[locales_order][]" class="hidden" />
+                  <span>+ Add Language</span>
+                </label>
               </div>
             </.accordion>
             <.accordion title="Facebook Meta Tags" nogrid>
