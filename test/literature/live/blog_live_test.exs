@@ -27,9 +27,11 @@ defmodule Literature.BlogLiveTest do
   describe "Index" do
     setup [:create_blog]
 
-    test "redirects to / when path is ?page=1", %{conn: conn} do
-      conn = get(conn, Routes.literature_path(conn, :index, page: 1))
-      assert conn.assigns.path_info == ["blog"]
+    test "redirects to / when path is /page/1", %{conn: conn} do
+      assert {_, {:live_redirect, %{to: to}}} =
+               live(conn, Routes.literature_path(conn, :index, 1))
+
+      assert to == "/blog"
     end
 
     test "lists all blog posts", %{conn: conn, publication: publication, post: post} do
@@ -38,6 +40,32 @@ defmodule Literature.BlogLiveTest do
       assert html =~ publication.name
       assert html =~ publication.description
       assert html =~ post.title
+    end
+
+    test "lists blog posts page 2", %{
+      conn: conn,
+      publication: publication,
+      tag: tag,
+      author: author
+    } do
+      for i <- 1..20 do
+        post_fixture(
+          title: "Post #{i}",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+      end
+
+      assert {:ok, _view, html} = live(conn, Routes.literature_path(conn, :index, 2))
+      assert html =~ "/blog/page/1"
+      assert html =~ "/blog/page/3"
+    end
+
+    test "returns 404 error when exceeds total pages", %{conn: conn} do
+      assert_raise Literature.PageNotFound, fn ->
+        get(conn, Routes.literature_path(conn, :index, 2))
+      end
     end
 
     test "lists all blog tags", %{conn: conn, tag: tag} do
