@@ -1,8 +1,9 @@
 defmodule Literature.BlogLiveTest do
   use Literature.ConnCase
 
-  import Phoenix.LiveViewTest
+  import Floki, only: [parse_document!: 1, find: 2]
   import Literature.Test.Fixtures
+  import Phoenix.LiveViewTest
 
   defp create_blog(_) do
     publication = publication_fixture(name: "Blog", description: "Blog description", locale: "en")
@@ -98,14 +99,32 @@ defmodule Literature.BlogLiveTest do
       assert redirected_to(conn, redirect.type) == "/blog/"
     end
 
-    test "language tags", %{conn: conn} do
-      {:ok, view, html} = live(conn, Routes.literature_path(conn, :index))
+    test "publication language tags", %{conn: conn} do
+      {:ok, _view, html} = live(conn, Routes.literature_path(conn, :index))
 
-      IO.inspect(html)
-      IO.inspect("link[href='#{conn.host}/en'][hreflang='en'][rel='alternate']")
+      assert get_element(
+               html,
+               "link[href='#{@endpoint.url()}/en'][hreflang='en'][rel='alternate']"
+             )
 
-      assert view
-             |> has_element?("link[href='#{@endpoint}/en'][hreflang='en'][rel='alternate']")
+      assert get_element(
+               html,
+               "link[href='#{@endpoint.url()}/en'][hreflang='x-default'][rel='alternate']"
+             )
+    end
+
+    test "post language tags page", %{conn: conn, post: post} do
+      {:ok, _view, html} = live(conn, Routes.literature_path(conn, :show, post.slug))
+
+      assert get_element(
+               html,
+               "link[href='#{@endpoint.url()}/en'][hreflang='en'][rel='alternate']"
+             )
+
+      assert get_element(
+               html,
+               "link[href='#{@endpoint.url()}/en'][hreflang='x-default'][rel='alternate']"
+             )
     end
   end
 
@@ -123,5 +142,12 @@ defmodule Literature.BlogLiveTest do
       assert html =~ "Page not found"
       assert html =~ "Sorry, we could not find the page you are looking for."
     end
+  end
+
+  defp get_element(html, selector) do
+    html
+    |> parse_document!()
+    |> find(selector)
+    |> Enum.at(0)
   end
 end

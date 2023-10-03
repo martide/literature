@@ -138,6 +138,29 @@ defmodule Literature.PostFormComponent do
                 characters={@post_params["meta_description"] || @post.meta_description}
               />
               <.form_field form={f} type="text_input" field={:meta_keywords} label="Meta Keywords" />
+              <div>
+                <div class="text-gray-900 block mb-2 text-sm font-medium">
+                  Languages
+                </div>
+                <div class="flex justify-between">
+                  <.form_field
+                    form={f}
+                    type="text_input"
+                    field={:meta_keywords}
+                    label={false}
+                    placeholder="Language"
+                    container_class="flex-1 mr-2"
+                  />
+                  <.form_field
+                    form={f}
+                    type="text_input"
+                    field={:meta_keywords}
+                    label={false}
+                    placeholder="URL"
+                    container_class="flex-1"
+                  />
+                </div>
+              </div>
             </.accordion>
             <.accordion title="Facebook Meta Tags" nogrid>
               <.form_field
