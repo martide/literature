@@ -173,8 +173,7 @@ defmodule Literature.PostFormComponent do
                     </label>
                   </div>
                 </.inputs_for>
-
-                <label class="mt-2 flex cursor-pointer items-center text-base text-blue-500">
+                <label class="my-2 text-primary-700 font-medium cursor-pointer text-sm">
                   <input type="checkbox" name="post[locales_order][]" class="hidden" />
                   <span>+ Add Language</span>
                 </label>

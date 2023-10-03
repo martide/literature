@@ -21,6 +21,7 @@ defmodule Literature.Post do
     def changeset(%__MODULE__{} = struct, attrs \\ %{}) do
       struct
       |> cast(attrs, @embed_fields)
+      |> validate_required(@embed_fields)
     end
   end
 
