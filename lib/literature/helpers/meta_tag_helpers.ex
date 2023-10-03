@@ -92,4 +92,58 @@ defmodule Literature.MetaTagHelpers do
       value -> value || tags[default_key] || @metatags[key]
     end
   end
+
+  @doc """
+  Render pagination link tags
+  """
+  def render_pagination_link_tags(
+        %{
+          live_action: :index,
+          page: %{page_number: page_number, total_pages: total_pages}
+        },
+        current_url
+      )
+      when page_number == 1 and total_pages > 1 do
+    # When in first page, next tag only
+    [tag(:link, rel: "next", href: current_url <> "/page/2")]
+  end
+
+  def render_pagination_link_tags(
+        %{
+          live_action: :index,
+          page: %{page_number: page_number, total_pages: total_pages}
+        },
+        current_url
+      )
+      when total_pages > 1 and page_number == total_pages do
+    # When in last page, prev tag only
+    [
+      tag(:link,
+        rel: "prev",
+        href: String.replace(current_url, "/page/#{page_number}", "/page/#{page_number - 1}")
+      )
+    ]
+  end
+
+  def render_pagination_link_tags(
+        %{
+          live_action: :index,
+          page: %{page_number: page_number, total_pages: total_pages}
+        },
+        current_url
+      )
+      when page_number > 1 and page_number < total_pages do
+    [
+      tag(:link,
+        rel: "prev",
+        href: String.replace(current_url, "/page/#{page_number}", "/page/#{page_number - 1}")
+      ),
+      tag(:link,
+        rel: "next",
+        href: String.replace(current_url, "/page/#{page_number}", "/page/#{page_number + 1}")
+      )
+    ]
+  end
+
+  def render_pagination_link_tags(_, _), do: []
 end

@@ -28,6 +28,7 @@ defmodule Literature.RouterTest do
   describe "literature_path/2 for default path" do
     test "generates helper for blog pages", %{conn: conn} do
       assert Routes.literature_path(conn, :index) == "/blog"
+      assert Routes.literature_path(conn, :index, 2) == "/blog/page/2"
       assert Routes.literature_path(conn, :authors) == "/blog/authors"
       assert Routes.literature_path(conn, :tags) == "/blog/tags"
 
@@ -41,6 +42,7 @@ defmodule Literature.RouterTest do
   describe "literature_path/2 for dynamic path" do
     test "generates helper for blog pages", %{conn: conn} do
       assert DynamicPathRoutes.literature_path(conn, :index) == "/foo/bar/blog"
+      assert DynamicPathRoutes.literature_path(conn, :index, 2) == "/foo/bar/blog/page/2"
       assert DynamicPathRoutes.literature_path(conn, :authors) == "/foo/bar/blog/authors"
       assert DynamicPathRoutes.literature_path(conn, :tags) == "/foo/bar/blog/tags"
 
