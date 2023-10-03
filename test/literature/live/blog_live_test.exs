@@ -112,6 +112,19 @@ defmodule Literature.BlogLiveTest do
         get(conn, Routes.literature_path(conn, :show, "page-not-exists"))
       end
     end
+
+    test "redirects", %{conn: conn, publication: publication} do
+      redirect = redirect_fixture(publication_id: publication.id, from: "/", to: "/tags")
+
+      conn = get(conn, Routes.literature_path(conn, :index))
+      assert redirected_to(conn, redirect.type) == Routes.literature_path(conn, :tags)
+
+      redirect =
+        redirect_fixture(publication_id: publication.id, from: "/some-post", to: "/", type: 302)
+
+      conn = get(conn, Routes.literature_path(conn, :show, "some-post"))
+      assert redirected_to(conn, redirect.type) == "/blog/"
+    end
   end
 
   describe "Error view" do

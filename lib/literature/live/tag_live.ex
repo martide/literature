@@ -19,26 +19,7 @@ defmodule Literature.TagLive do
   @impl Phoenix.LiveView
   def render(assigns) do
     ~H"""
-    <.sidebar id="tag-sidebar" live_action={@live_action}>
-      <:tab
-        title="Posts"
-        path={literature_dashboard_path(@socket, :list_posts, @slug)}
-        icon="pencil"
-        actions={~w(list_posts new_post edit_post)a}
-      />
-      <:tab
-        title="Tags"
-        path={literature_dashboard_path(@socket, :list_tags, @slug)}
-        icon="tag"
-        actions={~w(list_tags new_tag edit_tag)a}
-      />
-      <:tab
-        title="Authors"
-        path={literature_dashboard_path(@socket, :list_authors, @slug)}
-        icon="users"
-        actions={~w(list_authors new_author edit_author)a}
-      />
-    </.sidebar>
+    <.sidebar_default id="tag-sidebar" live_action={@live_action} slug={@slug} socket={@socket} />
     <.container>
       <.h1><%= @page_title %></.h1>
       <%= if @live_action == :list_tags do %>
