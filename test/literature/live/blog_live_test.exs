@@ -18,7 +18,11 @@ defmodule Literature.BlogLiveTest do
         publication_id: publication.id,
         authors_ids: [author.id],
         tags_ids: [tag.id],
-        html: ["<p>content</p>"]
+        html: ["<p>content</p>"],
+        locales: [
+          %{locale: "en", url: "http://example.com/en"},
+          %{locale: "de", url: "http://example.com/de"}
+        ]
       )
 
     %{publication: publication, author: author, tag: tag, post: post}
@@ -153,6 +157,13 @@ defmodule Literature.BlogLiveTest do
                html,
                "link[href='#{@endpoint.url()}/en'][hreflang='x-default'][rel='alternate']"
              )
+
+      for locale <- post.locales do
+        assert get_element(
+                 html,
+                 "[href='#{locale.url}'][hreflang='#{locale.locale}'][rel='alternate']"
+               )
+      end
     end
   end
 
