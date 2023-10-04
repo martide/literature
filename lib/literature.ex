@@ -11,6 +11,9 @@ defmodule Literature do
   alias Literature.Repo
   alias Literature.Tag
 
+  use Cldr,
+    providers: [Cldr.Language]
+
   ## Author Context
 
   @doc """

@@ -4,6 +4,8 @@ defmodule Literature.Publication do
   """
   use Literature.Web, :model
 
+  alias Literature.Language
+
   schema "literature_publications" do
     field(:slug, :string)
     field(:name, :string)
@@ -68,6 +70,7 @@ defmodule Literature.Publication do
     |> cast_attachments(params, @attachments)
     |> maybe_generate_slug(publication)
     |> validate_required(@required_params, message: "This field is required")
+    |> validate_inclusion(:locale, Language.available_languages())
     |> unique_constraint(:slug)
   end
 

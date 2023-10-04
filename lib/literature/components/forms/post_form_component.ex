@@ -147,8 +147,9 @@ defmodule Literature.PostFormComponent do
                   <div class="flex justify-between items-center">
                     <.form_field
                       form={locale_form}
-                      type="text_input"
+                      type="select"
                       field={:locale}
+                      options={@available_languages}
                       label={false}
                       placeholder="Language"
                       container_class="flex-1 mr-2"

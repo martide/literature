@@ -43,7 +43,13 @@ defmodule Literature.FormComponent do
           <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
           <.radio_group form={@form} field={@field} {@input_opts} />
         <% "select" -> %>
-          <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
+          <.form_label
+            :if={@label}
+            form={@form}
+            field={@field}
+            label={@label}
+            required={assigns[:required]}
+          />
           <.select form={@form} field={@field} {@input_opts} />
         <% "url_input" -> %>
           <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />

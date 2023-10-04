@@ -49,6 +49,7 @@ defmodule Literature.PostLive do
           slug={@slug}
           action={@live_action}
           return_to={@return_to}
+          available_languages={Literature.Language.available_languages()}
         />
       <% end %>
     </.container>
