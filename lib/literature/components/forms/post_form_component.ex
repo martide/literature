@@ -138,6 +138,47 @@ defmodule Literature.PostFormComponent do
                 characters={@post_params["meta_description"] || @post.meta_description}
               />
               <.form_field form={f} type="text_input" field={:meta_keywords} label="Meta Keywords" />
+              <div>
+                <div class="text-gray-900 block mb-2 text-sm font-medium">
+                  Languages
+                </div>
+                <.inputs_for :let={locale_form} field={f[:locales]}>
+                  <input type="hidden" name="post[locales_order][]" value={locale_form.index} />
+                  <div class="flex justify-between items-center">
+                    <.form_field
+                      form={locale_form}
+                      type="select"
+                      field={:locale}
+                      options={@available_languages}
+                      label={false}
+                      placeholder="Language"
+                      container_class="flex-1 mr-2"
+                    />
+                    <.form_field
+                      form={locale_form}
+                      type="text_input"
+                      field={:url}
+                      label={false}
+                      placeholder="URL"
+                      container_class="flex-1 mr-2"
+                    />
+
+                    <label class="cursor-pointer hover:text-red-600 transition duration-300 ease-in-out mb-1">
+                      <input
+                        type="checkbox"
+                        name="post[locales_delete][]"
+                        class="hidden"
+                        value={locale_form.index}
+                      />
+                      <.delete_icon />
+                    </label>
+                  </div>
+                </.inputs_for>
+                <label class="my-2 block text-primary-700 font-medium cursor-pointer text-sm">
+                  <input type="checkbox" name="post[locales_order][]" class="hidden" />
+                  <span>+ Add Language</span>
+                </label>
+              </div>
             </.accordion>
             <.accordion title="Facebook Meta Tags" nogrid>
               <.form_field
@@ -210,6 +251,7 @@ defmodule Literature.PostFormComponent do
       |> Map.merge(build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a))
       |> build_images()
       |> build_html()
+      |> Map.put_new("locales", [])
 
     case Literature.update_post(socket.assigns.post, post_params) do
       {:ok, post} ->
@@ -269,5 +311,24 @@ defmodule Literature.PostFormComponent do
   defp build_html(%{"html" => html} = params) do
     html = Enum.map(html, &parse_image_tag/1)
     %{params | "html" => html}
+  end
+
+  defp delete_icon(assigns) do
+    ~H"""
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      class="w-4 h-4"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+      />
+    </svg>
+    """
   end
 end

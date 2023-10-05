@@ -68,6 +68,7 @@ defmodule Literature.MixProject do
       {:slugy, "~> 4.1"},
       {:timex, "~> 3.7"},
       {:poolboy, "~> 1.5"},
+      {:ex_cldr_languages, "~> 0.3"},
 
       # Test
       {:credo, "~> 1.6", only: [:test, :dev], runtime: false},

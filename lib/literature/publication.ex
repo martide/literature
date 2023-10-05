@@ -4,6 +4,8 @@ defmodule Literature.Publication do
   """
   use Literature.Web, :model
 
+  alias Literature.Language
+
   schema "literature_publications" do
     field(:slug, :string)
     field(:name, :string)
@@ -17,6 +19,8 @@ defmodule Literature.Publication do
     field(:twitter_image, Uploaders.Type)
     field(:twitter_title, :string)
     field(:twitter_description, :string)
+    field(:locale, :string)
+    field(:ex_default_locale, :string)
 
     has_many(:authors, Author)
     has_many(:tags, Tag)
@@ -51,6 +55,7 @@ defmodule Literature.Publication do
     og_description
     twitter_title
     twitter_description
+    locale
   )a
 
   @attachments ~w(
@@ -66,6 +71,7 @@ defmodule Literature.Publication do
     |> cast_attachments(params, @attachments)
     |> maybe_generate_slug(publication)
     |> validate_required(@required_params, message: "This field is required")
+    |> validate_inclusion(:locale, Language.available_languages())
     |> unique_constraint(:slug)
   end
 

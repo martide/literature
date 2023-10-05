@@ -94,6 +94,31 @@ defmodule Literature.MetaTagHelpers do
   end
 
   @doc """
+  Render publication language tags
+  """
+  def render_publication_language_tags(%Literature.Publication{locale: locale}, current_url)
+      when is_binary(locale) do
+    [
+      [tag(:link, href: current_url, hreflang: locale, rel: "alternate")],
+      [tag(:link, href: current_url, hreflang: "x-default", rel: "alternate")]
+    ]
+  end
+
+  def render_publication_language_tags(_publication, _base_url), do: []
+
+  @doc """
+  Render post language tags
+  """
+  def render_post_language_tags(%{locales: locales})
+      when is_list(locales) and locales != [] do
+    Enum.map(locales, fn locale ->
+      tag(:link, href: locale.url, hreflang: locale.locale, rel: "alternate")
+    end)
+  end
+
+  def render_post_language_tags(_post), do: []
+
+  @doc """
   Render pagination link tags
   """
   def render_pagination_link_tags(

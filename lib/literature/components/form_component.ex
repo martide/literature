@@ -19,12 +19,19 @@ defmodule Literature.FormComponent do
           :required
         ])
       end)
+      |> assign_new(:container_class, fn -> nil end)
 
     ~H"""
-    <div class={form_field_classes(@type)}>
+    <div class={"#{form_field_classes(@type)} #{@container_class}"}>
       <%= case @type do %>
         <% "text_input" -> %>
-          <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
+          <.form_label
+            :if={@label}
+            form={@form}
+            field={@field}
+            label={@label}
+            required={assigns[:required]}
+          />
           <.text_input form={@form} field={@field} {@input_opts} />
         <% "textarea" -> %>
           <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
@@ -36,7 +43,13 @@ defmodule Literature.FormComponent do
           <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
           <.radio_group form={@form} field={@field} {@input_opts} />
         <% "select" -> %>
-          <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
+          <.form_label
+            :if={@label}
+            form={@form}
+            field={@field}
+            label={@label}
+            required={assigns[:required]}
+          />
           <.select form={@form} field={@field} {@input_opts} />
         <% "url_input" -> %>
           <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />

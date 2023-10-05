@@ -7,7 +7,8 @@ defmodule Literature.PostLiveTest do
   @create_attrs %{
     title: "some new title",
     authors_ids: [],
-    tags_ids: []
+    tags_ids: [],
+    locales: %{}
   }
 
   @update_attrs %{title: "some updated title"}
@@ -21,7 +22,11 @@ defmodule Literature.PostLiveTest do
       post_fixture(
         publication_id: publication.id,
         authors_ids: [author.id],
-        tags_ids: [tag.id]
+        tags_ids: [tag.id],
+        locales: [
+          %{locale: "en", url: "http://example.com/en"},
+          %{locale: "de", url: "http://example.com/de"}
+        ]
       )
 
     %{publication: publication, author: author, tag: tag, post: post}
@@ -55,9 +60,30 @@ defmodule Literature.PostLiveTest do
 
       assert html =~ "New Post"
 
+      # Add language
       new_live
       |> form("#post-form",
-        post: %{@create_attrs | authors_ids: [author.id], tags_ids: [tag.id]}
+        post: %{"locales_order" => [""]}
+      )
+      |> render_change()
+
+      new_live
+      |> form("#post-form",
+        post: %{"locales_order" => [""]}
+      )
+      |> render_change()
+
+      new_live
+      |> form("#post-form",
+        post: %{
+          @create_attrs
+          | authors_ids: [author.id],
+            tags_ids: [tag.id],
+            locales: %{
+              0 => %{locale: "en", url: "https://example.com/en"},
+              1 => %{locale: "de", url: "https://example.com/de"}
+            }
+        }
       )
       |> render_submit()
 
@@ -65,6 +91,10 @@ defmodule Literature.PostLiveTest do
 
       assert path == Routes.literature_dashboard_path(conn, :list_posts, publication.slug)
       assert flash["success"] == "Post created successfully"
+
+      assert post = Literature.get_post!(title: @create_attrs.title)
+      assert Enum.find(post.locales, &(&1.locale == "en"))
+      assert Enum.find(post.locales, &(&1.locale == "de"))
     end
 
     test "saves new post with html", %{
@@ -119,6 +149,19 @@ defmodule Literature.PostLiveTest do
         Routes.literature_dashboard_path(conn, :edit_post, publication.slug, post.slug)
       )
 
+      # Delete locales
+      view
+      |> form("#post-form",
+        post: %{"locales_delete" => ["0"]}
+      )
+      |> render_change()
+
+      view
+      |> form("#post-form",
+        post: %{"locales_delete" => ["0"]}
+      )
+      |> render_change()
+
       result =
         view
         |> form("#post-form", post: @update_attrs)
@@ -130,6 +173,11 @@ defmodule Literature.PostLiveTest do
 
       {:ok, _, html} = follow_redirect(result, conn, path)
       assert html =~ @update_attrs.title
+
+      assert post = Literature.get_post!(title: @update_attrs.title)
+
+      refute Enum.find(post.locales, &(&1.locale == "de"))
+      refute Enum.find(post.locales, &(&1.locale == "en"))
     end
 
     test "updates post in listing with html", %{
