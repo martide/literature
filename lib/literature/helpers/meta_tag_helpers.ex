@@ -92,4 +92,83 @@ defmodule Literature.MetaTagHelpers do
       value -> value || tags[default_key] || @metatags[key]
     end
   end
+
+  @doc """
+  Render publication language tags
+  """
+  def render_publication_language_tags(%Literature.Publication{locale: locale}, current_url)
+      when is_binary(locale) do
+    [
+      [tag(:link, href: current_url, hreflang: locale, rel: "alternate")],
+      [tag(:link, href: current_url, hreflang: "x-default", rel: "alternate")]
+    ]
+  end
+
+  def render_publication_language_tags(_publication, _base_url), do: []
+
+  @doc """
+  Render post language tags
+  """
+  def render_post_language_tags(%{locales: locales})
+      when is_list(locales) and locales != [] do
+    Enum.map(locales, fn locale ->
+      tag(:link, href: locale.url, hreflang: locale.locale, rel: "alternate")
+    end)
+  end
+
+  def render_post_language_tags(_post), do: []
+
+  @doc """
+  Render pagination link tags
+  """
+  def render_pagination_link_tags(
+        %{
+          live_action: :index,
+          page: %{page_number: page_number, total_pages: total_pages}
+        },
+        current_url
+      )
+      when page_number == 1 and total_pages > 1 do
+    # When in first page, next tag only
+    [tag(:link, rel: "next", href: current_url <> "/page/2")]
+  end
+
+  def render_pagination_link_tags(
+        %{
+          live_action: :index,
+          page: %{page_number: page_number, total_pages: total_pages}
+        },
+        current_url
+      )
+      when total_pages > 1 and page_number == total_pages do
+    # When in last page, prev tag only
+    [
+      tag(:link,
+        rel: "prev",
+        href: String.replace(current_url, "/page/#{page_number}", "/page/#{page_number - 1}")
+      )
+    ]
+  end
+
+  def render_pagination_link_tags(
+        %{
+          live_action: :index,
+          page: %{page_number: page_number, total_pages: total_pages}
+        },
+        current_url
+      )
+      when page_number > 1 and page_number < total_pages do
+    [
+      tag(:link,
+        rel: "prev",
+        href: String.replace(current_url, "/page/#{page_number}", "/page/#{page_number - 1}")
+      ),
+      tag(:link,
+        rel: "next",
+        href: String.replace(current_url, "/page/#{page_number}", "/page/#{page_number + 1}")
+      )
+    ]
+  end
+
+  def render_pagination_link_tags(_, _), do: []
 end

@@ -62,4 +62,20 @@ defmodule Literature.Test.Fixtures do
 
     tag
   end
+
+  @doc """
+  Generate a redirect.
+  """
+  def redirect_fixture(attrs \\ []) do
+    {:ok, redirect} =
+      attrs
+      |> Keyword.put_new(:from, "/from")
+      |> Keyword.put_new(:to, "/to")
+      |> Keyword.put_new(:type, "301")
+      |> Enum.into(%{})
+      |> atomize_keys_to_string()
+      |> Literature.create_redirect()
+
+    redirect
+  end
 end

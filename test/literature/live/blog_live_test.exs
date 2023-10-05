@@ -1,11 +1,12 @@
 defmodule Literature.BlogLiveTest do
   use Literature.ConnCase
 
-  import Phoenix.LiveViewTest
+  import Floki, only: [parse_document!: 1, find: 2]
   import Literature.Test.Fixtures
+  import Phoenix.LiveViewTest
 
   defp create_blog(_) do
-    publication = publication_fixture(name: "Blog", description: "Blog description")
+    publication = publication_fixture(name: "Blog", description: "Blog description", locale: "en")
 
     author =
       author_fixture(publication_id: publication.id, name: "Author", bio: "Author description")
@@ -17,7 +18,11 @@ defmodule Literature.BlogLiveTest do
         publication_id: publication.id,
         authors_ids: [author.id],
         tags_ids: [tag.id],
-        html: ["<p>content</p>"]
+        html: ["<p>content</p>"],
+        locales: [
+          %{locale: "en", url: "http://example.com/en"},
+          %{locale: "de", url: "http://example.com/de"}
+        ]
       )
 
     %{publication: publication, author: author, tag: tag, post: post}
@@ -26,9 +31,11 @@ defmodule Literature.BlogLiveTest do
   describe "Index" do
     setup [:create_blog]
 
-    test "redirects to / when path is ?page=1", %{conn: conn} do
-      conn = get(conn, Routes.literature_path(conn, :index, page: 1))
-      assert conn.assigns.path_info == ["blog"]
+    test "redirects to / when path is /page/1", %{conn: conn} do
+      assert {_, {:live_redirect, %{to: to}}} =
+               live(conn, Routes.literature_path(conn, :index, 1))
+
+      assert to == "/blog"
     end
 
     test "lists all blog posts", %{conn: conn, publication: publication, post: post} do
@@ -37,6 +44,32 @@ defmodule Literature.BlogLiveTest do
       assert html =~ publication.name
       assert html =~ publication.description
       assert html =~ post.title
+    end
+
+    test "lists blog posts page 2", %{
+      conn: conn,
+      publication: publication,
+      tag: tag,
+      author: author
+    } do
+      for i <- 1..20 do
+        post_fixture(
+          title: "Post #{i}",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+      end
+
+      assert {:ok, _view, html} = live(conn, Routes.literature_path(conn, :index, 2))
+      assert html =~ "/blog/page/1"
+      assert html =~ "/blog/page/3"
+    end
+
+    test "returns 404 error when exceeds total pages", %{conn: conn} do
+      assert_raise Literature.PageNotFound, fn ->
+        get(conn, Routes.literature_path(conn, :index, 2))
+      end
     end
 
     test "lists all blog tags", %{conn: conn, tag: tag} do
@@ -84,6 +117,58 @@ defmodule Literature.BlogLiveTest do
         get(conn, Routes.literature_path(conn, :show, "page-not-exists"))
       end
     end
+
+    test "redirects", %{conn: conn, publication: publication} do
+      redirect = redirect_fixture(publication_id: publication.id, from: "/", to: "/tags")
+
+      conn = get(conn, Routes.literature_path(conn, :index))
+      assert redirected_to(conn, redirect.type) == Routes.literature_path(conn, :tags)
+
+      redirect =
+        redirect_fixture(publication_id: publication.id, from: "/some-post", to: "/", type: 302)
+
+      conn = get(conn, Routes.literature_path(conn, :show, "some-post"))
+      assert redirected_to(conn, redirect.type) == "/blog/"
+    end
+
+    test "publication language tags", %{conn: conn} do
+      {:ok, _view, html} = live(conn, Routes.literature_path(conn, :index))
+
+      current_url = @endpoint.url() <> Routes.literature_path(conn, :index)
+
+      assert get_element(
+               html,
+               "link[href='#{current_url}'][hreflang='en'][rel='alternate']"
+             )
+
+      assert get_element(
+               html,
+               "link[href='#{current_url}'][hreflang='x-default'][rel='alternate']"
+             )
+    end
+
+    test "post language tags page", %{conn: conn, post: post} do
+      {:ok, _view, html} = live(conn, Routes.literature_path(conn, :show, post.slug))
+
+      current_url = @endpoint.url() <> Routes.literature_path(conn, :show, post.slug)
+
+      assert get_element(
+               html,
+               "link[href='#{current_url}'][hreflang='en'][rel='alternate']"
+             )
+
+      assert get_element(
+               html,
+               "link[href='#{current_url}'][hreflang='x-default'][rel='alternate']"
+             )
+
+      for locale <- post.locales do
+        assert get_element(
+                 html,
+                 "[href='#{locale.url}'][hreflang='#{locale.locale}'][rel='alternate']"
+               )
+      end
+    end
   end
 
   describe "Error view" do
@@ -100,5 +185,12 @@ defmodule Literature.BlogLiveTest do
       assert html =~ "Page not found"
       assert html =~ "Sorry, we could not find the page you are looking for."
     end
+  end
+
+  defp get_element(html, selector) do
+    html
+    |> parse_document!()
+    |> find(selector)
+    |> Enum.at(0)
   end
 end

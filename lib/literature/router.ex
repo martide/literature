@@ -28,6 +28,10 @@ defmodule Literature.Router do
         plug(:cdn_cache_control)
       end
 
+      pipeline :maybe_redirect do
+        plug Literature.Plugs.Redirect
+      end
+
       defp cdn_cache_control(conn, _) do
         conn
         |> put_resp_header(
@@ -93,6 +97,9 @@ defmodule Literature.Router do
               route_opts
             )
 
+            get("/css-:md5", Literature.Assets, :css, route_opts)
+            get("/js-:md5", Literature.Assets, :js, route_opts)
+
             scope "/:publication_slug", Literature do
               # Post routes
               live("/posts", PostLive, :list_posts, route_opts)
@@ -109,6 +116,9 @@ defmodule Literature.Router do
               live("/authors", AuthorLive, :list_authors, route_opts)
               live("/authors/new", AuthorLive, :new_author, route_opts)
               live("/authors/:slug/edit", AuthorLive, :edit_author, route_opts)
+
+              # Redirect routes
+              live("/redirects", RedirectLive, :list_redirects, route_opts)
             end
           end
         end
@@ -164,12 +174,15 @@ defmodule Literature.Router do
             Literature.Router.__options__(opts, session_name, :root)
 
           scope "/#{publication_slug}", Literature do
+            pipe_through(:maybe_redirect)
+
             get("/rss.xml", RSSController, :rss, as: session_name)
 
             live_session session_name, session_opts do
               # Blog routes
               if :index in routes do
                 live("/", BlogLive, :index, route_opts)
+                live("/page/:page", BlogLive, :index, route_opts)
               end
 
               if :tags in routes do

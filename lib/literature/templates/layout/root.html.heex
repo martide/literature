@@ -4,10 +4,12 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={"Literature #{Application.spec(:literature, :vsn)}"} />
 
     <%= render_all_tags(assigns[:meta_tags] || %{}, current_url(@conn)) %>
 
     <link rel="canonical" href={canonical_path(@conn)} />
+    <%= render_pagination_link_tags(assigns, current_url(@conn, %{})) %>
     <link
       rel="shortcut icon"
       type="image/png"
@@ -19,8 +21,12 @@
       title={@publication.name}
       href={application_rss_path(@conn, @view_module)}
     />
-    <link phx-track-static rel="stylesheet" href={application_css_path(@conn, @view_module)} />
 
+    <link phx-track-static rel="stylesheet" href={application_css_path(@conn, @view_module)} />
+    <!-- Language tag -->
+    <%= render_publication_language_tags(@publication, current_url(@conn, %{})) %>
+    <%= render_post_language_tags(assigns[:post]) %>
+    <!-- END Language tag -->
     <script
       defer
       phx-track-static
