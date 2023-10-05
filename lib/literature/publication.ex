@@ -56,6 +56,7 @@ defmodule Literature.Publication do
     twitter_title
     twitter_description
     locale
+    ex_default_locale
   )a
 
   @attachments ~w(
@@ -72,6 +73,7 @@ defmodule Literature.Publication do
     |> maybe_generate_slug(publication)
     |> validate_required(@required_params, message: "This field is required")
     |> validate_inclusion(:locale, Language.available_languages())
+    |> validate_inclusion(:ex_default_locale, Language.available_languages())
     |> unique_constraint(:slug)
   end
 

@@ -6,7 +6,13 @@ defmodule Literature.BlogLiveTest do
   import Phoenix.LiveViewTest
 
   defp create_blog(_) do
-    publication = publication_fixture(name: "Blog", description: "Blog description", locale: "en")
+    publication =
+      publication_fixture(
+        name: "Blog",
+        description: "Blog description",
+        locale: "en",
+        ex_default_locale: "en"
+      )
 
     author =
       author_fixture(publication_id: publication.id, name: "Author", bio: "Author description")
@@ -147,7 +153,7 @@ defmodule Literature.BlogLiveTest do
              )
     end
 
-    test "post language tags page", %{conn: conn, post: post} do
+    test "post language tags", %{conn: conn, post: post} do
       {:ok, _view, html} = live(conn, Routes.literature_path(conn, :show, post.slug))
 
       current_url = @endpoint.url() <> Routes.literature_path(conn, :show, post.slug)
@@ -168,6 +174,38 @@ defmodule Literature.BlogLiveTest do
                  "[href='#{locale.url}'][hreflang='#{locale.locale}'][rel='alternate']"
                )
       end
+    end
+
+    test "post language tags only renders equal to x-default", %{
+      conn: conn,
+      publication: publication,
+      post: post
+    } do
+      {:ok, _view, html} = live(conn, Routes.literature_path(conn, :show, post.slug))
+
+      Literature.update_publication(publication, %{ex_default_locale: "de"})
+
+      current_url = @endpoint.url() <> Routes.literature_path(conn, :show, post.slug)
+
+      assert get_element(
+               html,
+               "link[href='#{current_url}'][hreflang='en'][rel='alternate']"
+             )
+
+      assert get_element(
+               html,
+               "link[href='#{current_url}'][hreflang='x-default'][rel='alternate']"
+             )
+
+      assert get_element(
+               html,
+               "link[href='http://example.com/de'][hreflang='de'][rel='alternate']"
+             )
+
+      refute get_element(
+               html,
+               "link[href='http://example.com/de}'][hreflang='de'][rel='alternate']"
+             )
     end
   end
 

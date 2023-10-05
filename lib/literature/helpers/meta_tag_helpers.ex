@@ -109,14 +109,24 @@ defmodule Literature.MetaTagHelpers do
   @doc """
   Render post language tags
   """
-  def render_post_language_tags(%{locales: locales})
+  def render_post_language_tags(
+        %{locales: locales} = _post,
+        %{
+          ex_default_locale: ex_default_locale,
+          locale: publication_locale
+        } = _publication
+      )
       when is_list(locales) and locales != [] do
+    show_tags? = not is_nil(publication_locale) and publication_locale == ex_default_locale
+
     Enum.map(locales, fn locale ->
-      tag(:link, href: locale.url, hreflang: locale.locale, rel: "alternate")
+      if locale.locale == ex_default_locale or show_tags? do
+        tag(:link, href: locale.url, hreflang: locale.locale, rel: "alternate")
+      end
     end)
   end
 
-  def render_post_language_tags(_post), do: []
+  def render_post_language_tags(_post, _publication), do: []
 
   @doc """
   Render pagination link tags
