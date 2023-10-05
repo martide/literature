@@ -134,28 +134,32 @@ defmodule Literature.BlogLiveTest do
     test "publication language tags", %{conn: conn} do
       {:ok, _view, html} = live(conn, Routes.literature_path(conn, :index))
 
+      current_url = @endpoint.url() <> Routes.literature_path(conn, :index)
+
       assert get_element(
                html,
-               "link[href='#{@endpoint.url()}/en'][hreflang='en'][rel='alternate']"
+               "link[href='#{current_url}'][hreflang='en'][rel='alternate']"
              )
 
       assert get_element(
                html,
-               "link[href='#{@endpoint.url()}/en'][hreflang='x-default'][rel='alternate']"
+               "link[href='#{current_url}'][hreflang='x-default'][rel='alternate']"
              )
     end
 
     test "post language tags page", %{conn: conn, post: post} do
       {:ok, _view, html} = live(conn, Routes.literature_path(conn, :show, post.slug))
 
+      current_url = @endpoint.url() <> Routes.literature_path(conn, :show, post.slug)
+
       assert get_element(
                html,
-               "link[href='#{@endpoint.url()}/en'][hreflang='en'][rel='alternate']"
+               "link[href='#{current_url}'][hreflang='en'][rel='alternate']"
              )
 
       assert get_element(
                html,
-               "link[href='#{@endpoint.url()}/en'][hreflang='x-default'][rel='alternate']"
+               "link[href='#{current_url}'][hreflang='x-default'][rel='alternate']"
              )
 
       for locale <- post.locales do

@@ -96,11 +96,11 @@ defmodule Literature.MetaTagHelpers do
   @doc """
   Render publication language tags
   """
-  def render_publication_language_tags(%Literature.Publication{locale: locale}, base_url)
+  def render_publication_language_tags(%Literature.Publication{locale: locale}, current_url)
       when is_binary(locale) do
     [
-      [tag(:link, href: "#{base_url}/#{locale}", hreflang: locale, rel: "alternate")],
-      [tag(:link, href: "#{base_url}/#{locale}", hreflang: "x-default", rel: "alternate")]
+      [tag(:link, href: current_url, hreflang: locale, rel: "alternate")],
+      [tag(:link, href: current_url, hreflang: "x-default", rel: "alternate")]
     ]
   end
 

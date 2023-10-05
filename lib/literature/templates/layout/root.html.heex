@@ -24,7 +24,7 @@
 
     <link phx-track-static rel="stylesheet" href={application_css_path(@conn, @view_module)} />
     <!-- Language tag -->
-    <%= render_publication_language_tags(@publication, endpoint_module(@conn).url()) %>
+    <%= render_publication_language_tags(@publication, current_url(@conn, %{})) %>
     <%= render_post_language_tags(assigns[:post]) %>
     <!-- END Language tag -->
     <script

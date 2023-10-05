@@ -36,7 +36,7 @@ defmodule Literature.PublicationLive do
           publication={@publication}
           action={@live_action}
           return_to={@return_to}
-          available_languages={Literature.Language.available_languages()}
+          available_languages={[{"", ""}] ++ Literature.Language.available_languages()}
         />
       <% end %>
     </div>

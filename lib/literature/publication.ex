@@ -20,6 +20,7 @@ defmodule Literature.Publication do
     field(:twitter_title, :string)
     field(:twitter_description, :string)
     field(:locale, :string)
+    field(:ex_default_locale, :string)
 
     has_many(:authors, Author)
     has_many(:tags, Tag)

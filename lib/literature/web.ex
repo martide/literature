@@ -52,7 +52,7 @@ defmodule Literature.Web do
 
       # Import convenience functions from controllers
       import Phoenix.Controller,
-        only: [current_url: 1, current_url: 2, endpoint_module: 1, get_flash: 2]
+        only: [current_url: 1, current_url: 2, get_flash: 2]
 
       unquote(view_helpers())
     end

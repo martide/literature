@@ -59,6 +59,13 @@ defmodule Literature.PublicationFormComponent do
             field={:locale}
             label="Language"
           />
+          <.form_field
+            form={f}
+            type="select"
+            options={@available_languages}
+            field={:ex_default_locale}
+            label="Ex-default Language"
+          />
         </.form_group>
         <.accordion title="Meta Tags">
           <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
