@@ -4,6 +4,27 @@ defmodule Literature.Post do
   """
   use Literature.Web, :model
 
+  defmodule Locale do
+    @moduledoc """
+    Post languages
+    """
+    use Literature.Web, :model
+
+    @embed_fields ~w(locale url)a
+
+    @primary_key false
+    embedded_schema do
+      field(:locale, :string)
+      field(:url, :string)
+    end
+
+    def changeset(%__MODULE__{} = struct, attrs \\ %{}) do
+      struct
+      |> cast(attrs, @embed_fields)
+      |> validate_required(@embed_fields)
+    end
+  end
+
   schema "literature_posts" do
     field(:slug, :string)
     field(:title, :string)
@@ -37,6 +58,8 @@ defmodule Literature.Post do
 
     many_to_many(:authors, Author, join_through: "literature_authors_posts", on_replace: :delete)
     many_to_many(:tags, Tag, join_through: "literature_tags_posts", on_replace: :delete)
+
+    embeds_many(:locales, Locale, on_replace: :delete)
 
     timestamps()
   end
@@ -78,6 +101,10 @@ defmodule Literature.Post do
     |> cast(params, @required_params ++ @optional_params)
     |> maybe_generate_slug(post)
     |> cast_attachments(params, @attachments)
+    |> cast_embed(:locales,
+      sort_param: :locales_order,
+      drop_param: :locales_delete
+    )
     |> validate_required(@required_params, message: "This field is required")
     |> unique_constraint(:slug,
       name: :literature_posts_publication_id_slug_index,

@@ -1,5 +1,9 @@
 defmodule Literature do
   @moduledoc false
+
+  use Cldr,
+    providers: [Cldr.Language]
+
   import Literature.QueryHelpers
 
   alias Literature.Author
