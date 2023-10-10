@@ -181,11 +181,13 @@ defmodule Literature.BlogLiveTest do
       publication: publication,
       post: post
     } do
-      {:ok, _view, html} = live(conn, Routes.literature_path(conn, :show, post.slug))
-
+      # Update x-default to 'de' and then 'en' tag should not be shown
       Literature.update_publication(publication, %{ex_default_locale: "de"})
 
-      current_url = @endpoint.url() <> Routes.literature_path(conn, :show, post.slug)
+      path = Routes.literature_path(conn, :show, post.slug)
+      {:ok, _view, html} = live(conn, path)
+
+      current_url = @endpoint.url() <> path
 
       assert get_element(
                html,
@@ -204,7 +206,7 @@ defmodule Literature.BlogLiveTest do
 
       refute get_element(
                html,
-               "link[href='http://example.com/de}'][hreflang='de'][rel='alternate']"
+               "link[href='http://example.com/en'][hreflang='en'][rel='alternate']"
              )
     end
   end

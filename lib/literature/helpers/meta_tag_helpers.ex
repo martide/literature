@@ -119,10 +119,10 @@ defmodule Literature.MetaTagHelpers do
       when is_list(locales) and locales != [] do
     show_tags? = not is_nil(publication_locale) and publication_locale == ex_default_locale
 
-    Enum.map(locales, fn locale ->
-      if locale.locale == ex_default_locale or show_tags? do
-        tag(:link, href: locale.url, hreflang: locale.locale, rel: "alternate")
-      end
+    locales
+    |> Enum.filter(&(&1.locale == ex_default_locale or show_tags?))
+    |> Enum.map(fn locale ->
+      tag(:link, href: locale.url, hreflang: locale.locale, rel: "alternate")
     end)
   end
 
