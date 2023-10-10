@@ -1,6 +1,7 @@
 defmodule Literature.LayoutView do
   @moduledoc false
   use Literature.Web, :view
+  use Phoenix.Component
 
   import Literature.LayoutComponent
   import Literature.MetaTagHelpers
