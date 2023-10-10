@@ -57,10 +57,13 @@ defmodule Literature.TableComponent do
             <span class="flex-1 ml-2 whitespace-nowrap">Create new</span>
           </button>
         <% else %>
-          <%= live_redirect to: @new_path, class: "text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center" do %>
+          <.link
+            navigate={@new_path}
+            class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center"
+          >
             <.create_icon />
             <span class="flex-1 ml-2 whitespace-nowrap">Create new</span>
-          <% end %>
+          </.link>
         <% end %>
       </div>
       <div class="overflow-x-auto">
@@ -69,7 +72,7 @@ defmodule Literature.TableComponent do
             <tr>
               <%= for column <- @columns do %>
                 <th scope="col" class="py-3 px-6">
-                  <%= table_sort(@base_path, @params, column) %>
+                  <.table_sort base_path={@base_path} params={@params} column={column} />
                 </th>
               <% end %>
               <th scope="col" class="py-3 px-6">
@@ -150,9 +153,13 @@ defmodule Literature.TableComponent do
           <.edit_icon />
         </div>
       <% else %>
-        <%= live_patch to: "#{@base_path}/#{@item.slug}/edit", id: "edit-#{@item.id}", class: "hover:text-primary-600 transition duration-300 ease-in-out" do %>
+        <.link
+          id={"edit-#{@item.id}"}
+          patch={"#{@base_path}/#{@item.slug}/edit"}
+          class="hover:text-primary-600 transition duration-300 ease-in-out"
+        >
           <.edit_icon />
-        <% end %>
+        </.link>
       <% end %>
       <%= link to: "#", phx_click: "open_delete_modal", phx_value_id: @item.id, id: "delete-#{@item.id}", class: "hover:text-red-600 transition duration-300 ease-in-out" do %>
         <svg
@@ -293,9 +300,14 @@ defmodule Literature.TableComponent do
     """
   end
 
-  defp table_sort(_base_path, _params, {:posts, text}), do: text
+  defp table_sort(%{column: {:posts, _text}} = assigns) do
+    ~H"""
+    <% {:posts, text} = @column %>
+    <%= text %>
+    """
+  end
 
-  defp table_sort(base_path, params, {field, text}) do
+  defp table_sort(%{params: params, column: {field, text}} = assigns) do
     direction = params["sort_direction"]
 
     sort_direction =
@@ -306,7 +318,14 @@ defmodule Literature.TableComponent do
       sort_direction: sort_direction
     }
 
-    live_patch(text, to: "#{base_path}?#{query_string(params, opts)}")
+    assigns =
+      assign(assigns, opts: opts, text: text)
+
+    ~H"""
+    <.link patch={"#{@base_path}?#{query_string(@params, @opts)}"}>
+      <%= @text %>
+    </.link>
+    """
   end
 
   defp query_string(params, opts) do
