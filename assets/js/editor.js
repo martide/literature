@@ -1,20 +1,30 @@
 import EditorJS from '@editorjs/editorjs'
-import Header from '@editorjs/header' 
+import Header from '@editorjs/header'
 import Image from '@editorjs/image'
 import List from '@editorjs/list'
 import editorParser from 'editorjs-html'
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 
+// Custom image parser to put alt attribute
+const customImageParser = ({ data }) => {
+  const alt = data.alt ? data.alt : 'Image';
+
+  return `<img src="${data.file && data.file.url ? data.file.url : data.url
+    }" alt="${alt}" />`;
+};
+
+const parser = editorParser({ image: customImageParser });
+
 const HTMLEditorJS = element => {
   const inputEditorJSON = document.querySelector('#post-form_editor_json')
   const inputHTML = document.querySelector('#post-form_html')
 
-  inputHTML.value = element.dataset.postData ? 
-    JSON.stringify(editorParser().parse(JSON.parse(element.dataset.postData))) : ""
+  inputHTML.value = element.dataset.postData ?
+    JSON.stringify(parser.parse(JSON.parse(element.dataset.postData))) : ""
 
   const editor = new EditorJS({
-    tools: { 
+    tools: {
       header: Header,
       image: {
         class: Image,
@@ -37,7 +47,7 @@ const HTMLEditorJS = element => {
     onChange: () => {
       editor.save().then((outputData) => {
         inputEditorJSON.value = JSON.stringify(outputData)
-        inputHTML.value = JSON.stringify(editorParser().parse(outputData))
+        inputHTML.value = JSON.stringify(parser.parse(outputData))
       })
     }
   })
