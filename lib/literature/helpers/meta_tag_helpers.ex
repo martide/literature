@@ -182,7 +182,7 @@ defmodule Literature.MetaTagHelpers do
 
   def render_pagination_link_tags(_, _), do: []
 
-  defp prev_url(current_url, 2), do: current_url
+  defp prev_url(current_url, 2), do: String.replace(current_url, "/page/2", "")
 
   defp prev_url(current_url, page_number),
     do: String.replace(current_url, "/page/#{page_number}", "/page/#{page_number - 1}")
