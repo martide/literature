@@ -155,7 +155,7 @@ defmodule Literature.MetaTagHelpers do
     [
       tag(:link,
         rel: "prev",
-        href: String.replace(current_url, "/page/#{page_number}", "/page/#{page_number - 1}")
+        href: prev_url(current_url, page_number)
       )
     ]
   end
@@ -171,7 +171,7 @@ defmodule Literature.MetaTagHelpers do
     [
       tag(:link,
         rel: "prev",
-        href: String.replace(current_url, "/page/#{page_number}", "/page/#{page_number - 1}")
+        href: prev_url(current_url, page_number)
       ),
       tag(:link,
         rel: "next",
@@ -181,4 +181,9 @@ defmodule Literature.MetaTagHelpers do
   end
 
   def render_pagination_link_tags(_, _), do: []
+
+  defp prev_url(current_url, 2), do: current_url
+
+  defp prev_url(current_url, page_number),
+    do: String.replace(current_url, "/page/#{page_number}", "/page/#{page_number - 1}")
 end

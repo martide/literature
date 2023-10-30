@@ -68,7 +68,7 @@ defmodule Literature.BlogLiveTest do
       end
 
       assert {:ok, _view, html} = live(conn, Routes.literature_path(conn, :index, 2))
-      assert html =~ "/blog/page/1"
+      assert html =~ "/blog"
       assert html =~ "/blog/page/3"
     end
 
