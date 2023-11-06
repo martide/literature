@@ -45,8 +45,8 @@ defmodule Literature.Repo do
   end
 
   @doc "Wraps `c:Ecto.Repo.preload/2`."
-  def preload(struct_or_changeset, opts \\ []) do
-    Config.repo().preload(struct_or_changeset, opts)
+  def preload(struct_or_changeset, preloads, opts \\ []) do
+    Config.repo().preload(struct_or_changeset, preloads, opts)
   end
 
   @doc "Wraps `c:Ecto.Repo.insert_all/23`."

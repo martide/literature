@@ -280,7 +280,10 @@ defmodule LiteratureTest do
 
       assert {3, nil} == Literature.sort_tag_posts([post_3.id, post_2.id, post_1.id], tag.id)
 
-      tag = Repo.preload(tag, published_posts: Literature.preload_tag_posts_with_position(true))
+      tag =
+        Repo.preload(tag,
+          published_posts: Literature.preload_tag_posts_with_position(tag.id, true)
+        )
 
       assert [
                post_3.id,

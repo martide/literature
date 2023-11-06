@@ -725,19 +725,19 @@ defmodule Literature do
     )
   end
 
-  def preload_tag_posts_with_position(published \\ false)
+  def preload_tag_posts_with_position(tag_id, published \\ false)
 
-  def preload_tag_posts_with_position(true) do
+  def preload_tag_posts_with_position(tag_id, true) do
     Post
     |> where_status(%{"status" => "published"})
-    |> with_tag_post_custom_position()
+    |> with_tag_post_custom_position(tag_id)
   end
 
-  def preload_tag_posts_with_position(_), do: with_tag_post_custom_position(Post)
+  def preload_tag_posts_with_position(tag_id, _), do: with_tag_post_custom_position(Post, tag_id)
 
-  defp with_tag_post_custom_position(query) do
+  defp with_tag_post_custom_position(query, tag_id) do
     query
-    |> include_tag_post_custom_position()
+    |> include_tag_post_custom_position(tag_id)
     |> sort_by(%{"sort_field" => "custom_position", "sort_direction" => "asc"})
   end
 end
