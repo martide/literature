@@ -248,6 +248,46 @@ defmodule LiteratureTest do
 
       assert %Ecto.Changeset{} = Literature.change_post(post)
     end
+
+    test "custom_position update and preloading" do
+      publication = publication_fixture()
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+
+      post_1 =
+        post_fixture(
+          title: "Last",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      post_2 =
+        post_fixture(
+          title: "Second",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      post_3 =
+        post_fixture(
+          title: "First",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      assert {3, nil} == Literature.sort_tag_posts([post_3.id, post_2.id, post_1.id], tag.id)
+
+      tag = Repo.preload(tag, published_posts: Literature.preload_tag_posts_with_position(true))
+
+      assert [
+               post_3.id,
+               post_2.id,
+               post_1.id
+             ] == Enum.map(tag.published_posts, & &1.id)
+    end
   end
 
   describe "publications" do

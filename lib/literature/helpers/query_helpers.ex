@@ -52,7 +52,14 @@ defmodule Literature.QueryHelpers do
 
   def set_limit(query, _), do: query
 
-  def sort_by(query, attrs, default_sort \\ {:asc, :name}) do
+  def sort_by(query, attrs, default_sort \\ {:asc, :name})
+
+  def sort_by(query, %{"sort_field" => "custom_position", "sort_direction" => direction}, _)
+      when direction in ~w(asc desc) do
+    order_by(query, {^String.to_existing_atom(direction), selected_as(:custom_position)})
+  end
+
+  def sort_by(query, attrs, default_sort) do
     order_by(query, ^sort(attrs, default_sort))
   end
 
@@ -99,6 +106,12 @@ defmodule Literature.QueryHelpers do
   end
 
   def where_publication(query, _), do: query
+
+  def include_tag_post_custom_position(query) do
+    query
+    |> join(:inner, [p], tp in "literature_tags_posts", on: p.id == tp.post_id)
+    |> select_merge([p, tp], %{custom_position: tp.position |> selected_as(:custom_position)})
+  end
 
   ### Private Methods
 

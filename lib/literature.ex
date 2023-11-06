@@ -6,6 +6,7 @@ defmodule Literature do
 
   import Literature.QueryHelpers
 
+  alias Ecto.UUID
   alias Literature.Author
   alias Literature.DownloadHelpers
   alias Literature.ImageComponent
@@ -705,4 +706,38 @@ defmodule Literature do
   end
 
   defp parse_tags(data), do: data
+
+  def sort_tag_posts(post_ids, tag_id) do
+    params =
+      post_ids
+      |> Enum.with_index(1)
+      |> Enum.map(fn {post_id, index} ->
+        %{
+          post_id: UUID.dump!(post_id),
+          tag_id: UUID.dump!(tag_id),
+          position: index
+        }
+      end)
+
+    Repo.insert_all("literature_tags_posts", params,
+      conflict_target: [:tag_id, :post_id],
+      on_conflict: {:replace, [:position]}
+    )
+  end
+
+  def preload_tag_posts_with_position(published \\ false)
+
+  def preload_tag_posts_with_position(true) do
+    Post
+    |> where_status(%{"status" => "published"})
+    |> with_tag_post_custom_position()
+  end
+
+  def preload_tag_posts_with_position(_), do: with_tag_post_custom_position(Post)
+
+  defp with_tag_post_custom_position(query) do
+    query
+    |> include_tag_post_custom_position()
+    |> sort_by(%{"sort_field" => "custom_position", "sort_direction" => "asc"})
+  end
 end

@@ -65,6 +65,13 @@ defmodule Literature.TagFormComponent do
             required={true}
             options={[{"true", "Public"}, {"false", "Private"}]}
           />
+          <.form_field
+            form={f}
+            type="radio_group"
+            field={:enable_posts_custom_order}
+            label="Posts Order"
+            options={[{"false", "Date"}, {"true", "Custom"}]}
+          />
         </.form_group>
         <.accordion title="Meta Tags">
           <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />

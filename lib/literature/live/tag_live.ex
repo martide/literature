@@ -118,7 +118,8 @@ defmodule Literature.TagLive do
       {:name, "Name"},
       {:slug, "Slug"},
       {:visibility, "Visibility"},
-      {:posts, "Posts"}
+      {:posts, "Posts"},
+      {:tag_posts_order, "Posts Order"}
     ]
   end
 end

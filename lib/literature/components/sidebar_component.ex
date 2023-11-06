@@ -41,7 +41,7 @@ defmodule Literature.SidebarComponent do
         title="Tags"
         path={Helpers.literature_dashboard_path(@socket, :list_tags, @slug)}
         icon="tag"
-        actions={~w(list_tags new_tag edit_tag)a}
+        actions={~w(list_tags new_tag edit_tag sort_tag_posts)a}
       />
       <:tab
         title="Authors"

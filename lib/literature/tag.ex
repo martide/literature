@@ -10,6 +10,7 @@ defmodule Literature.Tag do
     field(:description, :string)
     field(:feature_image, Uploaders.Type)
     field(:visibility, :boolean)
+    field(:enable_posts_custom_order, :boolean)
     field(:meta_title, :string)
     field(:meta_description, :string)
     field(:meta_keywords, :string)
@@ -41,6 +42,7 @@ defmodule Literature.Tag do
 
   @optional_params ~w(
     description
+    enable_posts_custom_order
     meta_title
     meta_description
     meta_keywords

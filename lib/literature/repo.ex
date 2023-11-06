@@ -48,4 +48,9 @@ defmodule Literature.Repo do
   def preload(struct_or_changeset, opts \\ []) do
     Config.repo().preload(struct_or_changeset, opts)
   end
+
+  @doc "Wraps `c:Ecto.Repo.insert_all/23`."
+  def insert_all(schema_or_source, entries_or_query, opts) do
+    Config.repo().insert_all(schema_or_source, entries_or_query, opts)
+  end
 end

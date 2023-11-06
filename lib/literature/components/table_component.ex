@@ -86,7 +86,7 @@ defmodule Literature.TableComponent do
                 <tr class="bg-white border-b hover:bg-gray-50">
                   <%= for {field, _} <- @columns do %>
                     <td scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">
-                      <%= render_item(item, field) %>
+                      <.item item={item} field={field} base_path={@base_path} />
                     </td>
                   <% end %>
                   <td class="py-4 px-6">
@@ -212,46 +212,77 @@ defmodule Literature.TableComponent do
     """
   end
 
-  defp render_item(item, :status = field) do
-    label = Map.get(item, field)
-
-    classes =
-      case label do
+  defp item(%{field: :status, item: item} = assigns) do
+    class =
+      case Map.get(item, :status) do
         "scheduled" -> "bg-yellow-100 text-yellow-800"
         "published" -> "bg-primary-100 text-primary-800"
         _ -> "bg-gray-100 text-gray-800"
       end
 
-    content_tag(:span, label,
-      class: "capitalize text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg #{classes}"
-    )
+    assigns =
+      assign(assigns, :class, class)
+
+    ~H"""
+    <span class={"capitalize text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg #{@class}"}>
+      <%= Map.get(@item, :status) %>
+    </span>
+    """
   end
 
-  defp render_item(item, :published_at = field) do
-    Map.get(item, field)
+  defp item(%{field: :published_at} = assigns) do
+    ~H"""
+    <%= Map.get(@item, :published_at)
     |> case do
       nil -> ""
       datetime -> Timex.format!(datetime, "%d %b %Y at %I:%M %p", :strftime)
-    end
+    end %>
+    """
   end
 
-  defp render_item(item, :visibility = field) do
-    visible? = Map.get(item, field)
+  defp item(%{field: :visibility, item: item} = assigns) do
+    visible? = Map.get(item, :visibility)
     label = (visible? && "Public") || "Private"
-    classes = (visible? && "bg-green-100 text-green-800") || "bg-red-100 text-red-800"
+    class = (visible? && "bg-green-100 text-green-800") || "bg-red-100 text-red-800"
 
-    content_tag(:span, label,
-      class: "text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg #{classes}"
-    )
+    assigns =
+      assign(assigns, label: label, class: class)
+
+    ~H"""
+    <span class={"text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg #{@class}"}>
+      <%= @label %>
+    </span>
+    """
   end
 
-  defp render_item(item, :posts = field) do
-    posts = Map.get(item, field)
-
-    content_tag(:span, length(posts), class: "text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg")
+  defp item(%{field: :posts} = assigns) do
+    ~H"""
+    <span class="text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg">
+      <%= @item |> Map.get(:posts) |> length() %>
+    </span>
+    """
   end
 
-  defp render_item(item, field), do: Map.get(item, field)
+  defp item(%{field: :tag_posts_order} = assigns) do
+    ~H"""
+    <%= if Map.get(@item, :enable_posts_custom_order) do %>
+      <.link
+        patch={"#{@base_path}/#{@item.slug}/sort-posts"}
+        class="hover:text-primary-600 transition duration-300 ease-in-out"
+      >
+        Custom
+      </.link>
+    <% else %>
+      Date
+    <% end %>
+    """
+  end
+
+  defp item(assigns) do
+    ~H"""
+    <%= Map.get(@item, @field) %>
+    """
+  end
 
   defp filter_status(%{published_at: _}, %{params: params} = assigns) do
     params = Map.put_new(params, "status", "all")
