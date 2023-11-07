@@ -17,6 +17,7 @@ defmodule Literature.Web do
       alias Literature.Publication
       alias Literature.Redirect
       alias Literature.Tag
+      alias Literature.TagPost
       alias Literature.Uploaders
 
       @primary_key {:id, :binary_id, autogenerate: false}

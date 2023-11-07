@@ -5,6 +5,7 @@ defmodule LiteratureTest do
   import Literature.Test.Fixtures
 
   alias Literature
+  alias Literature.Tag
 
   describe "authors" do
     alias Literature.Author
@@ -253,24 +254,35 @@ defmodule LiteratureTest do
       publication = publication_fixture()
       author = author_fixture(publication_id: publication.id)
       tag = tag_fixture(publication_id: publication.id)
+      other_tag = tag_fixture(name: "other tag", publication_id: publication.id)
+      another_tag = tag_fixture(name: "another tag", publication_id: publication.id)
 
       post_1 =
         post_fixture(
           title: "Last",
           publication_id: publication.id,
           authors_ids: [author.id],
-          tags_ids: [tag.id]
+          tags_ids: [tag.id, other_tag.id],
+          published_at: nil
         )
 
       post_2 =
         post_fixture(
-          title: "Second",
+          title: "third",
           publication_id: publication.id,
           authors_ids: [author.id],
-          tags_ids: [tag.id]
+          tags_ids: [tag.id, other_tag.id]
         )
 
       post_3 =
+        post_fixture(
+          title: "second",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id, other_tag.id]
+        )
+
+      post_4 =
         post_fixture(
           title: "First",
           publication_id: publication.id,
@@ -278,18 +290,86 @@ defmodule LiteratureTest do
           tags_ids: [tag.id]
         )
 
-      assert {3, nil} == Literature.sort_tag_posts([post_3.id, post_2.id, post_1.id], tag.id)
+      assert {4, nil} ==
+               Literature.sort_tag_posts([post_4.id, post_3.id, post_2.id, post_1.id], tag.id)
 
+      assert {3, nil} ==
+               Literature.sort_tag_posts(
+                 [post_4.id, post_3.id, post_2.id, post_1.id],
+                 other_tag.id
+               )
+
+      # Test preloading on list_tags/1
+      tags =
+        Literature.list_tags(%{
+          "preload" => [
+            posts: fn tag_ids ->
+              Literature.preload_tag_posts_with_position(tag_ids)
+            end,
+            published_posts: fn tag_ids ->
+              Literature.preload_tag_posts_with_position(tag_ids, "published")
+            end
+          ]
+        })
+
+      tag = Enum.find(tags, &(&1.id == tag.id))
+      other_tag = Enum.find(tags, &(&1.id == other_tag.id))
+      another_tag = Enum.find(tags, &(&1.id == another_tag.id))
+
+      assert another_tag.posts == []
+      assert another_tag.published_posts == []
+
+      assert [
+               {post_4.id, 1},
+               {post_3.id, 2},
+               {post_2.id, 3},
+               {post_1.id, 4}
+             ] == Enum.map(tag.posts, &{&1.id, &1.custom_position})
+
+      assert [
+               {post_3.id, 1},
+               {post_2.id, 2},
+               {post_1.id, 3}
+             ] == Enum.map(other_tag.posts, &{&1.id, &1.custom_position})
+
+      assert [
+               {post_4.id, 1},
+               {post_3.id, 2},
+               {post_2.id, 3}
+             ] == Enum.map(tag.published_posts, &{&1.id, &1.custom_position})
+
+      assert [
+               {post_3.id, 1},
+               {post_2.id, 2}
+             ] == Enum.map(other_tag.published_posts, &{&1.id, &1.custom_position})
+
+      # Test preloading on Repo.preload/3
       tag =
-        Repo.preload(tag,
-          published_posts: Literature.preload_tag_posts_with_position(tag.id, true)
+        Repo.preload(
+          tag,
+          [
+            posts: fn tag_ids ->
+              Literature.preload_tag_posts_with_position(tag_ids)
+            end,
+            published_posts: fn tag_ids ->
+              Literature.preload_tag_posts_with_position(tag_ids, "published")
+            end
+          ],
+          force: true
         )
 
       assert [
-               post_3.id,
-               post_2.id,
-               post_1.id
-             ] == Enum.map(tag.published_posts, & &1.id)
+               {post_4.id, 1},
+               {post_3.id, 2},
+               {post_2.id, 3},
+               {post_1.id, 4}
+             ] == Enum.map(tag.posts, &{&1.id, &1.custom_position})
+
+      assert [
+               {post_4.id, 1},
+               {post_3.id, 2},
+               {post_2.id, 3}
+             ] == Enum.map(tag.published_posts, &{&1.id, &1.custom_position})
     end
   end
 

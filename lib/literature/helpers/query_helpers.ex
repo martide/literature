@@ -93,6 +93,16 @@ defmodule Literature.QueryHelpers do
 
   def where_status(query, _), do: query
 
+  def filter(query, %{"post_id" => post_id}) do
+    where(query, [q], q.post_id in ^List.wrap(post_id))
+  end
+
+  def filter(query, %{"tag_id" => tag_id}) do
+    where(query, [q], q.tag_id in ^List.wrap(tag_id))
+  end
+
+  def filter(query, _), do: query
+
   def where_publication(query, attrs) when is_list(attrs) do
     attrs
     |> atomize_keys_to_string()
@@ -107,13 +117,17 @@ defmodule Literature.QueryHelpers do
 
   def where_publication(query, _), do: query
 
-  def include_tag_post_custom_position(query, tag_id) do
+  def include_tag_post_custom_position(query, tag_ids) do
     # Get the position of the posts for the tag
     query
     |> join(:inner, [p], tp in "literature_tags_posts",
-      on: p.id == tp.post_id and tp.tag_id == type(^tag_id, :binary_id)
+      on: p.id == tp.post_id and tp.tag_id in type(^tag_ids, {:array, :binary_id})
     )
-    |> select_merge([p, tp], %{custom_position: tp.position |> selected_as(:custom_position)})
+    |> select(
+      [p, tp],
+      {type(tp.tag_id, :binary_id),
+       %{p | custom_position: tp.position |> selected_as(:custom_position)}}
+    )
   end
 
   ### Private Methods

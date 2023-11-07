@@ -6,7 +6,6 @@ defmodule Literature do
 
   import Literature.QueryHelpers
 
-  alias Ecto.UUID
   alias Literature.Author
   alias Literature.DownloadHelpers
   alias Literature.ImageComponent
@@ -15,6 +14,7 @@ defmodule Literature do
   alias Literature.Redirect
   alias Literature.Repo
   alias Literature.Tag
+  alias Literature.TagPost
 
   ## Author Context
 
@@ -708,36 +708,40 @@ defmodule Literature do
   defp parse_tags(data), do: data
 
   def sort_tag_posts(post_ids, tag_id) do
+    existing_post_ids =
+      TagPost
+      |> filter(%{"post_id" => post_ids})
+      |> filter(%{"tag_id" => tag_id})
+      |> Repo.all()
+      |> Enum.map(& &1.post_id)
+
+    # Preserve order from input
     params =
       post_ids
+      |> Enum.filter(&(&1 in existing_post_ids))
       |> Enum.with_index(1)
       |> Enum.map(fn {post_id, index} ->
         %{
-          post_id: UUID.dump!(post_id),
-          tag_id: UUID.dump!(tag_id),
+          post_id: post_id,
+          tag_id: tag_id,
           position: index
         }
       end)
 
-    Repo.insert_all("literature_tags_posts", params,
+    Repo.insert_all(TagPost, params,
       conflict_target: [:tag_id, :post_id],
       on_conflict: {:replace, [:position]}
     )
   end
 
-  def preload_tag_posts_with_position(tag_id, published \\ false)
+  def preload_tag_posts_with_position(tag_ids, status \\ nil) do
+    # Custom preloader to be used for preloader functions
+    # https://hexdocs.pm/ecto/Ecto.Query.html#preload/3-preload-functions
 
-  def preload_tag_posts_with_position(tag_id, true) do
     Post
-    |> where_status(%{"status" => "published"})
-    |> with_tag_post_custom_position(tag_id)
-  end
-
-  def preload_tag_posts_with_position(tag_id, _), do: with_tag_post_custom_position(Post, tag_id)
-
-  defp with_tag_post_custom_position(query, tag_id) do
-    query
-    |> include_tag_post_custom_position(tag_id)
+    |> where_status(%{"status" => status})
+    |> include_tag_post_custom_position(tag_ids)
     |> sort_by(%{"sort_field" => "custom_position", "sort_direction" => "asc"})
+    |> Repo.all()
   end
 end

@@ -97,7 +97,11 @@ defmodule Literature.SortTagPostsLive do
         tag =
           Repo.preload(
             assigns.tag,
-            [posts: Literature.preload_tag_posts_with_position(assigns.tag.id)],
+            [
+              posts: fn tag_ids ->
+                Literature.preload_tag_posts_with_position(tag_ids)
+              end
+            ],
             force: true
           )
 
@@ -115,7 +119,11 @@ defmodule Literature.SortTagPostsLive do
     tag =
       Literature.get_tag!(slug: slug, publication_slug: socket.assigns.slug)
       |> then(fn tag ->
-        Repo.preload(tag, posts: Literature.preload_tag_posts_with_position(tag.id))
+        Repo.preload(tag,
+          posts: fn tag_ids ->
+            Literature.preload_tag_posts_with_position(tag_ids)
+          end
+        )
       end)
 
     assign(socket, page_title: "Sort Posts", tag: tag)
