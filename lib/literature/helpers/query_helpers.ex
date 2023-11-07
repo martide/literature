@@ -108,6 +108,7 @@ defmodule Literature.QueryHelpers do
   def where_publication(query, _), do: query
 
   def include_tag_post_custom_position(query, tag_id) do
+    # Get the position of the posts for the tag
     query
     |> join(:inner, [p], tp in "literature_tags_posts",
       on: p.id == tp.post_id and tp.tag_id == type(^tag_id, :binary_id)
