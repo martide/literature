@@ -118,13 +118,11 @@ defmodule Literature.SortTagPostsLive do
   defp apply_action(socket, :sort_tag_posts, %{"slug" => slug}) do
     tag =
       Literature.get_tag!(slug: slug, publication_slug: socket.assigns.slug)
-      |> then(fn tag ->
-        Repo.preload(tag,
-          posts: fn tag_ids ->
-            Literature.preload_tag_posts_with_position(tag_ids)
-          end
-        )
-      end)
+      |> Repo.preload(
+        posts: fn tag_ids ->
+          Literature.preload_tag_posts_with_position(tag_ids)
+        end
+      )
 
     assign(socket, page_title: "Sort Posts", tag: tag)
   end
