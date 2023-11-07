@@ -6,6 +6,8 @@ defmodule Literature.Migrations.Postgres.V05 do
 
   def up(_opts) do
     alter table(:literature_tags_posts) do
+      # Add column to linking table since posts can have multiple tags
+      # Posts can have their custom order per tag
       add_if_not_exists(:position, :integer)
     end
 
