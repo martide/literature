@@ -10,7 +10,7 @@ defmodule Literature.Tag do
     field(:description, :string)
     field(:feature_image, Uploaders.Type)
     field(:visibility, :boolean)
-    field(:enable_posts_custom_order, :boolean)
+    field(:enable_posts_custom_order, :boolean, read_after_writes: true)
     field(:meta_title, :string)
     field(:meta_description, :string)
     field(:meta_keywords, :string)
