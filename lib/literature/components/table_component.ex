@@ -263,7 +263,7 @@ defmodule Literature.TableComponent do
     """
   end
 
-  defp item(%{field: :tag_posts_order} = assigns) do
+  defp item(%{field: :enable_posts_custom_order} = assigns) do
     ~H"""
     <%= if Map.get(@item, :enable_posts_custom_order) do %>
       <.link

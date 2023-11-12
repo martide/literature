@@ -119,7 +119,7 @@ defmodule Literature.TagLive do
       {:slug, "Slug"},
       {:visibility, "Visibility"},
       {:posts, "Posts"},
-      {:tag_posts_order, "Posts Order"}
+      {:enable_posts_custom_order, "Posts Order"}
     ]
   end
 end
