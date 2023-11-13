@@ -55,7 +55,7 @@ defmodule Literature.RouterTest do
       assert Routes.literature_path(conn, :rss) == "/blog/rss.xml"
     end
 
-    test "generates helper only for specified routes" do
+    test "generates helper only for specified routes", %{conn: conn} do
       paths =
         Router.__routes__()
         |> Enum.filter(&(&1.helper == "with_only"))
@@ -63,6 +63,13 @@ defmodule Literature.RouterTest do
 
       assert Enum.sort(paths) ==
                Enum.sort(["/with-only", "/with-only/:slug", "/with-only/rss.xml"])
+
+      assert Routes.with_only_path(conn, :index) == "/with-only"
+
+      assert Routes.with_only_path(conn, :show, "author-or-tag-or-post") ==
+               "/with-only/author-or-tag-or-post"
+
+      assert Routes.with_only_path(conn, :rss) == "/with-only/rss.xml"
     end
   end
 
