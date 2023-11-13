@@ -20,6 +20,13 @@ defmodule Literature.Test.Router do
     error_view_module: Literature.Test.ErrorView,
     as: :error_view
   )
+
+  literature("/",
+    publication_slug: "with-only",
+    only: [:index, :show],
+    view_module: @view_module,
+    as: :with_only
+  )
 end
 
 defmodule Literature.Test.DynamicPathRouter do
