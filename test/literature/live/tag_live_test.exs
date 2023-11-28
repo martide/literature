@@ -26,13 +26,14 @@ defmodule Literature.TagLiveTest do
     end
 
     test "have tags count", %{conn: conn, publication: publication, tag: tag} do
-      {:ok, _view, html} =
+      {:ok, view, html} =
         live(conn, Routes.literature_dashboard_path(conn, :list_tags, publication.slug))
 
       assert html =~ "Tags"
 
-      assert html =~
-               ~s"<span class=\"text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg\">0</span>"
+      assert view
+             |> element("span[class='text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg']", "0")
+             |> has_element?()
 
       author = author_fixture(publication_id: publication.id)
 
@@ -42,13 +43,14 @@ defmodule Literature.TagLiveTest do
         tags_ids: [tag.id]
       )
 
-      {:ok, _view, html} =
+      {:ok, view, html} =
         live(conn, Routes.literature_dashboard_path(conn, :list_tags, publication.slug))
 
       assert html =~ "Tags"
 
-      assert html =~
-               ~s"<span class=\"text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg\">1</span>"
+      assert view
+             |> element("span[class='text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg']", "1")
+             |> has_element?()
     end
 
     test "saves new tag", %{conn: conn, publication: publication} do
@@ -68,17 +70,21 @@ defmodule Literature.TagLiveTest do
 
       assert html =~ "New Tag"
 
+      create_attrs = Map.put(@create_attrs, :enable_posts_custom_order, true)
+
       result =
         new_live
-        |> form("#tag-form", tag: @create_attrs)
+        |> form("#tag-form", tag: create_attrs)
         |> render_submit()
 
       {path, flash} = assert_redirect(new_live)
       assert path == Routes.literature_dashboard_path(conn, :list_tags, publication.slug)
       assert flash["success"] == "Tag created successfully"
 
-      {:ok, _, html} = follow_redirect(result, conn, path)
+      {:ok, view, html} = follow_redirect(result, conn, path)
       assert html =~ @create_attrs.name
+
+      assert view |> element("td a", "Custom") |> has_element?()
     end
 
     test "updates tag in listing", %{conn: conn, publication: publication, tag: tag} do
@@ -86,6 +92,7 @@ defmodule Literature.TagLiveTest do
         live(conn, Routes.literature_dashboard_path(conn, :list_tags, publication.slug))
 
       assert html =~ "Tags"
+      assert view |> element("td", "Date") |> has_element?()
 
       assert view |> element("#edit-#{tag.id}") |> render_click() =~ "Edit Tag"
 
@@ -100,15 +107,17 @@ defmodule Literature.TagLiveTest do
 
       result =
         view
-        |> form("#tag-form", tag: @update_attrs)
+        |> form("#tag-form", tag: Map.put(@update_attrs, :enable_posts_custom_order, true))
         |> render_submit()
 
       {path, flash} = assert_redirect(view)
       assert path == Routes.literature_dashboard_path(conn, :list_tags, publication.slug)
       assert flash["success"] == "Tag updated successfully"
 
-      {:ok, _, html} = follow_redirect(result, conn, path)
+      {:ok, view, html} = follow_redirect(result, conn, path)
       assert html =~ @update_attrs.name
+
+      assert view |> element("td a", "Custom") |> has_element?()
     end
 
     test "deletes tag in listing", %{conn: conn, publication: publication, tag: tag} do

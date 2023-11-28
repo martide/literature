@@ -68,8 +68,19 @@ defmodule Literature.BlogLiveTest do
       end
 
       assert {:ok, _view, html} = live(conn, Routes.literature_path(conn, :index, 2))
-      assert html =~ "/blog/page/1"
-      assert html =~ "/blog/page/3"
+
+      prev_url = @endpoint.url() <> Routes.literature_path(conn, :index)
+      next_url = @endpoint.url() <> Routes.literature_path(conn, :index, 3)
+
+      assert get_element(
+               html,
+               "link[href='#{prev_url}'][rel='prev']"
+             )
+
+      assert get_element(
+               html,
+               "link[href='#{next_url}'][rel='next']"
+             )
     end
 
     test "returns 404 error when exceeds total pages", %{conn: conn} do
