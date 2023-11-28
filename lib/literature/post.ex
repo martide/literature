@@ -53,6 +53,7 @@ defmodule Literature.Post do
     field(:prev_post, :map, virtual: true)
     field(:next_post, :map, virtual: true)
     field(:similar_posts, {:array, :map}, virtual: true)
+    field(:custom_position, :integer, virtual: true)
 
     belongs_to(:publication, Publication)
 

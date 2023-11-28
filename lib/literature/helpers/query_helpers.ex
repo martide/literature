@@ -52,7 +52,14 @@ defmodule Literature.QueryHelpers do
 
   def set_limit(query, _), do: query
 
-  def sort_by(query, attrs, default_sort \\ {:asc, :name}) do
+  def sort_by(query, attrs, default_sort \\ {:asc, :name})
+
+  def sort_by(query, %{"sort_field" => "custom_position", "sort_direction" => direction}, _)
+      when direction in ~w(asc desc) do
+    order_by(query, {^String.to_existing_atom(direction), selected_as(:custom_position)})
+  end
+
+  def sort_by(query, attrs, default_sort) do
     order_by(query, ^sort(attrs, default_sort))
   end
 
@@ -86,6 +93,16 @@ defmodule Literature.QueryHelpers do
 
   def where_status(query, _), do: query
 
+  def filter(query, %{"post_id" => post_id}) do
+    where(query, [q], q.post_id in ^List.wrap(post_id))
+  end
+
+  def filter(query, %{"tag_id" => tag_id}) do
+    where(query, [q], q.tag_id in ^List.wrap(tag_id))
+  end
+
+  def filter(query, _), do: query
+
   def where_publication(query, attrs) when is_list(attrs) do
     attrs
     |> atomize_keys_to_string()
@@ -99,6 +116,19 @@ defmodule Literature.QueryHelpers do
   end
 
   def where_publication(query, _), do: query
+
+  def include_tag_post_custom_position(query, tag_ids) do
+    # Get the position of the posts for the tag
+    query
+    |> join(:inner, [p], tp in "literature_tags_posts",
+      on: p.id == tp.post_id and tp.tag_id in type(^tag_ids, {:array, :binary_id})
+    )
+    |> select(
+      [p, tp],
+      {type(tp.tag_id, :binary_id),
+       %{p | custom_position: tp.position |> selected_as(:custom_position)}}
+    )
+  end
 
   ### Private Methods
 

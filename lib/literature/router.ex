@@ -111,6 +111,7 @@ defmodule Literature.Router do
               live("/tags", TagLive, :list_tags, route_opts)
               live("/tags/new", TagLive, :new_tag, route_opts)
               live("/tags/:slug/edit", TagLive, :edit_tag, route_opts)
+              live("/tags/:slug/sort-posts", SortTagPostsLive, :sort_tag_posts, route_opts)
 
               # Author routes
               live("/authors", AuthorLive, :list_authors, route_opts)

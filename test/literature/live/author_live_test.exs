@@ -35,13 +35,14 @@ defmodule Literature.AuthorLiveTest do
         tags_ids: [tag.id]
       )
 
-      {:ok, _view, html} =
+      {:ok, view, html} =
         live(conn, Routes.literature_dashboard_path(conn, :list_authors, publication.slug))
 
       assert html =~ "Posts"
 
-      assert html =~
-               ~s"<span class=\"text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg\">1</span>"
+      assert view
+             |> element("span[class='text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg']", "1")
+             |> has_element?()
 
       post_fixture(
         title: "second post",
@@ -50,11 +51,12 @@ defmodule Literature.AuthorLiveTest do
         tags_ids: [tag.id]
       )
 
-      {:ok, _view, html} =
+      {:ok, view, _html} =
         live(conn, Routes.literature_dashboard_path(conn, :list_authors, publication.slug))
 
-      assert html =~
-               ~s"<span class=\"text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg\">2</span>"
+      assert view
+             |> element("span[class='text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg']", "2")
+             |> has_element?()
     end
 
     test "saves new author", %{conn: conn, publication: publication} do
