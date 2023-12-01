@@ -150,7 +150,7 @@ defmodule Literature.Router do
   defmacro literature(path, opts \\ []) do
     opts = Keyword.put(opts, :application_router, __CALLER__.module)
 
-    routes = Keyword.get(opts, :only, ~w(index tags authors show)a)
+    routes = Keyword.get(opts, :only, ~w(index index_pages tags authors show)a)
 
     session_name = Keyword.get(opts, :as, :literature)
 
@@ -183,6 +183,9 @@ defmodule Literature.Router do
               # Blog routes
               if :index in routes do
                 live("/", BlogLive, :index, route_opts)
+              end
+
+              if :index_pages in routes do
                 live("/page/:page", BlogLive, :index, route_opts)
               end
 

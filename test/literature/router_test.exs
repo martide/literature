@@ -4,6 +4,7 @@ defmodule Literature.RouterTest do
   import Literature.Test.Fixtures
 
   alias Literature.Test.DynamicPathRouter.Helpers, as: DynamicPathRoutes
+  alias Literature.Test.Router
 
   test "literature_assets/0 generates helper for literature assets with default path", %{
     conn: conn
@@ -27,6 +28,22 @@ defmodule Literature.RouterTest do
 
   describe "literature_path/2 for default path" do
     test "generates helper for blog pages", %{conn: conn} do
+      paths =
+        Router.__routes__()
+        |> Enum.filter(&(&1.helper == "literature"))
+        |> Enum.map(& &1.path)
+
+      assert Enum.sort(paths) ==
+               Enum.sort([
+                 "/blog",
+                 "/blog/:slug",
+                 "/blog/authors",
+                 "/blog/tags",
+                 "/blog/page/:page",
+                 "/blog/rss.xml",
+                 "/literature"
+               ])
+
       assert Routes.literature_path(conn, :index) == "/blog"
       assert Routes.literature_path(conn, :index, 2) == "/blog/page/2"
       assert Routes.literature_path(conn, :authors) == "/blog/authors"
@@ -36,6 +53,23 @@ defmodule Literature.RouterTest do
                "/blog/author_or_tag_or_post"
 
       assert Routes.literature_path(conn, :rss) == "/blog/rss.xml"
+    end
+
+    test "generates helper only for specified routes", %{conn: conn} do
+      paths =
+        Router.__routes__()
+        |> Enum.filter(&(&1.helper == "with_only"))
+        |> Enum.map(& &1.path)
+
+      assert Enum.sort(paths) ==
+               Enum.sort(["/with-only", "/with-only/:slug", "/with-only/rss.xml"])
+
+      assert Routes.with_only_path(conn, :index) == "/with-only"
+
+      assert Routes.with_only_path(conn, :show, "author-or-tag-or-post") ==
+               "/with-only/author-or-tag-or-post"
+
+      assert Routes.with_only_path(conn, :rss) == "/with-only/rss.xml"
     end
   end
 
