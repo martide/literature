@@ -10,7 +10,7 @@ defmodule Literature.RSSController do
   def rss(conn, _params) do
     base_path = String.replace(current_path(conn), @default_path, "")
     base_url = Config.feed_url() <> base_path
-    publication_slug = String.split(base_path, "/") |> List.last()
+    publication_slug = conn.private[:publication_slug]
     publication = Literature.get_publication!(slug: publication_slug)
 
     conn

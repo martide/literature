@@ -11,17 +11,19 @@ defmodule Literature.Plugs.Redirect do
   def call(conn, _opts) do
     with "GET" <- conn.method,
          publication_slug when not is_nil(publication_slug) <-
-           conn.private[:publication_slug] do
-      # Parse path after publication slug
+           conn.private[:publication_slug],
+         root_path when not is_nil(root_path) <-
+           conn.private[:root_path] do
+      # Parse path after root_path
       {base_path, current_path} =
-        parse_paths(conn.request_path, publication_slug)
+        parse_paths(conn.request_path, root_path)
 
       case Literature.get_redirect!(publication_slug: publication_slug, from: current_path) do
         nil ->
           conn
 
         redirect ->
-          new_path = "#{base_path}/#{publication_slug}#{redirect.to}"
+          new_path = "#{base_path}#{root_path}#{redirect.to}"
 
           conn
           |> put_status(redirect.type)
@@ -34,9 +36,9 @@ defmodule Literature.Plugs.Redirect do
     end
   end
 
-  defp parse_paths(request_path, publication_slug) do
+  defp parse_paths(request_path, root_path) do
     [base_path, current_path] =
-      String.split(request_path, "/#{publication_slug}", parts: 2)
+      String.split(request_path, root_path, parts: 2)
 
     # Match empty path with /
     current_path =

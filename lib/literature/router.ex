@@ -76,7 +76,7 @@ defmodule Literature.Router do
           pipe_through(:dashboard_browser)
 
           {session_name, session_opts, route_opts} =
-            Literature.Router.__options__(opts, session_name, :root_dashboard)
+            Literature.Router.__options__(opts, session_name, :root_dashboard, path)
 
           live_session session_name, session_opts do
             # Publication routes
@@ -154,9 +154,21 @@ defmodule Literature.Router do
 
     session_name = Keyword.get(opts, :as, :literature)
 
+    # Opt to create routes on the root path without the publication slug
+    root? = Keyword.get(opts, :root, false)
+
+    if Keyword.has_key?(opts, :publication_slug) do
+      IO.warn(
+        ":publication_slug option is deprecated, please use :publication instead.",
+        Macro.Env.stacktrace(__ENV__)
+      )
+    end
+
     publication_slug =
-      Keyword.get_lazy(opts, :publication_slug, fn ->
-        raise "Missing mandatory :publication_slug option."
+      Keyword.get_lazy(opts, :publication, fn ->
+        Keyword.get_lazy(opts, :publication_slug, fn ->
+          raise "Missing mandatory :publication option."
+        end)
       end)
 
     view_module =
@@ -172,12 +184,12 @@ defmodule Literature.Router do
           pipe_through(:blog_browser)
 
           {session_name, session_opts, route_opts} =
-            Literature.Router.__options__(opts, session_name, :root)
+            Literature.Router.__options__(opts, session_name, :root, path)
 
-          scope "/#{publication_slug}", Literature do
+          scope "/#{if root?, do: "", else: publication_slug}", Literature do
             pipe_through(:maybe_redirect)
 
-            get("/rss.xml", RSSController, :rss, as: session_name)
+            get("/rss.xml", RSSController, :rss, route_opts)
 
             live_session session_name, session_opts do
               # Blog routes
@@ -237,22 +249,35 @@ defmodule Literature.Router do
   end
 
   @doc false
-  def __options__(opts, session_name, root_layout) do
+  def __options__(opts, session_name, root_layout, path) do
+    publication_slug = Keyword.get(opts, :publication) || Keyword.get(opts, :publication_slug)
+    root? = Keyword.get(opts, :root, false)
+
     session_opts = [
       root_layout: {Literature.LayoutView, root_layout},
       session: %{
         "application_router" => Keyword.get(opts, :application_router),
-        "publication_slug" => Keyword.get(opts, :publication_slug),
+        "publication_slug" => publication_slug,
         "view_module" => Keyword.get(opts, :view_module),
         "error_view_module" => Keyword.get(opts, :error_view_module)
       }
     ]
 
+    scope = "/#{if root?, do: "", else: "#{publication_slug}"}"
+
+    root_path =
+      if path == "/" do
+        scope
+      else
+        "#{path}#{scope}" |> String.replace_suffix("/", "")
+      end
+
     route_opts = [
       private: %{
         application_router: Keyword.get(opts, :application_router),
-        publication_slug: Keyword.get(opts, :publication_slug),
-        view_module: Keyword.get(opts, :view_module)
+        publication_slug: publication_slug,
+        view_module: Keyword.get(opts, :view_module),
+        root_path: root_path
       },
       as: session_name
     ]
