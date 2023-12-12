@@ -175,7 +175,10 @@ defmodule Literature.MetaTagHelpers do
       ),
       tag(:link,
         rel: "next",
-        href: String.replace(current_url, "/page/#{page_number}", "/page/#{page_number + 1}")
+        href:
+          current_url
+          |> String.replace("/page/#{page_number}", "")
+          |> put_page_number(page_number + 1)
       )
     ]
   end
@@ -185,5 +188,13 @@ defmodule Literature.MetaTagHelpers do
   defp prev_url(current_url, 2), do: String.replace(current_url, "/page/2", "")
 
   defp prev_url(current_url, page_number),
-    do: String.replace(current_url, "/page/#{page_number}", "/page/#{page_number - 1}")
+    do:
+      current_url
+      |> String.replace("/page/#{page_number}", "")
+      |> put_page_number(page_number - 1)
+
+  defp put_page_number(current_url, page_number) do
+    current_url <>
+      "#{if String.ends_with?(current_url, "/"), do: "", else: "/"}page/#{page_number}"
+  end
 end
