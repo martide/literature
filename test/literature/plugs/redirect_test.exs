@@ -20,10 +20,13 @@ defmodule Literature.Plugs.RedirectTest do
       conn =
         Plug.Test.conn(:get, req_path, %{})
         |> put_private(:publication_slug, publication.slug)
+        |> put_private(:root_path, "/blog")
         |> Redirect.call([])
 
       assert conn.halted
-      assert redirected_to(conn, redirect.type) == "/#{publication.slug}#{redirect.to}"
+
+      assert redirected_to(conn, redirect.type) ==
+               "#{conn.private.root_path}#{redirect.to}"
     end
 
     test "redirects authors to tags with dynamic path", %{
@@ -39,6 +42,7 @@ defmodule Literature.Plugs.RedirectTest do
       conn =
         Plug.Test.conn(:get, req_path, %{})
         |> put_private(:publication_slug, publication.slug)
+        |> put_private(:root_path, "/foo/bar/blog")
         |> Redirect.call([])
 
       assert conn.halted

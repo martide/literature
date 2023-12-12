@@ -3,6 +3,7 @@ defmodule Literature.RouterTest do
 
   import Literature.Test.Fixtures
 
+  alias Literature.Test.DynamicPathRouter
   alias Literature.Test.DynamicPathRouter.Helpers, as: DynamicPathRoutes
   alias Literature.Test.Router
 
@@ -54,23 +55,50 @@ defmodule Literature.RouterTest do
 
       assert Routes.literature_path(conn, :rss) == "/blog/rss.xml"
     end
+  end
 
-    test "generates helper only for specified routes", %{conn: conn} do
-      paths =
-        Router.__routes__()
-        |> Enum.filter(&(&1.helper == "with_only"))
-        |> Enum.map(& &1.path)
+  test "generates helper only for specified routes", %{conn: conn} do
+    paths =
+      Router.__routes__()
+      |> Enum.filter(&(&1.helper == "with_only"))
+      |> Enum.map(& &1.path)
 
-      assert Enum.sort(paths) ==
-               Enum.sort(["/with-only", "/with-only/:slug", "/with-only/rss.xml"])
+    assert Enum.sort(paths) ==
+             Enum.sort(["/with-only", "/with-only/:slug", "/with-only/rss.xml"])
 
-      assert Routes.with_only_path(conn, :index) == "/with-only"
+    assert Routes.with_only_path(conn, :index) == "/with-only"
 
-      assert Routes.with_only_path(conn, :show, "author-or-tag-or-post") ==
-               "/with-only/author-or-tag-or-post"
+    assert Routes.with_only_path(conn, :show, "author-or-tag-or-post") ==
+             "/with-only/author-or-tag-or-post"
 
-      assert Routes.with_only_path(conn, :rss) == "/with-only/rss.xml"
-    end
+    assert Routes.with_only_path(conn, :rss) == "/with-only/rss.xml"
+  end
+
+  test "generates helpers on root", %{conn: conn} do
+    paths =
+      Router.__routes__()
+      |> Enum.filter(&(&1.helper == "on_root"))
+      |> Enum.map(& &1.path)
+
+    assert Enum.sort(paths) ==
+             Enum.sort([
+               "/",
+               "/:slug",
+               "/authors",
+               "/tags",
+               "/page/:page",
+               "/rss.xml"
+             ])
+
+    assert Routes.on_root_path(conn, :index) == "/"
+    assert Routes.on_root_path(conn, :index, 2) == "/page/2"
+    assert Routes.on_root_path(conn, :authors) == "/authors"
+    assert Routes.on_root_path(conn, :tags) == "/tags"
+
+    assert Routes.on_root_path(conn, :show, "author_or_tag_or_post") ==
+             "/author_or_tag_or_post"
+
+    assert Routes.on_root_path(conn, :rss) == "/rss.xml"
   end
 
   describe "literature_path/2 for dynamic path" do
@@ -85,6 +113,33 @@ defmodule Literature.RouterTest do
 
       assert DynamicPathRoutes.literature_path(conn, :rss) == "/foo/bar/blog/rss.xml"
     end
+  end
+
+  test "generates helpers on root with dynamic path", %{conn: conn} do
+    paths =
+      DynamicPathRouter.__routes__()
+      |> Enum.filter(&(&1.helper == "on_root"))
+      |> Enum.map(& &1.path)
+
+    assert Enum.sort(paths) ==
+             Enum.sort([
+               "/dynamic-on-root",
+               "/dynamic-on-root/:slug",
+               "/dynamic-on-root/authors",
+               "/dynamic-on-root/tags",
+               "/dynamic-on-root/page/:page",
+               "/dynamic-on-root/rss.xml"
+             ])
+
+    assert DynamicPathRoutes.on_root_path(conn, :index) == "/dynamic-on-root"
+    assert DynamicPathRoutes.on_root_path(conn, :index, 2) == "/dynamic-on-root/page/2"
+    assert DynamicPathRoutes.on_root_path(conn, :authors) == "/dynamic-on-root/authors"
+    assert DynamicPathRoutes.on_root_path(conn, :tags) == "/dynamic-on-root/tags"
+
+    assert DynamicPathRoutes.on_root_path(conn, :show, "author_or_tag_or_post") ==
+             "/dynamic-on-root/author_or_tag_or_post"
+
+    assert DynamicPathRoutes.on_root_path(conn, :rss) == "/dynamic-on-root/rss.xml"
   end
 
   describe "literature_api_path/2 for default path" do

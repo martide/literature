@@ -7,7 +7,7 @@ defmodule Literature.Test.Router do
   literature_assets("/blog")
 
   literature("/",
-    publication_slug: "blog",
+    publication: "blog",
     view_module: @view_module
   )
 
@@ -15,17 +15,24 @@ defmodule Literature.Test.Router do
   literature_dashboard("/literature")
 
   literature("/",
-    publication_slug: "error-view",
+    publication: "error-view",
     view_module: @view_module,
     error_view_module: Literature.Test.ErrorView,
     as: :error_view
   )
 
   literature("/",
-    publication_slug: "with-only",
+    publication: "with-only",
     only: [:index, :show],
     view_module: @view_module,
     as: :with_only
+  )
+
+  literature("/",
+    publication: "on-root",
+    view_module: @view_module,
+    as: :on_root,
+    root: true
   )
 end
 
@@ -36,9 +43,16 @@ defmodule Literature.Test.DynamicPathRouter do
   @view_module Literature.BlogView
 
   literature_assets("/foo/bar")
-  literature("/foo/bar", publication_slug: "blog", view_module: @view_module)
+  literature("/foo/bar", publication: "blog", view_module: @view_module)
   literature_api("/foo/bar")
   literature_dashboard("/foo/bar")
+
+  literature("/dynamic-on-root",
+    publication: "on-root",
+    view_module: @view_module,
+    as: :on_root,
+    root: true
+  )
 end
 
 defmodule Literature.Test.ErrorView do
