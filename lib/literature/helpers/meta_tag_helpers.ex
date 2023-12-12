@@ -178,7 +178,9 @@ defmodule Literature.MetaTagHelpers do
         href:
           current_url
           |> String.replace("/page/#{page_number}", "")
+          |> IO.inspect()
           |> put_page_number(page_number + 1)
+          |> IO.inspect()
       )
     ]
   end
