@@ -222,13 +222,76 @@ defmodule Literature.BlogLiveTest do
     end
   end
 
-  describe "Error view" do
+  describe "On root routes" do
     setup do
-      publication = publication_fixture(name: "Error View", description: "Blog description")
+      publication =
+        publication_fixture(
+          name: "On root",
+          description: "On root description"
+        )
 
-      %{publication: publication}
+      author =
+        author_fixture(publication_id: publication.id, name: "Author", bio: "Author description")
+
+      tag =
+        tag_fixture(publication_id: publication.id, name: "Tag", description: "Tag description")
+
+      post =
+        post_fixture(
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id],
+          html: ["<p>content</p>"],
+          locales: [
+            %{locale: "en", url: "http://example.com/en"},
+            %{locale: "de", url: "http://example.com/de"}
+          ]
+        )
+
+      %{publication: publication, author: author, tag: tag, post: post}
     end
 
+    test "redirects on root routes", %{conn: conn, publication: publication} do
+      redirect =
+        redirect_fixture(publication_id: publication.id, from: "/some-post", to: "/", type: 302)
+
+      conn = get(conn, Routes.on_root_path(conn, :show, "some-post"))
+      assert redirected_to(conn, redirect.type) == "/"
+    end
+
+    test "lists blog posts page 2", %{
+      conn: conn,
+      publication: publication,
+      tag: tag,
+      author: author
+    } do
+      for i <- 1..20 do
+        post_fixture(
+          title: "Post #{i}",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+      end
+
+      assert {:ok, _view, html} = live(conn, Routes.on_root_path(conn, :index, 2))
+
+      prev_url = @endpoint.url()
+      next_url = @endpoint.url() <> Routes.on_root_path(conn, :index, 3)
+
+      assert get_element(
+               html,
+               "link[href='#{prev_url}'][rel='prev']"
+             )
+
+      assert get_element(
+               html,
+               "link[href='#{next_url}'][rel='next']"
+             )
+    end
+  end
+
+  describe "Error view" do
     test "Display 404 page when page not found", %{conn: conn} do
       {:ok, view, _html} = live(conn, Routes.error_view_path(conn, :show, "page-not-exists"))
       html = render(view)

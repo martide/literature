@@ -178,9 +178,7 @@ defmodule Literature.MetaTagHelpers do
         href:
           current_url
           |> String.replace("/page/#{page_number}", "")
-          |> IO.inspect()
           |> put_page_number(page_number + 1)
-          |> IO.inspect()
       )
     ]
   end
@@ -196,7 +194,8 @@ defmodule Literature.MetaTagHelpers do
       |> put_page_number(page_number - 1)
 
   defp put_page_number(current_url, page_number) do
-    current_url <>
-      "#{if String.ends_with?(current_url, "/"), do: "", else: "/"}page/#{page_number}"
+    current_url
+    |> String.replace_suffix("/", "")
+    |> Kernel.<>("/page/#{page_number}")
   end
 end
