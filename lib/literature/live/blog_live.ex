@@ -92,12 +92,16 @@ defmodule Literature.BlogLive do
     %{path: path} = URI.parse(url)
 
     with_page_number? =
-      String.contains?(path, "#{socket.assigns.publication_slug}/page/")
+      String.contains?(path, "/page/")
 
     cond do
       with_page_number? and params["page"] == "1" ->
         path
-        |> String.replace("/page/#{params["page"]}", "")
+        |> String.replace("/page/1", "")
+        |> case do
+          "" -> "/"
+          path -> path
+        end
         |> then(&{:noreply, push_navigate(socket, to: &1, replace: true)})
 
       not with_page_number? and Map.has_key?(params, "page") ->
