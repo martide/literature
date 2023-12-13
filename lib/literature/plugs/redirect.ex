@@ -18,12 +18,15 @@ defmodule Literature.Plugs.Redirect do
       {base_path, current_path} =
         parse_paths(conn.request_path, root_path)
 
-      case Literature.get_redirect!(publication_slug: publication_slug, from: current_path) do
+      case Literature.get_redirect!(
+             publication_slug: publication_slug,
+             from: current_path
+           ) do
         nil ->
           conn
 
         redirect ->
-          new_path = "#{base_path}#{root_path}#{redirect.to}"
+          new_path = String.replace_suffix("#{base_path}#{root_path}", "/", "") <> redirect.to
 
           conn
           |> put_status(redirect.type)
@@ -42,9 +45,10 @@ defmodule Literature.Plugs.Redirect do
 
     # Match empty path with /
     current_path =
-      case current_path do
-        "" -> "/"
-        _ -> current_path
+      if String.starts_with?(current_path, "/") do
+        current_path
+      else
+        "/#{current_path}"
       end
 
     {base_path, current_path}

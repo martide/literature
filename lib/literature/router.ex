@@ -266,11 +266,7 @@ defmodule Literature.Router do
     scope = "/#{if root?, do: "", else: "#{publication_slug}"}"
 
     root_path =
-      if path == "/" do
-        scope
-      else
-        "#{path}#{scope}" |> String.replace_suffix("/", "")
-      end
+      String.replace_suffix(path, "/", "") <> scope
 
     route_opts = [
       private: %{

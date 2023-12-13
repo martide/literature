@@ -140,7 +140,7 @@ defmodule Literature.MetaTagHelpers do
       )
       when page_number == 1 and total_pages > 1 do
     # When in first page, next tag only
-    [tag(:link, rel: "next", href: current_url <> "/page/2")]
+    [tag(:link, rel: "next", href: next_url(current_url, page_number))]
   end
 
   def render_pagination_link_tags(
@@ -175,15 +175,30 @@ defmodule Literature.MetaTagHelpers do
       ),
       tag(:link,
         rel: "next",
-        href: String.replace(current_url, "/page/#{page_number}", "/page/#{page_number + 1}")
+        href: next_url(current_url, page_number)
       )
     ]
   end
 
   def render_pagination_link_tags(_, _), do: []
 
+  defp next_url(current_url, page_number) do
+    current_url
+    |> String.replace("/page/#{page_number}", "")
+    |> put_page_number(page_number + 1)
+  end
+
   defp prev_url(current_url, 2), do: String.replace(current_url, "/page/2", "")
 
   defp prev_url(current_url, page_number),
-    do: String.replace(current_url, "/page/#{page_number}", "/page/#{page_number - 1}")
+    do:
+      current_url
+      |> String.replace("/page/#{page_number}", "")
+      |> put_page_number(page_number - 1)
+
+  defp put_page_number(current_url, page_number) do
+    current_url
+    |> String.replace_suffix("/", "")
+    |> Kernel.<>("/page/#{page_number}")
+  end
 end
