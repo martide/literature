@@ -1,7 +1,7 @@
 defmodule Literature.MixProject do
   use Mix.Project
 
-  @version "0.2.4"
+  @version "0.2.5"
 
   def project do
     [
@@ -56,6 +56,7 @@ defmodule Literature.MixProject do
       {:scrivener_phoenix, "~> 0.3"},
 
       # Images
+      {:mogrify, "~> 0.9"},
       {:waffle, "~> 1.1"},
       {:waffle_ecto, "~> 0.0"},
 
@@ -63,7 +64,6 @@ defmodule Literature.MixProject do
       {:atomex, "~> 0.5"},
       {:ex_doc, "~> 0.28", only: :dev, runtime: false},
       {:httpoison, "~> 1.0 or ~> 2.0"},
-      {:mogrify, "~> 0.9"},
       {:sitemapper, "~> 0.7"},
       {:slugy, "~> 4.1"},
       {:timex, "~> 3.7"},
