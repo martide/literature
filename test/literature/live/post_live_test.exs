@@ -162,17 +162,15 @@ defmodule Literature.PostLiveTest do
       )
       |> render_change()
 
-      result =
-        view
-        |> form("#post-form", post: @update_attrs)
-        |> render_submit()
+      view
+      |> form("#post-form", post: @update_attrs)
+      |> render_submit()
 
       {path, flash} = assert_redirect(view)
       assert path == Routes.literature_dashboard_path(conn, :list_posts, publication.slug)
       assert flash["success"] == "Post updated successfully"
 
-      {:ok, _, html} = follow_redirect(result, conn, path)
-      assert html =~ @update_attrs.title
+      # Will not be able to follow redirect since redirect happens after async result
 
       assert post = Literature.get_post!(title: @update_attrs.title)
 
@@ -199,10 +197,9 @@ defmodule Literature.PostLiveTest do
 
       html = Jason.encode!(["<p>some html</p>"])
 
-      result =
-        view
-        |> form("#post-form", post: @update_attrs)
-        |> render_submit(%{post: %{"html" => html}})
+      view
+      |> form("#post-form", post: @update_attrs)
+      |> render_submit(%{post: %{"html" => html}})
 
       {path, flash} = assert_redirect(view)
 
@@ -211,8 +208,7 @@ defmodule Literature.PostLiveTest do
 
       assert Literature.get_post!(post.id).html == Jason.decode!(html)
 
-      {:ok, _, html} = follow_redirect(result, conn, path)
-      assert html =~ @update_attrs.title
+      # Will not be able to follow redirect since redirect happens after async result
     end
 
     test "deletes post in listing", %{conn: conn, publication: publication, post: post} do
