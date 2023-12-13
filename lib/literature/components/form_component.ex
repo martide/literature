@@ -142,7 +142,8 @@ defmodule Literature.FormComponent do
       class:
         "w-full md:w-auto text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 md:mr-2 mb-2 focus:outline-none disabled:bg-opacity-70",
       phx_disable_with: "Saving...",
-      form: assigns[:form]
+      form: assigns[:form],
+      disabled: assigns[:disabled] || false
     ) %>
     """
   end

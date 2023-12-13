@@ -17,6 +17,7 @@ defmodule Literature.PostFormComponent do
       |> assign(:post_params, Map.new())
       |> assign(:authors, list_authors(slug))
       |> assign(:tags, list_tags(slug))
+      |> assign(:loading, false)
       |> allow_upload()
 
     {:ok, socket}
@@ -215,7 +216,8 @@ defmodule Literature.PostFormComponent do
             <div class="mt-5">
               <.button_group>
                 <.back_button label="Cancel" return_to={@return_to} />
-                <.submit_button label="Save Changes" />
+                <.submit_button :if={@loading} label="Saving..." disabled={true} />
+                <.submit_button :if={!@loading} label="Save Changes" />
               </.button_group>
             </div>
           </div>
@@ -238,12 +240,43 @@ defmodule Literature.PostFormComponent do
   @impl Phoenix.LiveComponent
   def handle_event("save", %{"post" => post_params}, socket) do
     html = post_params["html"]
-
     html = if is_binary(html) and html != "", do: Jason.decode!(post_params["html"]), else: []
-
     post_params = Map.put(post_params, "html", html)
-    save_post(socket, socket.assigns.action, post_params)
+
+    socket
+    |> assign(:loading, true)
+    |> start_async(:save_task, fn ->
+      save_post(socket, socket.assigns.action, post_params)
+    end)
+    |> then(&{:noreply, &1})
   end
+
+  def handle_async(:save_task, {:ok, {:error, changeset}}, socket) do
+    {:noreply, assign(socket, changeset: changeset, loading: false)}
+  end
+
+  def handle_async(:save_task, {:ok, {:ok, saved_post}}, socket) do
+    purge_cloudflare_files(socket, saved_post.slug)
+    # Need to call parent liveview to do the redirect & flash message because
+    # currently handle_async/3 does not support it.
+    # Ref issue: https://github.com/phoenixframework/phoenix_live_view/issues/2878
+    send(
+      self(),
+      {:redirect, socket.assigns.return_to, {:success, save_flash_message(socket.assigns.action)}}
+    )
+
+    {:noreply, consume_all_uploaded_entries(socket)}
+  end
+
+  def handle_async(:save_task, {:exit, reason}, socket) do
+    socket
+    |> consume_all_uploaded_entries()
+    |> put_flash(:error, "Error: #{inspect(reason)}")
+    |> then(&{:noreply, &1})
+  end
+
+  defp save_flash_message(:new_post), do: "Post created successfully"
+  defp save_flash_message(:edit_post), do: "Post updated successfully"
 
   defp save_post(socket, :edit_post, post_params) do
     post_params =
@@ -253,18 +286,7 @@ defmodule Literature.PostFormComponent do
       |> build_html()
       |> Map.put_new("locales", [])
 
-    case Literature.update_post(socket.assigns.post, post_params) do
-      {:ok, post} ->
-        purge_cloudflare_files(socket, post.slug)
-
-        {:noreply,
-         socket
-         |> put_flash(:success, "Post updated successfully")
-         |> push_redirect(to: socket.assigns.return_to)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, :changeset, changeset)}
-    end
+    Literature.update_post(socket.assigns.post, post_params)
   end
 
   defp save_post(socket, :new_post, post_params) do
@@ -275,16 +297,7 @@ defmodule Literature.PostFormComponent do
       |> build_images()
       |> build_html()
 
-    case Literature.create_post(post_params) do
-      {:ok, _post} ->
-        {:noreply,
-         socket
-         |> put_flash(:success, "Post created successfully")
-         |> push_redirect(to: socket.assigns.return_to)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, changeset: changeset)}
-    end
+    Literature.create_post(post_params)
   end
 
   defp list_authors(slug) do

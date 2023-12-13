@@ -15,6 +15,10 @@ defmodule Literature.Uploaders do
   # imagemagick 7 is required for avif conversions
   @versions ~w(original jpg webp)a
 
+  # Set to async false to prevent `Erlang error: :emfile`
+  # caused by too many open files when calling `Mogrify.verbose/1`
+  @async false
+
   def asset_host, do: Config.waffle_asset_host()
   def bucket, do: Config.waffle_bucket()
   def __storage, do: Config.waffle_storage()

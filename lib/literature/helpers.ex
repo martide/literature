@@ -1,7 +1,7 @@
 defmodule Literature.Helpers do
   @moduledoc false
 
-  import Phoenix.LiveView, only: [uploaded_entries: 2]
+  import Phoenix.LiveView, only: [uploaded_entries: 2, consume_uploaded_entries: 3]
   alias Phoenix.LiveView.UploadConfig
 
   # Routing Helpers
@@ -111,4 +111,16 @@ defmodule Literature.Helpers do
 
   def date_format(datetime, format \\ "%b %d, %Y"),
     do: Timex.format!(datetime, format, :strftime)
+
+  def consume_all_uploaded_entries(
+        %{assigns: %{uploads: %{__phoenix_refs_to_names__: ref_name_map}}} = socket
+      ) do
+    Enum.each(ref_name_map, fn {_ref, upload_name} ->
+      consume_uploaded_entries(socket, upload_name, fn _, _ ->
+        {:ok, upload_name}
+      end)
+    end)
+
+    socket
+  end
 end

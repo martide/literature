@@ -90,6 +90,14 @@ defmodule Literature.PostLive do
     {:noreply, socket}
   end
 
+  @impl Phoenix.LiveView
+  def handle_info({:redirect, path, {type, msg}}, socket) do
+    socket
+    |> put_flash(type, msg)
+    |> push_redirect(to: path)
+    |> then(&{:noreply, &1})
+  end
+
   defp apply_action(socket, :list_posts, params) do
     socket
     |> assign(paginate_posts(params))
