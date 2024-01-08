@@ -291,6 +291,59 @@ defmodule Literature.BlogLiveTest do
     end
   end
 
+  describe "Custom routes" do
+    setup do
+      publication =
+        publication_fixture(
+          name: "Custom routes",
+          description: "Custom routes such as :show_tag -> /tags/:tag_slug"
+        )
+
+      author =
+        author_fixture(publication_id: publication.id, name: "Author", bio: "Author description")
+
+      tag =
+        tag_fixture(
+          publication_id: publication.id,
+          name: "Custom Routes Tag",
+          description: "Tag description"
+        )
+
+      post =
+        post_fixture(
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      %{publication: publication, author: author, tag: tag, post: post}
+    end
+
+    test "show_tag", %{
+      conn: conn,
+      tag: tag,
+      author: author,
+      post: post
+    } do
+      assert {:ok, _view, html} =
+               live(conn, Routes.custom_routes_path(conn, :show_tag, tag.slug))
+
+      assert html =~ tag.name
+
+      # Not found when accessed through show path
+      assert_raise Literature.PageNotFound, fn ->
+        live(conn, Routes.custom_routes_path(conn, :show, tag.slug))
+      end
+
+      # Show post and author should work as usual
+      assert {:ok, _view, _html} =
+               live(conn, Routes.custom_routes_path(conn, :show, author.slug))
+
+      assert {:ok, _view, _html} =
+               live(conn, Routes.custom_routes_path(conn, :show, post.slug))
+    end
+  end
+
   describe "Error view" do
     test "Display 404 page when page not found", %{conn: conn} do
       {:ok, view, _html} = live(conn, Routes.error_view_path(conn, :show, "page-not-exists"))

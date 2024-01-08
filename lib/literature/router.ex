@@ -152,6 +152,10 @@ defmodule Literature.Router do
 
     routes = Keyword.get(opts, :only, ~w(index index_pages tags authors show)a)
 
+    # Custom routes to enable /tags/:tag_slug route
+    # Possible value for now is [:show_tag]
+    custom_routes = Keyword.get(opts, :custom_routes, [])
+
     session_name = Keyword.get(opts, :as, :literature)
 
     # Opt to create routes on the root path without the publication slug
@@ -203,6 +207,10 @@ defmodule Literature.Router do
 
               if :tags in routes do
                 live("/tags", BlogLive, :tags, route_opts)
+
+                if :show_tag in custom_routes do
+                  live("/tags/:tag_slug", BlogLive, :show_tag, route_opts)
+                end
               end
 
               if :authors in routes do
@@ -259,7 +267,8 @@ defmodule Literature.Router do
         "application_router" => Keyword.get(opts, :application_router),
         "publication_slug" => publication_slug,
         "view_module" => Keyword.get(opts, :view_module),
-        "error_view_module" => Keyword.get(opts, :error_view_module)
+        "error_view_module" => Keyword.get(opts, :error_view_module),
+        "custom_routes" => Keyword.get(opts, :custom_routes)
       }
     ]
 
