@@ -38,7 +38,7 @@ defmodule Literature.Sitemap do
   def literature_sitemap_paths(opts \\ []) do
     Config.repo().transaction(fn ->
       Config.sitemap_router().__routes__()
-      |> Stream.filter(&is_blog_path/1)
+      |> Stream.filter(&blog_path?/1)
       |> Stream.map(&replace_slug/1)
       |> Enum.to_list()
     end)
@@ -54,8 +54,8 @@ defmodule Literature.Sitemap do
     |> Enum.map(fn {path, _} -> path end)
   end
 
-  defp is_blog_path(%{metadata: %{log_module: Literature.BlogLive}}), do: true
-  defp is_blog_path(_), do: false
+  defp blog_path?(%{metadata: %{log_module: Literature.BlogLive}}), do: true
+  defp blog_path?(_), do: false
 
   defp replace_slug(route) do
     if String.contains?(route.path, ":slug") do
