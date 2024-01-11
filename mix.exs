@@ -49,11 +49,12 @@ defmodule Literature.MixProject do
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_live_view, "~> 0.18"},
       {:phoenix_view, "~> 2.0"},
+      {:phoenix_html_helpers, "~> 1.0"},
       {:postgrex, ">= 0.0.0", only: :test},
 
       # Pagination
       {:scrivener_ecto, "~> 2.7"},
-      {:scrivener_phoenix, "~> 0.3"},
+      {:flop_phoenix, "~> 0.22.5"},
 
       # Images
       {:mogrify, "~> 0.9"},

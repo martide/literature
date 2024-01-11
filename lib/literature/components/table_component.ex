@@ -2,12 +2,12 @@ defmodule Literature.TableComponent do
   @moduledoc false
   use Literature.Web, :live_component
 
-  import Scrivener.PhoenixView
-
   alias Plug.Conn.Query
 
   @impl Phoenix.LiveComponent
   def update(assigns, socket) do
+    IO.inspect(assigns.items)
+
     socket
     |> assign(assigns)
     |> assign_new(:params, fn -> Map.new() end)
@@ -104,9 +104,9 @@ defmodule Literature.TableComponent do
           </tbody>
         </table>
       </div>
-      <%= paginate(@socket, @page, fn socket, [page: page] ->
-        literature_dashboard_path(socket, @live_action, @slug, %{page: page})
-      end) %>
+      <!--
+        Paginate Here
+       -->
     </div>
     """
   end

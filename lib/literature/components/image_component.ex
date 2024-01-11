@@ -1,9 +1,8 @@
 defmodule Literature.ImageComponent do
   @moduledoc false
-  use Phoenix.Component
+  use Literature.Web, :html
 
   import Literature.Helpers
-  import Phoenix.HTML.Tag
 
   alias Literature.Config
 

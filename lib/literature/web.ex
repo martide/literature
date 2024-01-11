@@ -86,9 +86,19 @@ defmodule Literature.Web do
     end
   end
 
+  def html do
+    quote do
+      use Phoenix.Component  
+
+      unquote(view_helpers())
+    end
+  end
+
   defp view_helpers do
     quote do
-      use Phoenix.HTML
+      import Phoenix.HTML
+      import Phoenix.HTML.Form
+      use PhoenixHTMLHelpers
 
       import Phoenix.LiveView.Helpers
       import Literature.Helpers
