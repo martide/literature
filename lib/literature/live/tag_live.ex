@@ -96,7 +96,7 @@ defmodule Literature.TagLive do
   defp apply_action(socket, :new_tag, _params) do
     socket
     |> assign(:page_title, "New Tag")
-    |> assign(:tag, %Tag{})
+    |> assign(:tag, %Tag{enable_posts_custom_order: false, visibility: true})
   end
 
   defp apply_action(socket, :edit_tag, %{"slug" => slug}) do
