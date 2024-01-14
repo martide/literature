@@ -6,8 +6,6 @@ defmodule Literature.TableComponent do
 
   @impl Phoenix.LiveComponent
   def update(assigns, socket) do
-    IO.inspect(assigns.items)
-
     socket
     |> assign(assigns)
     |> assign_new(:params, fn -> Map.new() end)
@@ -104,9 +102,12 @@ defmodule Literature.TableComponent do
           </tbody>
         </table>
       </div>
-      <!--
-        Paginate Here
-       -->
+
+      <Flop.Phoenix.pagination
+        opts={pagination_opts()}
+        meta={meta(@page, @params)}
+        path={literature_dashboard_path(@socket, @live_action, @slug, Map.delete(@params, "page"))}
+      />
     </div>
     """
   end
@@ -376,6 +377,39 @@ defmodule Literature.TableComponent do
     |> URI.encode_query()
   end
 
+  def meta(page, params) do
+    {current_page, ""} = Integer.parse(params["page"] || "1")
+    {page_size, ""} = Integer.parse(params["page_size"] || "50")
+    total_pages = page.total_pages
+
+    %Flop.Meta{
+      current_page: current_page,
+      page_size: page_size,
+      total_count: page.total_entries,
+      total_pages: total_pages,
+      has_next_page?: current_page < total_pages,
+      has_previous_page?: current_page > 1,
+      next_page: current_page + 1,
+      previous_page: current_page - 1
+    }
+  end
+
   defp reverse("desc"), do: "asc"
   defp reverse(_), do: "desc"
+
+  defp pagination_opts do
+    [
+      disabled: "disabled bg-gray-300",
+      page_links: :hide,
+      next_link_content: Phoenix.HTML.raw("&rarr;"),
+      previous_link_content: Phoenix.HTML.raw("&larr;"),
+      previous_link_attrs: [
+        class: "py-2 px-5 m-2 border border-rounded"
+      ],
+      next_link_attrs: [
+        class: "py-2 px-5 m-2 border border-rounded"
+      ],
+      wrapper_attrs: [class: "pagination flex justify-center space-x-2 mt-4"]
+    ]
+  end
 end

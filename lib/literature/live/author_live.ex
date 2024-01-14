@@ -28,8 +28,8 @@ defmodule Literature.AuthorLive do
           module={TableComponent}
           id="authors-table"
           slug={@slug}
-          items={@authors}
           page={@page}
+          items={@authors}
           params={@params}
           live_action={@live_action}
           columns={columns()}

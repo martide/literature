@@ -4,6 +4,11 @@ defmodule Literature.Redirect do
   """
   use Literature.Web, :model
 
+  @derive {
+    Flop.Schema,
+    filterable: [], sortable: []
+  }
+
   @available_types [
     301,
     302

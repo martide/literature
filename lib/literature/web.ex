@@ -88,7 +88,7 @@ defmodule Literature.Web do
 
   def html do
     quote do
-      use Phoenix.Component  
+      use Phoenix.Component
 
       unquote(view_helpers())
     end
