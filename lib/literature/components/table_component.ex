@@ -2,7 +2,7 @@ defmodule Literature.TableComponent do
   @moduledoc false
   use Literature.Web, :live_component
 
-  import Scrivener.PhoenixView
+  import Literature.Pagination
 
   alias Plug.Conn.Query
 
@@ -104,9 +104,18 @@ defmodule Literature.TableComponent do
           </tbody>
         </table>
       </div>
-      <%= paginate(@socket, @page, fn socket, [page: page] ->
-        literature_dashboard_path(socket, @live_action, @slug, %{page: page})
-      end) %>
+      <div class="mt-10 text-center">
+        <.pagination
+          :if={!Enum.empty?(@page.entries)}
+          class="self-center"
+          path={literature_dashboard_path(@socket, @live_action, @slug, %{page: ":page"})}
+          current_page={@page.page_number}
+          page_number={@page.page_number}
+          page_size={@page.page_size}
+          total_entries={@page.total_entries}
+          total_pages={@page.total_pages}
+        />
+      </div>
     </div>
     """
   end
