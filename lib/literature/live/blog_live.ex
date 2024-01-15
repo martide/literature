@@ -54,8 +54,9 @@ defmodule Literature.BlogLive do
       assign_defaults(socket, params, session)
 
     # Check if custom routes includes :show_tag and :show_author which are specific routes for tag and author
-    # Render not found when :show_tag is enabled, show page for tag should be accessed through :show_tag route -> /tags/:tag_slug
-    # Render not found when :show_author is enabled, show page for author should be accessed through :show_author route -> /authors/:author_slug
+    # Render not found when :show_tag or :show_author is enabled,
+    # Show page for tag should be accessed through :show_tag route -> /tags/:tag_slug
+    # Show page for author should be accessed through :show_author route -> /authors/:author_slug
     custom_routes = session["custom_routes"] || []
     show_tag_route? = :show_tag in custom_routes
     show_author_route? = :show_author in custom_routes
