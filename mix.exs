@@ -1,7 +1,7 @@
 defmodule Literature.MixProject do
   use Mix.Project
 
-  @version "0.2.7"
+  @version "0.2.8"
 
   def project do
     [
@@ -53,7 +53,6 @@ defmodule Literature.MixProject do
 
       # Pagination
       {:scrivener_ecto, "~> 2.7"},
-      {:scrivener_phoenix, "~> 0.3"},
 
       # Images
       {:mogrify, "~> 0.9"},
