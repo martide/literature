@@ -148,7 +148,6 @@ defmodule Literature.Router do
       end
   """
 
-  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   defmacro literature(path, opts \\ []) do
     opts = Keyword.put(opts, :application_router, __CALLER__.module)
 
@@ -209,27 +208,38 @@ defmodule Literature.Router do
 
               if :tags in routes do
                 live("/tags", BlogLive, :tags, route_opts)
-
-                if :show_tag in custom_routes do
-                  live("/tags/:tag_slug", BlogLive, :show_tag, route_opts)
-                end
               end
 
               if :authors in routes do
                 live("/authors", BlogLive, :authors, route_opts)
-
-                if :show_author in custom_routes do
-                  live("/authors/:author_slug", BlogLive, :show_author, route_opts)
-                end
               end
 
               if :show in routes do
                 pipe_through(:cloudflare_cdn)
                 live("/:slug", BlogLive, :show, route_opts)
               end
+
+              custom_show_author_route(custom_routes, route_opts)
+              custom_show_tag_route(custom_routes, route_opts)
             end
           end
         end
+      end
+    end
+  end
+
+  defmacro custom_show_author_route(custom_routes, route_opts) do
+    quote do
+      if :show_author in unquote(custom_routes) do
+        live("/authors/:author_slug", BlogLive, :show_author, unquote(route_opts))
+      end
+    end
+  end
+
+  defmacro custom_show_tag_route(custom_routes, route_opts) do
+    quote do
+      if :show_tag in unquote(custom_routes) do
+        live("/tags/:tag_slug", BlogLive, :show_tag, unquote(route_opts))
       end
     end
   end
