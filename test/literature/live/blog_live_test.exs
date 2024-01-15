@@ -334,6 +334,11 @@ defmodule Literature.BlogLiveTest do
         live(conn, Routes.custom_routes_path(conn, :show, tag.slug))
       end
 
+      # Not found when tag does not exist
+      assert_raise Literature.PageNotFound, fn ->
+        live(conn, Routes.custom_routes_path(conn, :show_tag, "does-not-exist"))
+      end
+
       # Show post should work as usual
       assert {:ok, _view, _html} =
                live(conn, Routes.custom_routes_path(conn, :show, post.slug))
@@ -352,6 +357,11 @@ defmodule Literature.BlogLiveTest do
       # Not found when accessed through show path
       assert_raise Literature.PageNotFound, fn ->
         live(conn, Routes.custom_routes_path(conn, :show, author.slug))
+      end
+
+      # Not found when author does not exist
+      assert_raise Literature.PageNotFound, fn ->
+        live(conn, Routes.custom_routes_path(conn, :show_author, "does-not-exist"))
       end
 
       # Show post and author should work as usual
