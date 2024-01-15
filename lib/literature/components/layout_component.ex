@@ -1,8 +1,6 @@
 defmodule Literature.LayoutComponent do
   @moduledoc false
-  use Phoenix.Component
-
-  import Phoenix.HTML.Link
+  use Literature.Web, :html
 
   def h1(assigns) do
     ~H"""
