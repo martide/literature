@@ -147,13 +147,15 @@ defmodule Literature.Router do
         end
       end
   """
+
+  # credo:disable-for-next-line Credo.Check.Refactor.CyclomaticComplexity
   defmacro literature(path, opts \\ []) do
     opts = Keyword.put(opts, :application_router, __CALLER__.module)
 
     routes = Keyword.get(opts, :only, ~w(index index_pages tags authors show)a)
 
-    # Custom routes to enable /tags/:tag_slug route
-    # Possible value for now is [:show_tag]
+    # Custom routes to enable /tags/:tag_slug or /authors/:author_slug routes
+    # Possible value for now is [:show_tag, :show_author]
     custom_routes = Keyword.get(opts, :custom_routes, [])
 
     session_name = Keyword.get(opts, :as, :literature)
@@ -215,6 +217,10 @@ defmodule Literature.Router do
 
               if :authors in routes do
                 live("/authors", BlogLive, :authors, route_opts)
+
+                if :show_author in custom_routes do
+                  live("/authors/:author_slug", BlogLive, :show_author, route_opts)
+                end
               end
 
               if :show in routes do

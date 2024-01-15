@@ -322,7 +322,6 @@ defmodule Literature.BlogLiveTest do
     test "show_tag", %{
       conn: conn,
       tag: tag,
-      author: author,
       post: post
     } do
       assert {:ok, _view, html} =
@@ -335,10 +334,27 @@ defmodule Literature.BlogLiveTest do
         live(conn, Routes.custom_routes_path(conn, :show, tag.slug))
       end
 
-      # Show post and author should work as usual
+      # Show post should work as usual
       assert {:ok, _view, _html} =
-               live(conn, Routes.custom_routes_path(conn, :show, author.slug))
+               live(conn, Routes.custom_routes_path(conn, :show, post.slug))
+    end
 
+    test "show_author", %{
+      conn: conn,
+      author: author,
+      post: post
+    } do
+      assert {:ok, _view, html} =
+               live(conn, Routes.custom_routes_path(conn, :show_author, author.slug))
+
+      assert html =~ author.name
+
+      # Not found when accessed through show path
+      assert_raise Literature.PageNotFound, fn ->
+        live(conn, Routes.custom_routes_path(conn, :show, author.slug))
+      end
+
+      # Show post and author should work as usual
       assert {:ok, _view, _html} =
                live(conn, Routes.custom_routes_path(conn, :show, post.slug))
     end

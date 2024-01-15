@@ -31,12 +31,31 @@ defmodule Literature.BlogLive do
     |> then(&{:ok, &1, layout: @layout})
   end
 
+  def mount(%{"author_slug" => author_slug} = params, session, socket) do
+    socket =
+      assign_defaults(socket, params, session)
+
+    Literature.get_author!(
+      slug: author_slug,
+      publication_slug: session["publication_slug"]
+    )
+    |> case do
+      %Author{} = author ->
+        assign_to_socket(socket, :author, preload_author(author))
+
+      _ ->
+        render_not_found(socket)
+    end
+    |> then(&{:ok, &1, layout: @layout})
+  end
+
   def mount(%{"slug" => slug} = params, session, socket) do
     socket =
       assign_defaults(socket, params, session)
 
     custom_routes = session["custom_routes"] || []
     show_tag_route? = :show_tag in custom_routes
+    show_author_route? = :show_author in custom_routes
 
     [&Literature.get_post!/1, &Literature.get_tag!/1, &Literature.get_author!/1]
     |> Enum.map(fn fun -> fun.(slug: slug, publication_slug: session["publication_slug"]) end)
@@ -48,7 +67,7 @@ defmodule Literature.BlogLive do
       %Tag{visibility: true} = tag when not show_tag_route? ->
         assign_to_socket(socket, :tag, preload_tag(tag))
 
-      %Author{} = author ->
+      %Author{} = author when not show_author_route? ->
         assign_to_socket(socket, :author, preload_author(author))
 
       _ ->
@@ -81,7 +100,7 @@ defmodule Literature.BlogLive do
       when is_nil(error_code) do
     live_action
     |> case do
-      show when show in [:show, :show_tag] ->
+      show when show in [:show, :show_tag, :show_author] ->
         [
           {assigns[:post], "post.html"},
           {assigns[:tag], "tag.html"},

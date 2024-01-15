@@ -101,7 +101,7 @@ defmodule Literature.RouterTest do
     assert Routes.on_root_path(conn, :rss) == "/rss.xml"
   end
 
-  test "generates helpers with custom_routes for show_tag", %{conn: conn} do
+  test "generates helpers with custom_routes for show_tag and show_author", %{conn: conn} do
     paths =
       Router.__routes__()
       |> Enum.filter(&(&1.helper == "custom_routes"))
@@ -112,6 +112,7 @@ defmodule Literature.RouterTest do
                "/custom-routes",
                "/custom-routes/:slug",
                "/custom-routes/authors",
+               "/custom-routes/authors/:author_slug",
                "/custom-routes/tags",
                "/custom-routes/tags/:tag_slug",
                "/custom-routes/page/:page",
@@ -122,6 +123,11 @@ defmodule Literature.RouterTest do
 
     assert Routes.custom_routes_path(conn, :show_tag, "test") ==
              "/custom-routes/tags/test"
+
+    assert Routes.custom_routes_path(conn, :authors) == "/custom-routes/authors"
+
+    assert Routes.custom_routes_path(conn, :show_author, "test") ==
+             "/custom-routes/authors/test"
 
     assert Routes.custom_routes_path(conn, :show, "test") ==
              "/custom-routes/test"
