@@ -53,7 +53,6 @@ defmodule Literature.MixProject do
 
       # Pagination
       {:scrivener_ecto, "~> 2.7"},
-      {:scrivener_phoenix, "~> 0.3"},
 
       # Images
       {:mogrify, "~> 0.9"},
