@@ -45,7 +45,8 @@ defmodule Literature.ImageComponent do
           <picture>
             <source srcset="#{load_srcset(:jpg, find_img_attribute(tag, "src"))}"/>
             <source srcset="#{load_srcset(:webp, find_img_attribute(tag, "src"))}"/>
-            <img src="#{find_img_attribute(tag, "src")}" alt="#{find_img_alt_attribute(tag)}" width="#{width}" height="#{height}" loading="lazy" />
+            <img src="#{find_img_attribute(tag, "src")}" alt="#{find_img_attribute(tag, "alt")}" width="#{width}" height="#{height}" loading="lazy" />
+            <figcaption style="font-style: italic;";>#{find_img_attribute(tag, "caption")}</figcaption>
           </picture>
           """
 
@@ -87,6 +88,15 @@ defmodule Literature.ImageComponent do
     |> Enum.map(&String.to_integer/1)
   end
 
+  defp find_img_attribute(tag, attr) when attr in ["alt", "caption"] do
+    regex_pattern = ~r/\b#{attr}\s*=\s*["']([^"']+)["']/
+
+    case Regex.run(regex_pattern, tag) do
+      [_, attr] -> attr
+      _ -> ""
+    end
+  end
+
   defp find_img_attribute(tag, attr) do
     tag
     |> String.replace("\"", "")
@@ -94,15 +104,6 @@ defmodule Literature.ImageComponent do
     |> Enum.find(&(&1 =~ attr))
     |> String.split("#{attr}=")
     |> List.last()
-  end
-
-  defp find_img_alt_attribute(tag) do
-    regex_pattern = ~r/\balt\s*=\s*["']([^"']+)["']/
-
-    case Regex.run(regex_pattern, tag) do
-      [_, alt] -> alt
-      _ -> ""
-    end
   end
 
   defp get_img_size(tag) do

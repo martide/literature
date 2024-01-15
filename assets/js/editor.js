@@ -10,8 +10,8 @@ const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute
 const customImageParser = ({ data }) => {
   const alt = data.alt ? data.alt : 'Image';
 
-  return `<img src="${data.file && data.file.url ? data.file.url : data.url
-    }" alt="${alt}" />`;
+  return `<img src="${data.file && data.file.url ? data.file.url : data.url}" 
+    alt="${alt}" ${data.caption ? `caption="${data.caption}"` : ''} />`;
 };
 
 const parser = editorParser({ image: customImageParser });
