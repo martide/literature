@@ -251,6 +251,7 @@ defmodule Literature.PostFormComponent do
     |> then(&{:noreply, &1})
   end
 
+  @impl true
   def handle_async(:save_task, {:ok, {:error, changeset}}, socket) do
     {:noreply, assign(socket, changeset: changeset, loading: false)}
   end
