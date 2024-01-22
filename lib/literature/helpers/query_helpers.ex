@@ -70,17 +70,17 @@ defmodule Literature.QueryHelpers do
   def where_preload(query, _), do: query
 
   def where_status(query, %{"status" => "drafts"}) do
-    where(query, [q], is_nil(q.published_at))
+    where(query, [q], not q.is_published)
   end
 
   def where_status(query, %{"status" => "scheduled"}) do
     datetime = Timex.now() |> Timex.local()
-    where(query, [q], q.published_at > ^datetime)
+    where(query, [q], q.is_published and q.published_at > ^datetime)
   end
 
   def where_status(query, %{"status" => "published"}) do
     datetime = Timex.now() |> Timex.local()
-    where(query, [q], q.published_at <= ^datetime)
+    where(query, [q], q.is_published and q.published_at <= ^datetime)
   end
 
   def where_status(query, %{"status" => "public"}) do

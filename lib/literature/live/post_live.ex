@@ -109,7 +109,7 @@ defmodule Literature.PostLive do
   defp apply_action(socket, :new_post, _params) do
     socket
     |> assign(:page_title, "New Post")
-    |> assign(:post, %Post{})
+    |> assign(:post, %Post{is_published: false})
   end
 
   defp apply_action(socket, :edit_post, %{"slug" => slug}) do

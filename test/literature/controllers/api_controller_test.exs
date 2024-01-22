@@ -114,7 +114,8 @@ defmodule Literature.ApiControllerTest do
 
   describe "POST /api/post" do
     @valid_attrs %{
-      title: "some post title"
+      title: "some post title",
+      is_published: false
     }
 
     test "returns error when :publication_id is missing", %{conn: conn} do
@@ -157,7 +158,11 @@ defmodule Literature.ApiControllerTest do
 
       assert json_response(conn, 422) == %{
                "message" => "Failed to create post",
-               "errors" => ["slug This field is required", "title This field is required"]
+               "errors" => [
+                 "slug This field is required",
+                 "title This field is required",
+                 "is_published This field is required"
+               ]
              }
     end
   end

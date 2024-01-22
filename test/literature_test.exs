@@ -178,7 +178,8 @@ defmodule LiteratureTest do
           locales: [
             %{locale: "en", url: "http://example.com/en"},
             %{locale: "de", url: "http://example.com/de"}
-          ]
+          ],
+          is_published: false
         }
         |> atomize_keys_to_string()
 
@@ -263,7 +264,8 @@ defmodule LiteratureTest do
           publication_id: publication.id,
           authors_ids: [author.id],
           tags_ids: [tag.id, other_tag.id],
-          published_at: nil
+          published_at: nil,
+          is_published: false
         )
 
       post_2 =
