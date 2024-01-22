@@ -1,7 +1,7 @@
 defmodule Literature.MixProject do
   use Mix.Project
 
-  @version "0.2.7"
+  @version "0.2.8"
 
   def project do
     [
@@ -49,6 +49,7 @@ defmodule Literature.MixProject do
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_live_view, "~> 0.18"},
       {:phoenix_view, "~> 2.0"},
+      {:phoenix_html_helpers, "~> 1.0"},
       {:postgrex, ">= 0.0.0", only: :test},
 
       # Pagination
