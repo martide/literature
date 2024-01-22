@@ -1,10 +1,6 @@
 defmodule Literature.FormComponent do
   @moduledoc false
-  use Phoenix.Component
-
-  import Literature.Helpers
-  import Phoenix.HTML.Form
-  import Phoenix.HTML.Tag
+  use Literature.Web, :html
 
   alias Phoenix.LiveView.JS
 
