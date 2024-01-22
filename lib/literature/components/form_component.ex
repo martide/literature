@@ -66,29 +66,54 @@ defmodule Literature.FormComponent do
     """
   end
 
-  def accordion(assigns) do
-    assigns =
-      assign_new(assigns, :id, fn -> "phx-#{hd(String.split(Ecto.UUID.generate(), "-"))}" end)
+  attr(:id, :string, required: true)
+  attr(:title, :string, required: true)
+  attr(:nogrid, :boolean, default: false)
+  slot(:inner_block, required: true)
 
+  def accordion(assigns) do
     ~H"""
     <hr class="border-gray-200 sm:mx-auto" />
-    <p
-      class="text-primary-700 font-semibold uppercase py-5 cursor-pointer"
-      phx-click={
-        JS.toggle(
-          to: "##{@id}",
-          in: {"ease-out duration-300", "opacity-0", "opacity-100"},
-          out: {"ease-in duration-300", "opacity-100", "opacity-0"}
-        )
-      }
+
+    <button
+      class="flex text-primary-700 font-semibold uppercase py-5 cursor-pointer"
+      phx-hook="Accordion"
+      id={@id}
+      data-exec-open={open_accordion(@id)}
+      data-exec-close={collapse_accordion(@id)}
+      type="button"
+      phx-click={on_accordion_click()}
+      aria-controls={"#{@id}-collapse-body"}
     >
-      <%= @title %>
-    </p>
-    <div id={@id}>
+      <.chevron />
+      <span>
+        <%= @title %>
+      </span>
+    </button>
+    <div id={"#{@id}-collapse-body"} aria-labelledby={"#{@id}"} class="hidden">
       <div class={(assigns[:nogrid] && "space-y-5") || "grid grid-cols-2 gap-5 pb-5"}>
         <%= render_slot(@inner_block) %>
       </div>
     </div>
+    """
+  end
+
+  defp chevron(assigns) do
+    ~H"""
+    <svg
+      data-accordion-icon
+      class="h-6 w-6 shrink-0"
+      fill="currentColor"
+      viewBox="0 0 20 20"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+        clip-rule="evenodd"
+      >
+      </path>
+    </svg>
     """
   end
 
@@ -442,4 +467,22 @@ defmodule Literature.FormComponent do
   end
 
   defp field_has_errors?(_), do: false
+
+  defp on_accordion_click do
+    JS.dispatch("toggle_accordion")
+  end
+
+  defp open_accordion(js \\ %JS{}, id) do
+    js
+    |> JS.set_attribute({"aria-expanded", "true"})
+    |> JS.add_class("rotate-180", to: "##{id} [data-accordion-icon]")
+    |> JS.show(to: "##{id}-collapse-body")
+  end
+
+  defp collapse_accordion(js \\ %JS{}, id) do
+    js
+    |> JS.set_attribute({"aria-expanded", "false"})
+    |> JS.remove_class("rotate-180", to: "##{id} [data-accordion-icon]")
+    |> JS.hide(to: "##{id}-collapse-body")
+  end
 end

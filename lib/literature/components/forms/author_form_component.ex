@@ -68,7 +68,7 @@ defmodule Literature.AuthorFormComponent do
           <.form_field form={f} type="url_input" field={:facebook} label="Facebook" />
           <.form_field form={f} type="url_input" field={:twitter} label="Twitter" />
         </.form_group>
-        <.accordion title="Meta Tags">
+        <.accordion id="meta-tags" title="Meta Tags">
           <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
           <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" />
           <.form_field form={f} type="text_input" field={:meta_keywords} label="Meta Keywords" />
