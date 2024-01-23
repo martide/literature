@@ -189,7 +189,7 @@ defmodule Literature.Router do
           scope "/#{if root?, do: "", else: publication_slug}", Literature do
             pipe_through(:maybe_redirect)
 
-            get("/rss.xml", RSSController, :rss, route_opts)
+            get("/feed", RSSController, :rss, route_opts)
 
             live_session session_name, session_opts do
               # Blog routes

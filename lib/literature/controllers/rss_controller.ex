@@ -5,7 +5,7 @@ defmodule Literature.RSSController do
   alias Atomex.Feed
   alias Literature.Config
 
-  @default_path "/rss.xml"
+  @default_path "/feed"
 
   def rss(conn, _params) do
     base_path = String.replace(current_path(conn), @default_path, "")
