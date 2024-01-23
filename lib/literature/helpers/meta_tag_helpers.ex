@@ -132,6 +132,18 @@ defmodule Literature.MetaTagHelpers do
   Render pagination link tags
   """
   def render_pagination_link_tags(
+        assigns,
+        current_url,
+        routes
+      ) do
+    if :index_pages in routes do
+      render_pagination_link_tags(assigns, current_url)
+    else
+      []
+    end
+  end
+
+  def render_pagination_link_tags(
         %{
           live_action: :index,
           page: %{page_number: page_number, total_pages: total_pages}

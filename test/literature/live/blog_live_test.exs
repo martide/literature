@@ -291,6 +291,59 @@ defmodule Literature.BlogLiveTest do
     end
   end
 
+  describe "without pagination route" do
+    setup do
+      publication =
+        publication_fixture(
+          name: "With only",
+          description: "With only description"
+        )
+
+      author =
+        author_fixture(publication_id: publication.id, name: "Author", bio: "Author description")
+
+      tag =
+        tag_fixture(publication_id: publication.id, name: "Tag", description: "Tag description")
+
+      post =
+        post_fixture(
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id],
+          html: ["<p>content</p>"],
+          locales: [
+            %{locale: "en", url: "http://example.com/en"},
+            %{locale: "de", url: "http://example.com/de"}
+          ]
+        )
+
+      %{publication: publication, author: author, tag: tag, post: post}
+    end
+
+    test "No pagination links", %{
+      conn: conn,
+      publication: publication,
+      tag: tag,
+      author: author
+    } do
+      for i <- 1..20 do
+        post_fixture(
+          title: "Post #{i}",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+      end
+
+      assert {:ok, _view, html} = live(conn, Routes.with_only_path(conn, :index))
+
+      refute get_element(
+               html,
+               "link[rel='next']"
+             )
+    end
+  end
+
   describe "Error view" do
     test "Display 404 page when page not found", %{conn: conn} do
       {:ok, view, _html} = live(conn, Routes.error_view_path(conn, :show, "page-not-exists"))
