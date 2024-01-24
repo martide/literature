@@ -33,7 +33,7 @@ defmodule Literature.Post do
     field(:feature_image_caption, :string)
     field(:featured, :boolean)
     field(:published_at, :utc_datetime)
-    field(:is_published, :boolean)
+    field(:is_published, :boolean, default: false)
     field(:excerpt, :string)
     field(:editor_json, :string)
     field(:html, {:array, :string})

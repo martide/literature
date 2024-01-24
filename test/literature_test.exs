@@ -140,6 +140,67 @@ defmodule LiteratureTest do
       assert another_post.id not in post_ids
     end
 
+    test "paginate_posts/1 returns filtered posts based on status" do
+      publication = publication_fixture()
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+
+      published_post_1 =
+        post_fixture(
+          title: "Published post 1",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      published_post_2 =
+        post_fixture(
+          title: "Published post 2",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      draft_post =
+        post_fixture(
+          title: "Draft post",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id],
+          is_published: false
+        )
+
+      scheduled_post =
+        post_fixture(
+          title: "Scheduled post",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id],
+          is_published: true,
+          published_at: DateTime.utc_now() |> DateTime.add(2, :day)
+        )
+
+      assert %Scrivener.Page{entries: entries} =
+               Literature.paginate_posts(%{"status" => "published"})
+
+      post_ids = Enum.map(entries, & &1.id)
+
+      assert published_post_1.id in post_ids
+      assert published_post_2.id in post_ids
+      refute draft_post.id in post_ids
+      refute scheduled_post.id in post_ids
+
+      assert %Scrivener.Page{entries: [post]} =
+               Literature.paginate_posts(%{"status" => "drafts"})
+
+      assert post.id == draft_post.id
+
+      assert %Scrivener.Page{entries: [post]} =
+               Literature.paginate_posts(%{"status" => "scheduled"})
+
+      assert post.id == scheduled_post.id
+    end
+
     test "list_posts/0 returns all posts" do
       publication = publication_fixture()
       author = author_fixture(publication_id: publication.id)
@@ -373,6 +434,41 @@ defmodule LiteratureTest do
                {post_2.id, 3}
              ] == Enum.map(tag.published_posts, &{&1.id, &1.custom_position})
     end
+
+    test "post status" do
+      publication = publication_fixture()
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+
+      post =
+        post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
+
+      assert post.status == "published"
+
+      post =
+        post_fixture(
+          title: "Draft post",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id],
+          published_at: nil,
+          is_published: false
+        )
+
+      assert post.status == "draft"
+
+      post =
+        post_fixture(
+          title: "Scheduled post",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id],
+          published_at: DateTime.utc_now() |> DateTime.add(2, :day),
+          is_published: true
+        )
+
+      assert post.status == "scheduled"
+    end
   end
 
   describe "publications" do
@@ -519,7 +615,7 @@ defmodule LiteratureTest do
       assert entries == [redirect]
     end
 
-    test "paginate_posts/1 returns filtered posts" do
+    test "paginate_redirects/1 returns filtered posts" do
       publication = publication_fixture()
 
       redirect =
