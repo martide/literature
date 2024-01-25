@@ -1,6 +1,6 @@
 defmodule Literature.MetaTagHelpers do
   @moduledoc false
-  use PhoenixHTMLHelpers
+  use Phoenix.HTML
 
   @metatags %{
     "og_type" => "website",
