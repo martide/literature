@@ -113,6 +113,14 @@ defmodule Literature.PostFormComponent do
                 field={:feature_image_caption}
                 label="Feature Image Caption"
               />
+              <.form_field
+                form={f}
+                required={true}
+                type="radio_group"
+                field={:is_published}
+                label="Status"
+                options={[{"false", "Draft"}, {"true", "Published"}]}
+              />
               <.form_field form={f} type="textarea" field={:excerpt} label="Excerpt" />
               <.form_field
                 form={f}

@@ -29,6 +29,7 @@ defmodule Literature.Test.Fixtures do
       |> Keyword.put_new(:title, "some title")
       |> Keyword.put_new(:featured, false)
       |> Keyword.put_new(:published_at, Timex.shift(Timex.now(), days: -1))
+      |> Keyword.put_new(:is_published, true)
       |> Enum.into(%{})
       |> atomize_keys_to_string()
       |> Literature.create_post()

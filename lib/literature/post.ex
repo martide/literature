@@ -33,6 +33,7 @@ defmodule Literature.Post do
     field(:feature_image_caption, :string)
     field(:featured, :boolean)
     field(:published_at, :utc_datetime)
+    field(:is_published, :boolean, default: false)
     field(:excerpt, :string)
     field(:editor_json, :string)
     field(:html, {:array, :string})
@@ -69,6 +70,7 @@ defmodule Literature.Post do
     publication_id
     slug
     title
+    is_published
   )a
 
   @optional_params ~w(
@@ -168,13 +170,13 @@ defmodule Literature.Post do
     _ -> post
   end
 
-  defp get_status(%{published_at: published_at}) do
+  defp get_status(%{published_at: published_at, is_published: is_published}) do
     datetime = Timex.now() |> Timex.local()
 
     cond do
-      is_nil(published_at) -> "draft"
-      Timex.compare(published_at, datetime) < 1 -> "published"
-      Timex.compare(published_at, datetime) == 1 -> "scheduled"
+      not is_published -> "draft"
+      is_published and Timex.compare(published_at, datetime) < 1 -> "published"
+      is_published and Timex.compare(published_at, datetime) == 1 -> "scheduled"
     end
   end
 

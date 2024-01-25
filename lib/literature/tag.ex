@@ -27,7 +27,7 @@ defmodule Literature.Tag do
 
     many_to_many(:published_posts, Post,
       join_through: "literature_tags_posts",
-      where: [published_at: {:fragment, "?::date < current_date"}]
+      where: [is_published: true, published_at: {:fragment, "?::date < current_date"}]
     )
 
     timestamps()

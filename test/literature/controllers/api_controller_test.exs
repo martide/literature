@@ -157,7 +157,10 @@ defmodule Literature.ApiControllerTest do
 
       assert json_response(conn, 422) == %{
                "message" => "Failed to create post",
-               "errors" => ["slug This field is required", "title This field is required"]
+               "errors" => [
+                 "slug This field is required",
+                 "title This field is required"
+               ]
              }
     end
   end
