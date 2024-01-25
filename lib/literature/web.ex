@@ -96,9 +96,7 @@ defmodule Literature.Web do
 
   defp view_helpers do
     quote do
-      import Phoenix.HTML
-      import Phoenix.HTML.Form
-      use PhoenixHTMLHelpers
+      use Phoenix.HTML
 
       import Phoenix.LiveView.Helpers
       import Literature.Helpers

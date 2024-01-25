@@ -291,13 +291,58 @@ defmodule Literature.BlogLiveTest do
     end
   end
 
-  describe "Custom routes" do
+  describe "without pagination route" do
     setup do
       publication =
         publication_fixture(
-          name: "Custom routes",
-          description: "Custom routes such as :show_tag -> /tags/:tag_slug"
+          name: "With only",
+          description: "With only description"
         )
+
+      author =
+        author_fixture(publication_id: publication.id, name: "Author", bio: "Author description")
+
+      tag =
+        tag_fixture(publication_id: publication.id, name: "Tag", description: "Tag description")
+
+      post =
+        post_fixture(
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      {:ok, binding()}
+    end
+
+    test "No pagination links", %{
+      conn: conn,
+      publication: publication,
+      tag: tag,
+      author: author
+    } do
+      for i <- 1..20 do
+        post_fixture(
+          title: "Post #{i}",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+      end
+
+      assert {:ok, _view, html} = live(conn, Routes.with_only_path(conn, :index))
+
+      refute get_element(
+               html,
+               "link[rel='next']"
+             )
+    end
+  end
+
+  describe "Custom routes" do
+    setup do
+      publication =
+        publication_fixture(name: "Custom routes")
 
       author =
         author_fixture(publication_id: publication.id, name: "Author", bio: "Author description")
@@ -316,7 +361,7 @@ defmodule Literature.BlogLiveTest do
           tags_ids: [tag.id]
         )
 
-      %{publication: publication, author: author, tag: tag, post: post}
+      {:ok, binding()}
     end
 
     test "show_tag", %{

@@ -37,7 +37,8 @@ defmodule Literature.RSSControllerTest do
         authors_ids: [author.id],
         tags_ids: [tag.id],
         title: "Draft Post",
-        published_at: nil
+        published_at: nil,
+        is_published: false
       )
 
     draft_post_path = Routes.literature_path(conn, :show, draft_post.slug)

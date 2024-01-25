@@ -33,7 +33,7 @@ defmodule Literature.Publication do
 
     has_many(:published_posts, Post,
       preload_order: [desc: :published_at],
-      where: [published_at: {:fragment, "?::date < current_date"}]
+      where: [is_published: true, published_at: {:fragment, "?::date < current_date"}]
     )
 
     has_many(:redirects, Redirect)

@@ -69,6 +69,25 @@ Hooks.HandleUpdateOrder = {
   }
 }
 
+Hooks.Accordion = {
+  mounted() {
+    const execOpen = this.el.getAttribute('data-exec-open');
+    const execClose = this.el.getAttribute('data-exec-close');
+
+    if (this.el.getAttribute('aria-expanded') === 'true') {
+      window.liveSocket.execJS(this.el, execOpen);
+    }
+
+    this.el.addEventListener("toggle_accordion", (e) => {
+      if (this.el.getAttribute('aria-expanded') === 'true') {
+        window.liveSocket.execJS(this.el, execClose);
+      } else {
+        window.liveSocket.execJS(this.el, execOpen);
+      }
+    });
+  },
+};
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, { hooks: Hooks, params: { _csrf_token: csrfToken } })
 

@@ -86,7 +86,7 @@ defmodule Literature.ImageComponent do
   end
 
   defp find_img_attribute(tag, attr) when attr in ["alt", "caption"] do
-    regex_pattern = ~r/\b#{attr}\s*=\s*["']([^"']+)["']/
+    regex_pattern = ~r/\b#{attr}=["]([^"]+)["]/
 
     case Regex.run(regex_pattern, tag) do
       [_, attr] -> attr
