@@ -150,6 +150,7 @@ defmodule Literature.Router do
   defmacro literature(path, opts \\ []) do
     opts = Keyword.put(opts, :application_router, __CALLER__.module)
 
+    # :index_pages to enable index pagination
     routes = Keyword.get(opts, :only, ~w(index index_pages tags authors show)a)
 
     session_name = Keyword.get(opts, :as, :literature)
@@ -189,7 +190,7 @@ defmodule Literature.Router do
           scope "/#{if root?, do: "", else: publication_slug}", Literature do
             pipe_through(:maybe_redirect)
 
-            get("/rss.xml", RSSController, :rss, route_opts)
+            get("/feed", RSSController, :rss, route_opts)
 
             live_session session_name, session_opts do
               # Blog routes
@@ -263,17 +264,21 @@ defmodule Literature.Router do
       }
     ]
 
+    # For handling redirects with root? enabled
     scope = "/#{if root?, do: "", else: "#{publication_slug}"}"
 
     root_path =
       String.replace_suffix(path, "/", "") <> scope
+
+    routes = Keyword.get(opts, :only, ~w(index index_pages tags authors show)a)
 
     route_opts = [
       private: %{
         application_router: Keyword.get(opts, :application_router),
         publication_slug: publication_slug,
         view_module: Keyword.get(opts, :view_module),
-        root_path: root_path
+        root_path: root_path,
+        routes: routes
       },
       as: session_name
     ]

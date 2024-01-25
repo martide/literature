@@ -1,6 +1,6 @@
 defmodule Literature.MetaTagHelpers do
   @moduledoc false
-  use PhoenixHTMLHelpers
+  use Phoenix.HTML
 
   @metatags %{
     "og_type" => "website",
@@ -131,6 +131,18 @@ defmodule Literature.MetaTagHelpers do
   @doc """
   Render pagination link tags
   """
+  def render_pagination_link_tags(
+        assigns,
+        current_url,
+        routes
+      ) do
+    if :index_pages in routes do
+      render_pagination_link_tags(assigns, current_url)
+    else
+      []
+    end
+  end
+
   def render_pagination_link_tags(
         %{
           live_action: :index,

@@ -73,12 +73,12 @@ defmodule Literature.TagFormComponent do
             options={[{"false", "Date"}, {"true", "Custom"}]}
           />
         </.form_group>
-        <.accordion title="Meta Tags">
+        <.accordion id="meta-tags" title="Meta Tags">
           <.form_field form={f} type="text_input" field={:meta_title} label="Meta Title" />
           <.form_field form={f} type="textarea" field={:meta_description} label="Meta Description" />
           <.form_field form={f} type="text_input" field={:meta_keywords} label="Meta Keywords" />
         </.accordion>
-        <.accordion title="Facebook Meta Tags">
+        <.accordion id="facebook-meta-tags" title="Facebook Meta Tags">
           <.form_field
             form={f}
             type="image_upload"
@@ -89,7 +89,7 @@ defmodule Literature.TagFormComponent do
           <.form_field form={f} type="text_input" field={:og_title} label="Facebook Title" />
           <.form_field form={f} type="textarea" field={:og_description} label="Facebook Description" />
         </.accordion>
-        <.accordion title="Twitter Meta Tags">
+        <.accordion id="twitter-meta-tags" title="Twitter Meta Tags">
           <.form_field
             form={f}
             type="image_upload"

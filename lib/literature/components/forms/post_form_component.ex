@@ -129,7 +129,7 @@ defmodule Literature.PostFormComponent do
                 label="Date Published"
               />
             </div>
-            <.accordion title="Meta Tags" nogrid>
+            <.accordion id="meta-tags" title="Meta Tags" nogrid>
               <.form_field
                 form={f}
                 type="text_input"
@@ -189,7 +189,7 @@ defmodule Literature.PostFormComponent do
                 </label>
               </div>
             </.accordion>
-            <.accordion title="Facebook Meta Tags" nogrid>
+            <.accordion id="facebook-meta-tags" title="Facebook Meta Tags" nogrid>
               <.form_field
                 form={f}
                 type="image_upload"
@@ -205,7 +205,7 @@ defmodule Literature.PostFormComponent do
                 label="Facebook Description"
               />
             </.accordion>
-            <.accordion title="Twitter Meta Tags" nogrid>
+            <.accordion id="twitter-meta-tags" title="Twitter Meta Tags" nogrid>
               <.form_field
                 form={f}
                 type="image_upload"
