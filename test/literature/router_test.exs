@@ -116,7 +116,7 @@ defmodule Literature.RouterTest do
                "/custom-routes/tags",
                "/custom-routes/tags/:tag_slug",
                "/custom-routes/page/:page",
-               "/custom-routes/rss.xml"
+               "/custom-routes/feed"
              ])
 
     assert Routes.custom_routes_path(conn, :tags) == "/custom-routes/tags"
