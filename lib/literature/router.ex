@@ -147,11 +147,16 @@ defmodule Literature.Router do
         end
       end
   """
+
   defmacro literature(path, opts \\ []) do
     opts = Keyword.put(opts, :application_router, __CALLER__.module)
 
     # :index_pages to enable index pagination
     routes = Keyword.get(opts, :only, ~w(index index_pages tags authors show)a)
+
+    # Custom routes to enable /tags/:tag_slug or /authors/:author_slug routes
+    # Possible value for now is [:show_tag, :show_author]
+    custom_routes = Keyword.get(opts, :custom_routes, [])
 
     session_name = Keyword.get(opts, :as, :literature)
 
@@ -214,9 +219,28 @@ defmodule Literature.Router do
                 pipe_through(:cloudflare_cdn)
                 live("/:slug", BlogLive, :show, route_opts)
               end
+
+              custom_show_author_route(custom_routes, route_opts)
+              custom_show_tag_route(custom_routes, route_opts)
             end
           end
         end
+      end
+    end
+  end
+
+  defmacro custom_show_author_route(custom_routes, route_opts) do
+    quote do
+      if :show_author in unquote(custom_routes) do
+        live("/authors/:author_slug", BlogLive, :show_author, unquote(route_opts))
+      end
+    end
+  end
+
+  defmacro custom_show_tag_route(custom_routes, route_opts) do
+    quote do
+      if :show_tag in unquote(custom_routes) do
+        live("/tags/:tag_slug", BlogLive, :show_tag, unquote(route_opts))
       end
     end
   end
@@ -260,7 +284,8 @@ defmodule Literature.Router do
         "application_router" => Keyword.get(opts, :application_router),
         "publication_slug" => publication_slug,
         "view_module" => Keyword.get(opts, :view_module),
-        "error_view_module" => Keyword.get(opts, :error_view_module)
+        "error_view_module" => Keyword.get(opts, :error_view_module),
+        "custom_routes" => Keyword.get(opts, :custom_routes)
       }
     ]
 

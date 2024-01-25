@@ -101,6 +101,38 @@ defmodule Literature.RouterTest do
     assert Routes.on_root_path(conn, :rss) == "/feed"
   end
 
+  test "generates helpers with custom_routes for show_tag and show_author", %{conn: conn} do
+    paths =
+      Router.__routes__()
+      |> Enum.filter(&(&1.helper == "custom_routes"))
+      |> Enum.map(& &1.path)
+
+    assert Enum.sort(paths) ==
+             Enum.sort([
+               "/custom-routes",
+               "/custom-routes/:slug",
+               "/custom-routes/authors",
+               "/custom-routes/authors/:author_slug",
+               "/custom-routes/tags",
+               "/custom-routes/tags/:tag_slug",
+               "/custom-routes/page/:page",
+               "/custom-routes/feed"
+             ])
+
+    assert Routes.custom_routes_path(conn, :tags) == "/custom-routes/tags"
+
+    assert Routes.custom_routes_path(conn, :show_tag, "test") ==
+             "/custom-routes/tags/test"
+
+    assert Routes.custom_routes_path(conn, :authors) == "/custom-routes/authors"
+
+    assert Routes.custom_routes_path(conn, :show_author, "test") ==
+             "/custom-routes/authors/test"
+
+    assert Routes.custom_routes_path(conn, :show, "test") ==
+             "/custom-routes/test"
+  end
+
   describe "literature_path/2 for dynamic path" do
     test "generates helper for blog pages", %{conn: conn} do
       assert DynamicPathRoutes.literature_path(conn, :index) == "/foo/bar/blog"

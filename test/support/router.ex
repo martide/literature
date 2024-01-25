@@ -34,6 +34,13 @@ defmodule Literature.Test.Router do
     as: :on_root,
     root: true
   )
+
+  literature("/",
+    publication: "custom-routes",
+    custom_routes: [:show_tag, :show_author],
+    view_module: @view_module,
+    as: :custom_routes
+  )
 end
 
 defmodule Literature.Test.DynamicPathRouter do

@@ -12,16 +12,54 @@ defmodule Literature.BlogLive do
   @layout {Literature.LayoutView, :live}
 
   @impl Phoenix.LiveView
+  def mount(%{"tag_slug" => tag_slug} = params, session, socket) do
+    socket =
+      assign_defaults(socket, params, session)
+
+    Literature.get_tag!(
+      slug: tag_slug,
+      publication_slug: session["publication_slug"],
+      visibility: true
+    )
+    |> case do
+      %Tag{} = tag ->
+        assign_to_socket(socket, :tag, preload_tag(tag))
+
+      _ ->
+        render_not_found(socket)
+    end
+    |> then(&{:ok, &1, layout: @layout})
+  end
+
+  def mount(%{"author_slug" => author_slug} = params, session, socket) do
+    socket =
+      assign_defaults(socket, params, session)
+
+    Literature.get_author!(
+      slug: author_slug,
+      publication_slug: session["publication_slug"]
+    )
+    |> case do
+      %Author{} = author ->
+        assign_to_socket(socket, :author, preload_author(author))
+
+      _ ->
+        render_not_found(socket)
+    end
+    |> then(&{:ok, &1, layout: @layout})
+  end
+
   def mount(%{"slug" => slug} = params, session, socket) do
     socket =
-      assign(socket,
-        application_router: session["application_router"],
-        locale: params["locale"],
-        publication_slug: session["publication_slug"],
-        view_module: session["view_module"],
-        error_view_module: session["error_view_module"],
-        error_code: nil
-      )
+      assign_defaults(socket, params, session)
+
+    # Check if custom routes includes :show_tag and :show_author which are specific routes for tag and author
+    # Render not found when :show_tag or :show_author is enabled,
+    # Show page for tag should be accessed through :show_tag route -> /tags/:tag_slug
+    # Show page for author should be accessed through :show_author route -> /authors/:author_slug
+    custom_routes = session["custom_routes"] || []
+    show_tag_route? = :show_tag in custom_routes
+    show_author_route? = :show_author in custom_routes
 
     [&Literature.get_post!/1, &Literature.get_tag!/1, &Literature.get_author!/1]
     |> Enum.map(fn fun -> fun.(slug: slug, publication_slug: session["publication_slug"]) end)
@@ -30,10 +68,10 @@ defmodule Literature.BlogLive do
       %Post{status: "published"} = post ->
         assign_to_socket(socket, :post, build_post(post, session["publication_slug"]))
 
-      %Tag{visibility: true} = tag ->
+      %Tag{visibility: true} = tag when not show_tag_route? ->
         assign_to_socket(socket, :tag, preload_tag(tag))
 
-      %Author{} = author ->
+      %Author{} = author when not show_author_route? ->
         assign_to_socket(socket, :author, preload_author(author))
 
       _ ->
@@ -66,7 +104,7 @@ defmodule Literature.BlogLive do
       when is_nil(error_code) do
     live_action
     |> case do
-      :show ->
+      show when show in [:show, :show_tag, :show_author] ->
         [
           {assigns[:post], "post.html"},
           {assigns[:tag], "tag.html"},
@@ -110,6 +148,17 @@ defmodule Literature.BlogLive do
       true ->
         do_handle_params(params, url, socket)
     end
+  end
+
+  defp assign_defaults(socket, params, session) do
+    assign(socket,
+      application_router: session["application_router"],
+      locale: params["locale"],
+      publication_slug: session["publication_slug"],
+      view_module: session["view_module"],
+      error_view_module: session["error_view_module"],
+      error_code: nil
+    )
   end
 
   defp do_handle_params(params, url, socket) do

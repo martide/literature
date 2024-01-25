@@ -309,15 +309,10 @@ defmodule Literature.BlogLiveTest do
         post_fixture(
           publication_id: publication.id,
           authors_ids: [author.id],
-          tags_ids: [tag.id],
-          html: ["<p>content</p>"],
-          locales: [
-            %{locale: "en", url: "http://example.com/en"},
-            %{locale: "de", url: "http://example.com/de"}
-          ]
+          tags_ids: [tag.id]
         )
 
-      %{publication: publication, author: author, tag: tag, post: post}
+      {:ok, binding()}
     end
 
     test "No pagination links", %{
@@ -341,6 +336,82 @@ defmodule Literature.BlogLiveTest do
                html,
                "link[rel='next']"
              )
+    end
+  end
+
+  describe "Custom routes" do
+    setup do
+      publication =
+        publication_fixture(name: "Custom routes")
+
+      author =
+        author_fixture(publication_id: publication.id, name: "Author", bio: "Author description")
+
+      tag =
+        tag_fixture(
+          publication_id: publication.id,
+          name: "Custom Routes Tag",
+          description: "Tag description"
+        )
+
+      post =
+        post_fixture(
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      {:ok, binding()}
+    end
+
+    test "show_tag", %{
+      conn: conn,
+      tag: tag,
+      post: post
+    } do
+      assert {:ok, _view, html} =
+               live(conn, Routes.custom_routes_path(conn, :show_tag, tag.slug))
+
+      assert html =~ tag.name
+
+      # Not found when accessed through show path
+      assert_raise Literature.PageNotFound, fn ->
+        live(conn, Routes.custom_routes_path(conn, :show, tag.slug))
+      end
+
+      # Not found when tag does not exist
+      assert_raise Literature.PageNotFound, fn ->
+        live(conn, Routes.custom_routes_path(conn, :show_tag, "does-not-exist"))
+      end
+
+      # Show post should work as usual
+      assert {:ok, _view, _html} =
+               live(conn, Routes.custom_routes_path(conn, :show, post.slug))
+    end
+
+    test "show_author", %{
+      conn: conn,
+      author: author,
+      post: post
+    } do
+      assert {:ok, _view, html} =
+               live(conn, Routes.custom_routes_path(conn, :show_author, author.slug))
+
+      assert html =~ author.name
+
+      # Not found when accessed through show path
+      assert_raise Literature.PageNotFound, fn ->
+        live(conn, Routes.custom_routes_path(conn, :show, author.slug))
+      end
+
+      # Not found when author does not exist
+      assert_raise Literature.PageNotFound, fn ->
+        live(conn, Routes.custom_routes_path(conn, :show_author, "does-not-exist"))
+      end
+
+      # Show post and author should work as usual
+      assert {:ok, _view, _html} =
+               live(conn, Routes.custom_routes_path(conn, :show, post.slug))
     end
   end
 
