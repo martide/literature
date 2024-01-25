@@ -8,7 +8,8 @@ defmodule Literature.PostLiveTest do
     title: "some new title",
     authors_ids: [],
     tags_ids: [],
-    locales: %{}
+    locales: %{},
+    notes: "Some notes"
   }
 
   @update_attrs %{title: "some updated title"}
@@ -82,7 +83,8 @@ defmodule Literature.PostLiveTest do
             locales: %{
               0 => %{locale: "en", url: "https://example.com/en"},
               1 => %{locale: "de", url: "https://example.com/de"}
-            }
+            },
+            notes: "Some blog post notes"
         }
       )
       |> render_submit()
@@ -93,6 +95,7 @@ defmodule Literature.PostLiveTest do
       assert flash["success"] == "Post created successfully"
 
       assert post = Literature.get_post!(title: @create_attrs.title)
+      assert post.notes == "Some blog post notes"
       assert Enum.find(post.locales, &(&1.locale == "en"))
       assert Enum.find(post.locales, &(&1.locale == "de"))
     end
@@ -163,7 +166,7 @@ defmodule Literature.PostLiveTest do
       |> render_change()
 
       view
-      |> form("#post-form", post: @update_attrs)
+      |> form("#post-form", post: Map.merge(@update_attrs, %{notes: "Some updated notes"}))
       |> render_submit()
 
       {path, flash} = assert_redirect(view)
@@ -173,6 +176,7 @@ defmodule Literature.PostLiveTest do
       # Will not be able to follow redirect since redirect happens after async result
 
       assert post = Literature.get_post!(title: @update_attrs.title)
+      assert post.notes == "Some updated notes"
 
       refute Enum.find(post.locales, &(&1.locale == "de"))
       refute Enum.find(post.locales, &(&1.locale == "en"))
