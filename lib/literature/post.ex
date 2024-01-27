@@ -109,11 +109,23 @@ defmodule Literature.Post do
       drop_param: :locales_delete
     )
     |> validate_required(@required_params, message: "This field is required")
+    |> maybe_require_published_at(message: "This field is required")
     |> unique_constraint(:slug,
       name: :literature_posts_publication_id_slug_index,
       message: "#{params["slug"]} slug is duplicated}"
     )
     |> put_assocs(params)
+  end
+
+  defp maybe_require_published_at(changeset, opts) do
+    case get_field(changeset, :is_published) do
+      true ->
+        changeset
+        |> validate_required([:published_at], opts)
+
+      _ ->
+        changeset
+    end
   end
 
   defp maybe_generate_slug(%{changes: %{title: title, slug: slug}} = changeset, _post)
@@ -174,17 +186,23 @@ defmodule Literature.Post do
     datetime = Timex.now() |> Timex.local()
 
     cond do
-      not is_published -> "draft"
+      not is_published or is_nil(published_at) -> "draft"
       is_published and Timex.compare(published_at, datetime) < 1 -> "published"
       is_published and Timex.compare(published_at, datetime) == 1 -> "scheduled"
     end
   end
 
-  defp put_assocs(changeset, %{"authors_ids" => ""}),
-    do: add_error(changeset, :authors_ids, "Required at least one author")
+  defp put_assocs(changeset, %{"authors_ids" => ""} = params) do
+    changeset
+    |> add_error(:authors_ids, "Required at least one author")
+    |> put_assocs(Map.delete(params, "authors_ids"))
+  end
 
-  defp put_assocs(changeset, %{"tags_ids" => ""}),
-    do: add_error(changeset, :tags_ids, "Required at least one tag")
+  defp put_assocs(changeset, %{"tags_ids" => ""} = params) do
+    changeset
+    |> add_error(:tags_ids, "Required at least one tag")
+    |> put_assocs(Map.delete(params, "tags_ids"))
+  end
 
   defp put_assocs(%{valid?: true} = changeset, %{"authors_ids" => authors, "tags_ids" => tags}) do
     changeset
