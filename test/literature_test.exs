@@ -258,6 +258,32 @@ defmodule LiteratureTest do
       assert {:error, %Ecto.Changeset{}} = Literature.create_post(@invalid_attrs)
     end
 
+    test "create_post/1 requires published_at when set to published status" do
+      publication = publication_fixture()
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+
+      attrs =
+        %{
+          title: "some title",
+          slug: "some-title",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id],
+          is_published: true,
+          published_at: nil
+        }
+
+      assert {:error, changeset} = Literature.create_post(attrs)
+
+      assert changeset.errors == [
+               published_at: {"This field is required", [validation: :required]}
+             ]
+
+      assert {:ok, %Post{}} =
+               Literature.create_post(%{attrs | published_at: DateTime.utc_now()})
+    end
+
     test "update_post/2 with valid data updates the post" do
       publication = publication_fixture()
       author = author_fixture(publication_id: publication.id)
@@ -287,6 +313,34 @@ defmodule LiteratureTest do
 
       assert {:error, %Ecto.Changeset{}} = Literature.update_post(post, @invalid_attrs)
       assert post == Literature.get_post!(post.id) |> Repo.preload(~w(authors tags)a)
+    end
+
+    test "update_post/2 requires published_at when set to published status" do
+      publication = publication_fixture()
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+
+      post =
+        post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
+
+      attrs =
+        %{
+          is_published: true,
+          published_at: nil
+        }
+
+      assert {:error, %Ecto.Changeset{} = changeset} = Literature.update_post(post, attrs)
+
+      assert changeset.errors == [
+               published_at: {"This field is required", [validation: :required]}
+             ]
+
+      now = DateTime.utc_now() |> DateTime.truncate(:second)
+
+      assert {:ok, %Post{} = post} =
+               Literature.update_post(post, %{attrs | published_at: now})
+
+      assert post.published_at == now
     end
 
     test "delete_post/1 deletes the post" do

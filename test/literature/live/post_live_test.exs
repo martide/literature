@@ -3,6 +3,7 @@ defmodule Literature.PostLiveTest do
 
   import Phoenix.LiveViewTest
   import Literature.Test.Fixtures
+  import Literature.TestHelpers
 
   @create_attrs %{
     title: "some new title",
@@ -95,6 +96,32 @@ defmodule Literature.PostLiveTest do
       assert post = Literature.get_post!(title: @create_attrs.title)
       assert Enum.find(post.locales, &(&1.locale == "en"))
       assert Enum.find(post.locales, &(&1.locale == "de"))
+    end
+
+    test "renders errors", %{conn: conn, publication: publication} do
+      {:ok, view, _html} =
+        live(conn, Routes.literature_dashboard_path(conn, :new_post, publication.slug))
+
+      view
+      |> form("#post-form",
+        post: %{}
+      )
+      |> render_submit()
+
+      assert form_has_error?(view, "post[title]", "This field is required")
+      assert form_has_error?(view, "post[slug]", "This field is required")
+      assert form_has_error?(view, "post[authors_ids]", "Required at least one author")
+      assert form_has_error?(view, "post[tags_ids]", "Required at least one tag")
+      refute form_has_error?(view, "post[published_at]", "This field is required")
+
+      # Require published_at if set to published
+      view
+      |> form("#post-form",
+        post: %{is_published: true}
+      )
+      |> render_submit()
+
+      assert form_has_error?(view, "post[published_at]", "This field is required")
     end
 
     test "saves new post with html", %{

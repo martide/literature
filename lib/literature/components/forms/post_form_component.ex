@@ -127,6 +127,7 @@ defmodule Literature.PostFormComponent do
                 type="datetime_local_input"
                 field={:published_at}
                 label="Date Published"
+                required={normalize_value("checkbox", input_value(f, :is_published))}
               />
             </div>
             <.accordion id="meta-tags" title="Meta Tags" nogrid>
