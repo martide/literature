@@ -46,6 +46,7 @@ defmodule Literature.Post do
     field(:twitter_image, Uploaders.Type)
     field(:twitter_title, :string)
     field(:twitter_description, :string)
+    field(:notes, :string)
 
     field(:status, :string, virtual: true)
     field(:authors_ids, {:array, :string}, virtual: true)
@@ -88,6 +89,7 @@ defmodule Literature.Post do
     og_description
     twitter_title
     twitter_description
+    notes
   )a
 
   @attachments ~w(

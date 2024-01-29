@@ -223,6 +223,9 @@ defmodule Literature.PostFormComponent do
               />
             </.accordion>
             <div class="mt-5">
+              <.form_field form={f} type="textarea" field={:notes} label="Notes" />
+            </div>
+            <div class="mt-5">
               <.button_group>
                 <.back_button label="Cancel" return_to={@return_to} />
                 <.submit_button :if={@loading} label="Saving..." disabled={true} />
