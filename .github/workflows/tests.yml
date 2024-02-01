@@ -48,7 +48,7 @@ jobs:
     - run: mix credo --strict
     - run: mix dialyzer
     - run: elixir --logger-sasl-reports true -S mix coveralls.json
-    - uses: codecov/codecov-action@v3
+    - uses: codecov/codecov-action@v4
 
   elixir_1_15:
     runs-on: ubuntu-latest
