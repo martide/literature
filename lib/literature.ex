@@ -1,8 +1,8 @@
 defmodule Literature do
   @moduledoc false
 
-  use Cldr,
-    providers: [Cldr.Language]
+  use Cldr, providers: [Cldr.Language]
+  use Literature.Callbacks
 
   import Literature.QueryHelpers
 
@@ -15,6 +15,10 @@ defmodule Literature do
   alias Literature.Repo
   alias Literature.Tag
   alias Literature.TagPost
+  alias Literature.Uploaders
+  alias Literature.Uploaders.DifferentSizes
+
+  @callback_module Application.compile_env(:literature, :callback_module, __MODULE__)
 
   ## Author Context
 
@@ -247,6 +251,18 @@ defmodule Literature do
     %Post{}
     |> Post.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, post} ->
+        Task.start(fn ->
+          url = Uploaders.url({post.feature_image.file_name, post})
+          DifferentSizes.store_different_sizes({url, post})
+        end)
+
+        {:ok, post}
+
+      error ->
+        error
+    end
   end
 
   @doc """
@@ -262,9 +278,16 @@ defmodule Literature do
 
   """
   def update_post(%Post{} = post, attrs) do
-    post
-    |> Post.changeset(attrs)
-    |> Repo.update()
+    changeset = Post.changeset(post, attrs)
+
+    case Repo.update(changeset) do
+      {:ok, post} ->
+        apply(@callback_module, :after_update, [post, changeset])
+        {:ok, post}
+
+      error ->
+        error
+    end
   end
 
   @doc """

@@ -1,23 +1,16 @@
 defmodule Literature.Uploaders do
   @moduledoc """
-    Literature Uploaders
+  Literature Uploaders
   """
-  use Waffle.Definition.Storage
-  use Waffle.Actions.Delete
-  use Literature.Uploaders.Actions.Store
-  use Literature.Uploaders.Actions.Url
-  use Literature.Uploaders.Versioning
+  use Waffle.Definition
   use Waffle.Ecto.Definition
 
   alias Literature.Config
+  alias Literature.Uploaders.Helpers
 
   @extension_whitelist ~w(.jpg .jpeg .png)
   # imagemagick 7 is required for avif conversions
   @versions ~w(original jpg webp)a
-
-  # Set to async false to prevent `Erlang error: :emfile`
-  # caused by too many open files when calling `Mogrify.verbose/1`
-  @async false
 
   def asset_host, do: Config.waffle_asset_host()
   def bucket, do: Config.waffle_bucket()
@@ -48,15 +41,24 @@ defmodule Literature.Uploaders do
   def storage_dir(_, {_, scope}),
     do: "literature/#{scope.id}"
 
-  def filename(:original, {file, _}, _) do
+  def filename(:original, {file, _}) do
     file_name = Path.basename(file.file_name, Path.extname(file.file_name))
     Slugy.slugify(file_name)
   end
 
-  def filename(_version, {file, _}, size) do
-    file_name = Path.basename(file.file_name, Path.extname(file.file_name))
-    suffix = String.split(file_name, "w") |> List.last()
-    Slugy.slugify(String.replace_suffix(file_name, suffix, to_string(size)))
+  # Original filename has width and height so we append just the width to the filename,
+  # otherwise, no changes to the filename will be made
+  def filename(_version, {%{file_name: file_name_with_ext}, _}) do
+    base_file_name = Path.basename(file_name_with_ext, Path.extname(file_name_with_ext))
+
+    case Helpers.get_dimension(file_name_with_ext) do
+      {width, _height} ->
+        suffix = String.split(base_file_name, "w") |> List.last()
+        Slugy.slugify(String.replace_suffix(base_file_name, suffix, to_string(width)))
+
+      _ ->
+        Slugy.slugify(base_file_name)
+    end
   end
 
   def s3_object_headers(_version, _) do
