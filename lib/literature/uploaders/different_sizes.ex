@@ -80,21 +80,22 @@ defmodule Literature.Uploaders.DifferentSizes do
       |> case do
         [_ | _] = widths ->
           widths
-          |> Enum.map(fn width ->
-            :convert
-            |> Convert.apply(file, "-resize #{width}x")
-            |> store_saved_file(scope)
-          end)
+          |> Enum.map(&store_custom_size({file, scope}, &1))
           |> handle_responses()
 
         _ ->
-          :convert
-          |> Convert.apply(file, "-resize 100x")
-          |> store_saved_file(scope)
+          {file, scope}
+          |> store_custom_size(100)
           |> List.wrap()
           |> handle_responses()
       end
     end
+  end
+
+  defp store_custom_size({file, scope}, width) do
+    :convert
+    |> Convert.apply(file, "-resize #{width}x")
+    |> store_saved_file(scope)
   end
 
   defp store_saved_file({:ok, file}, scope) do
