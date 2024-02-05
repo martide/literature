@@ -6,6 +6,7 @@ defmodule Literature.Uploaders.DifferentSizes do
   use Waffle.Ecto.Definition
 
   alias Literature.Config
+  alias Literature.Uploaders.Helpers
   alias Waffle.Transformations.Convert
 
   @extension_whitelist ~w(.jpg .jpeg .png)
@@ -26,6 +27,10 @@ defmodule Literature.Uploaders.DifferentSizes do
     )
   end
 
+  def transform({version, _width}, _) when version in @versions do
+    {:convert, :noaction, version}
+  end
+
   def transform(:jpg, _) do
     {:convert, "-format jpg", :jpg}
   end
@@ -41,22 +46,16 @@ defmodule Literature.Uploaders.DifferentSizes do
   def storage_dir(_, {_, scope}),
     do: "literature/#{scope.id}"
 
+  def filename({_ext, width}, {file, _scope}) do
+    Helpers.append_width(file.file_name, width)
+  end
+
   # Sets the filename when storing the file.
   # Appends the width in "-w{width}" format to the filename if none exists or
   # replaces the existing width with the new width
   def filename(_version, {%Waffle.File{path: path, file_name: file_name}, _scope}) do
     %{width: width} = Mogrify.verbose(Mogrify.open(path))
-    file_name = Path.basename(file_name, Path.extname(file_name))
-    size_rgx = ~r/-w\d+.*$/
-
-    if String.match?(file_name, size_rgx) do
-      file_name
-      |> String.replace(size_rgx, "-w#{width}")
-      |> Slugy.slugify()
-    else
-      (file_name <> " w#{width}")
-      |> Slugy.slugify()
-    end
+    Helpers.append_width(file_name, width)
   end
 
   # Sets the filename when retrieving the URL.

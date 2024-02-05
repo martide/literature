@@ -15,4 +15,22 @@ defmodule Literature.Uploaders.Helpers do
       _ -> nil
     end
   end
+
+  @doc """
+  Appends or update the width in the filename then slugify it.
+  """
+  @spec append_width(String.t(), integer()) :: String.t()
+  def append_width(file_name, width) do
+    file_name = Path.basename(file_name, Path.extname(file_name))
+    size_rgx = ~r/-w\d+.*$/
+
+    if String.match?(file_name, size_rgx) do
+      file_name
+      |> String.replace(size_rgx, "-w#{width}")
+      |> Slugy.slugify()
+    else
+      (file_name <> " w#{width}")
+      |> Slugy.slugify()
+    end
+  end
 end

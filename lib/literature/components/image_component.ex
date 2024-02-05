@@ -3,6 +3,7 @@ defmodule Literature.ImageComponent do
   use Literature.Web, :html
 
   alias Literature.Config
+  alias Literature.Uploaders.DifferentSizes
   alias Literature.Uploaders.Helpers
 
   def responsive_img_tag(assigns) do
@@ -17,8 +18,8 @@ defmodule Literature.ImageComponent do
       <%= case get_img_size(@post, @field) do %>
         <% {width, height} -> %>
           <picture>
-            <source srcset={load_srcset(file, literature_image_url(@post, @field, :jpg))} />
-            <source srcset={load_srcset(file, literature_image_url(@post, @field, :webp))} />
+            <source srcset={load_srcset(:jpg, {file, @post})} />
+            <source srcset={load_srcset(:webp, {file, @post})} />
             <%= img_tag(
               literature_image_url(@post, @field),
               [class: @classes, alt: @alt, width: width, height: height] ++
@@ -65,16 +66,16 @@ defmodule Literature.ImageComponent do
     |> then(&Map.merge(params, &1))
   end
 
+  defp load_srcset(version, {file, scope}) when version in ~w(jpg webp)a do
+    {width, _height} = get_original_size(file)
+
+    Range.new(100, width, Config.waffle_width_step())
+    |> Enum.map_join(", ", &"#{DifferentSizes.url({file, scope}, {version, &1})} #{&1}w")
+  end
+
   defp load_srcset(version, url) when version in ~w(jpg webp)a do
     url = String.replace(url, "\"", "") |> String.replace(~r/(jpeg|jpg|png)$/, to_string(version))
     {width, height} = get_original_size(%{file_name: url})
-
-    Range.new(100, width, Config.waffle_width_step())
-    |> Enum.map_join(", ", &"#{String.replace(url, "w#{width}x#{height}", "w#{&1}")} #{&1}w")
-  end
-
-  defp load_srcset(file, url) do
-    {width, height} = get_original_size(file)
 
     Range.new(100, width, Config.waffle_width_step())
     |> Enum.map_join(", ", &"#{String.replace(url, "w#{width}x#{height}", "w#{&1}")} #{&1}w")
