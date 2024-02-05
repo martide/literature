@@ -1,5 +1,7 @@
 defmodule Literature.Uploaders.Helpers do
   @moduledoc false
+  alias Literature.Uploaders
+  alias Literature.Uploaders.DifferentSizes
 
   @doc """
   Get the width and height of an image from its filename or url.
@@ -32,5 +34,16 @@ defmodule Literature.Uploaders.Helpers do
       (file_name <> " w#{width}")
       |> Slugy.slugify()
     end
+  end
+
+  @doc """
+  Asynchronously upload different sizes of a given file
+  """
+  @spec async_upload_different_sizes(map(), any()) :: {:ok, pid()}
+  def async_upload_different_sizes(file, scope) do
+    Task.start(fn ->
+      url = Uploaders.url({file.file_name, scope})
+      DifferentSizes.store_different_sizes({url, scope})
+    end)
   end
 end

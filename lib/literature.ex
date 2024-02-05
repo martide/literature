@@ -2,9 +2,9 @@ defmodule Literature do
   @moduledoc false
 
   use Cldr, providers: [Cldr.Language]
-  use Literature.Callbacks
 
   import Literature.QueryHelpers
+  import Literature.Uploaders.Helpers, only: [async_upload_different_sizes: 2]
 
   alias Literature.Author
   alias Literature.DownloadHelpers
@@ -15,10 +15,6 @@ defmodule Literature do
   alias Literature.Repo
   alias Literature.Tag
   alias Literature.TagPost
-  alias Literature.Uploaders
-  alias Literature.Uploaders.DifferentSizes
-
-  @callback_module Application.compile_env(:literature, :callback_module, __MODULE__)
 
   ## Author Context
 
@@ -248,15 +244,17 @@ defmodule Literature do
 
   """
   def create_post(attrs \\ %{}) do
-    %Post{}
-    |> Post.changeset(attrs)
+    changeset = Post.changeset(%Post{}, attrs)
+    attachment_changes = Map.take(changeset.changes, Post.attachment_fields())
+
+    changeset
     |> Repo.insert()
     |> case do
       {:ok, post} ->
-        Task.start(fn ->
-          url = Uploaders.url({post.feature_image.file_name, post})
-          DifferentSizes.store_different_sizes({url, post})
-        end)
+        for {field, _} <- attachment_changes do
+          file = Map.get(post, field)
+          async_upload_different_sizes(file, post)
+        end
 
         {:ok, post}
 
@@ -279,10 +277,17 @@ defmodule Literature do
   """
   def update_post(%Post{} = post, attrs) do
     changeset = Post.changeset(post, attrs)
+    attachment_changes = Map.take(changeset.changes, Post.attachment_fields())
 
-    case Repo.update(changeset) do
+    changeset
+    |> Repo.update()
+    |> case do
       {:ok, post} ->
-        apply(@callback_module, :after_update, [post, changeset])
+        for {field, _} <- attachment_changes do
+          file = Map.get(post, field)
+          async_upload_different_sizes(file, post)
+        end
+
         {:ok, post}
 
       error ->
