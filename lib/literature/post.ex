@@ -213,6 +213,4 @@ defmodule Literature.Post do
   end
 
   defp put_assocs(changeset, _), do: changeset
-
-  def attachment_fields, do: @attachments
 end
