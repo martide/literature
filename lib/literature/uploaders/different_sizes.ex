@@ -76,7 +76,7 @@ defmodule Literature.Uploaders.DifferentSizes do
       []
     else
       Range.new(100, width, width_step)
-      |> Range.to_list()
+      |> Enum.into([])
       |> case do
         [_ | _] = widths ->
           widths
