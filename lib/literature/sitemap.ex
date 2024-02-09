@@ -31,7 +31,6 @@ defmodule Literature.Sitemap do
     end)
     |> Sitemapper.generate(opts)
     |> Sitemapper.persist(opts)
-    |> Sitemapper.ping(opts)
     |> Stream.run()
   end
 
