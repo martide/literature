@@ -17,7 +17,7 @@
     "esbuild": "^0.20.0",
     "npm-run-all": "^4.1.5",
     "phoenix": "^1.7.10",
-    "phoenix_live_view": "^0.20.3",
+    "phoenix_live_view": "^0.20.5",
     "sortablejs": "^1.15.2",
     "tailwindcss": "^3.4.1"
   }
