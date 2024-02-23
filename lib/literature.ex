@@ -769,7 +769,12 @@ defmodule Literature do
       |> module.__schema__()
       |> Enum.filter(&(module.__schema__(:type, &1) == Uploaders.Type))
 
-    attachment_changes = Map.take(changeset.changes, attachment_fields)
+    virtual_fields =
+      :virtual_fields
+      |> module.__schema__()
+      |> Enum.filter(&(module.__schema__(:virtual_type, &1) == Uploaders.Type))
+
+    attachment_changes = Map.take(changeset.changes, attachment_fields ++ virtual_fields)
 
     for {field, _} <- attachment_changes do
       file = Map.get(scope, field)
