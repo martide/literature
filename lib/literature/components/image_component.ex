@@ -125,4 +125,16 @@ defmodule Literature.ImageComponent do
 
     {field, %{file | filename: "#{file_name}#{Path.extname(file.filename) |> String.downcase()}"}}
   end
+
+  def any_upload_errors?(uploads) do
+    upload_names =
+      uploads
+      |> Map.get(:__phoenix_refs_to_names__, [])
+      |> Enum.map(fn {_ref, name} -> name end)
+
+    upload_names
+    |> Enum.map(&Map.fetch!(uploads, &1))
+    |> Enum.flat_map(&Map.get(&1, :errors, []))
+    |> Enum.any?()
+  end
 end
