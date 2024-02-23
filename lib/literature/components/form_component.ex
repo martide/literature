@@ -282,7 +282,7 @@ defmodule Literature.FormComponent do
           </div>
         <% end %>
         <%= for err <- upload_errors(@upload_field, entry) do %>
-          <p class="absolute top-0"><%= err %></p>
+          <p class="absolute top-0 bg-red-600 text-white"><%= err %></p>
         <% end %>
       <% end %>
       <.live_file_input upload={@upload_field} class="hidden" />
