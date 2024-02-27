@@ -229,7 +229,11 @@ defmodule Literature.PostFormComponent do
               <.button_group>
                 <.back_button label="Cancel" return_to={@return_to} />
                 <.submit_button :if={@loading} label="Saving..." disabled={true} />
-                <.submit_button :if={!@loading} label="Save Changes" />
+                <.submit_button
+                  :if={!@loading}
+                  label="Save Changes"
+                  disabled={any_upload_errors?(@uploads)}
+                />
               </.button_group>
             </div>
           </div>

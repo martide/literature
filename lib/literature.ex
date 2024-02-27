@@ -1,10 +1,10 @@
 defmodule Literature do
   @moduledoc false
 
-  use Cldr,
-    providers: [Cldr.Language]
+  use Cldr, providers: [Cldr.Language]
 
   import Literature.QueryHelpers
+  import Literature.Uploaders.Helpers, only: [async_upload_different_sizes: 2]
 
   alias Literature.Author
   alias Literature.DownloadHelpers
@@ -15,6 +15,7 @@ defmodule Literature do
   alias Literature.Repo
   alias Literature.Tag
   alias Literature.TagPost
+  alias Literature.Uploaders
 
   ## Author Context
 
@@ -104,9 +105,11 @@ defmodule Literature do
 
   """
   def create_author(attrs \\ %{}) do
-    %Author{}
-    |> Author.changeset(attrs)
+    changeset = Author.changeset(%Author{}, attrs)
+
+    changeset
     |> Repo.insert()
+    |> maybe_async_upload_different_sizes(changeset)
   end
 
   @doc """
@@ -122,9 +125,11 @@ defmodule Literature do
 
   """
   def update_author(%Author{} = author, attrs) do
-    author
-    |> Author.changeset(attrs)
+    changeset = Author.changeset(author, attrs)
+
+    changeset
     |> Repo.update()
+    |> maybe_async_upload_different_sizes(changeset)
   end
 
   @doc """
@@ -244,9 +249,11 @@ defmodule Literature do
 
   """
   def create_post(attrs \\ %{}) do
-    %Post{}
-    |> Post.changeset(attrs)
+    changeset = Post.changeset(%Post{}, attrs)
+
+    changeset
     |> Repo.insert()
+    |> maybe_async_upload_different_sizes(changeset)
   end
 
   @doc """
@@ -262,9 +269,11 @@ defmodule Literature do
 
   """
   def update_post(%Post{} = post, attrs) do
-    post
-    |> Post.changeset(attrs)
+    changeset = Post.changeset(post, attrs)
+
+    changeset
     |> Repo.update()
+    |> maybe_async_upload_different_sizes(changeset)
   end
 
   @doc """
@@ -344,9 +353,11 @@ defmodule Literature do
 
   """
   def create_publication(attrs \\ %{}) do
-    %Publication{}
-    |> Publication.changeset(attrs)
+    changeset = Publication.changeset(%Publication{}, attrs)
+
+    changeset
     |> Repo.insert()
+    |> maybe_async_upload_different_sizes(changeset)
   end
 
   @doc """
@@ -362,9 +373,11 @@ defmodule Literature do
 
   """
   def update_publication(%Publication{} = publication, attrs) do
-    publication
-    |> Publication.changeset(attrs)
+    changeset = Publication.changeset(publication, attrs)
+
+    changeset
     |> Repo.update()
+    |> maybe_async_upload_different_sizes(changeset)
   end
 
   @doc """
@@ -473,9 +486,11 @@ defmodule Literature do
 
   """
   def create_tag(attrs \\ %{}) do
-    %Tag{}
-    |> Tag.changeset(attrs)
+    changeset = Tag.changeset(%Tag{}, attrs)
+
+    changeset
     |> Repo.insert()
+    |> maybe_async_upload_different_sizes(changeset)
   end
 
   @doc """
@@ -491,9 +506,11 @@ defmodule Literature do
 
   """
   def update_tag(%Tag{} = tag, attrs) do
-    tag
-    |> Tag.changeset(attrs)
+    changeset = Tag.changeset(tag, attrs)
+
+    changeset
     |> Repo.update()
+    |> maybe_async_upload_different_sizes(changeset)
   end
 
   @doc """
@@ -744,4 +761,28 @@ defmodule Literature do
     |> sort_by(%{"sort_field" => "custom_position", "sort_direction" => "asc"})
     |> Repo.all()
   end
+
+  # Upload different sizes for files that changed
+  defp maybe_async_upload_different_sizes({:ok, %module{} = scope} = result, changeset) do
+    attachment_fields =
+      :fields
+      |> module.__schema__()
+      |> Enum.filter(&(module.__schema__(:type, &1) == Uploaders.Type))
+
+    virtual_fields =
+      :virtual_fields
+      |> module.__schema__()
+      |> Enum.filter(&(module.__schema__(:virtual_type, &1) == Uploaders.Type))
+
+    attachment_changes = Map.take(changeset.changes, attachment_fields ++ virtual_fields)
+
+    for {field, _} <- attachment_changes do
+      file = Map.get(scope, field)
+      async_upload_different_sizes(file, scope)
+    end
+
+    result
+  end
+
+  defp maybe_async_upload_different_sizes(error, _), do: error
 end
