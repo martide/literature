@@ -13,6 +13,8 @@ defmodule Literature.BlogView do
 
   def meta_tags(:authors, publication), do: %{title: publication.name <> " Authors"}
   def meta_tags(:tags, publication), do: %{title: publication.name <> " Tags"}
+  def meta_tags(:show_author, %{author: author}), do: %{title: author.name <> " Author"}
+  def meta_tags(:show_tag, %{tag: tag}), do: %{title: tag.name <> " Tag"}
 
   defp logo, do: Config.logo()
   defp title, do: Config.title()

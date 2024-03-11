@@ -204,6 +204,19 @@ defmodule Literature.BlogLive do
     |> assign(:authors, list_authors(socket))
   end
 
+  defp apply_action(socket, action, slug, _params) when action in [:show_tag, :show_author] do
+    publication = Literature.get_publication!(slug: slug)
+    meta_tags = get_meta_tags_from_view_module(socket, action, socket.assigns)
+
+    socket =
+      case meta_tags do
+        %{title: _} -> assign_meta_tags(socket, meta_tags)
+        %{} -> socket
+      end
+
+    assign(socket, :publication, publication || %{name: nil})
+  end
+
   defp apply_action(socket, _, slug, _) do
     publication = Literature.get_publication!(slug: slug)
     assign(socket, :publication, publication || %{name: nil})

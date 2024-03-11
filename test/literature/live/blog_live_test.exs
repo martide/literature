@@ -5,6 +5,8 @@ defmodule Literature.BlogLiveTest do
   import Literature.Test.Fixtures
   import Phoenix.LiveViewTest
 
+  alias Literature.BlogView
+
   defp create_blog(_) do
     publication =
       publication_fixture(
@@ -89,20 +91,22 @@ defmodule Literature.BlogLiveTest do
       end
     end
 
-    test "lists all blog tags", %{conn: conn, tag: tag} do
-      {:ok, _view, html} = live(conn, Routes.literature_path(conn, :tags))
+    test "lists all blog tags", %{conn: conn, publication: publication, tag: tag} do
+      {:ok, view, html} = live(conn, Routes.literature_path(conn, :tags))
 
       assert html =~ tag.name
       assert html =~ tag.description
       assert html =~ "1 post"
+      assert page_title(view) == BlogView.meta_tags(:tags, publication).title
     end
 
-    test "lists all blog authors", %{conn: conn, author: author} do
-      {:ok, _view, html} = live(conn, Routes.literature_path(conn, :authors))
+    test "lists all blog authors", %{conn: conn, author: author, publication: publication} do
+      {:ok, view, html} = live(conn, Routes.literature_path(conn, :authors))
 
       assert html =~ author.name
       assert html =~ author.bio
       assert html =~ "1 post"
+      assert page_title(view) == BlogView.meta_tags(:authors, publication).title
     end
 
     test "renders single tag page", %{conn: conn, tag: tag, post: post} do
@@ -369,10 +373,11 @@ defmodule Literature.BlogLiveTest do
       tag: tag,
       post: post
     } do
-      assert {:ok, _view, html} =
+      assert {:ok, view, html} =
                live(conn, Routes.custom_routes_path(conn, :show_tag, tag.slug))
 
       assert html =~ tag.name
+      assert page_title(view) == BlogView.meta_tags(:show_tag, %{tag: tag}).title
 
       # Not found when accessed through show path
       assert_raise Literature.PageNotFound, fn ->
@@ -394,10 +399,12 @@ defmodule Literature.BlogLiveTest do
       author: author,
       post: post
     } do
-      assert {:ok, _view, html} =
+      assert {:ok, view, html} =
                live(conn, Routes.custom_routes_path(conn, :show_author, author.slug))
 
       assert html =~ author.name
+
+      assert page_title(view) == BlogView.meta_tags(:show_author, %{author: author}).title
 
       # Not found when accessed through show path
       assert_raise Literature.PageNotFound, fn ->
