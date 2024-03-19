@@ -1,6 +1,7 @@
 defmodule Literature.MetaTagHelpers do
   @moduledoc false
   use Phoenix.HTML
+  use Phoenix.Component
 
   @metatags %{
     "og_type" => "website",
@@ -127,6 +128,35 @@ defmodule Literature.MetaTagHelpers do
   end
 
   def render_post_language_tags(_post, _publication), do: []
+
+  @doc """
+  Render profile page schema
+  """
+  def render_profile_page_schema(%{author: _} = assigns) do
+    ~H"""
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        "mainEntity": {
+          "@type": "Person",
+          "name": "<%= @author.name %>",
+          "identifier": "<%= @author.slug %>"<%= if @author.bio || @author.profile_image, do: "," %>
+          <%= if @author.bio do %>
+          "description": "<%= @author.bio %>"<%= if @author.profile_image, do: "," %>
+          <% end %>
+          <%= if @author.profile_image do %>
+          "image": "<%= Literature.Uploaders.url({@author.profile_image.file_name, @author}) %>"
+          <% end %>
+        },
+        "dateCreated": "<%= NaiveDateTime.to_iso8601(@author.inserted_at) %>",
+        "dateModified": "<%= NaiveDateTime.to_iso8601(@author.updated_at) %>"
+      }
+    </script>
+    """
+  end
+
+  def render_profile_page_schema(_), do: []
 
   @doc """
   Render pagination link tags

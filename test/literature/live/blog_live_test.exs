@@ -6,6 +6,8 @@ defmodule Literature.BlogLiveTest do
   import Phoenix.LiveViewTest
 
   alias Literature.BlogView
+  alias Literature.MetaTagHelpers
+  alias Phoenix.HTML
 
   defp create_blog(_) do
     publication =
@@ -123,6 +125,11 @@ defmodule Literature.BlogLiveTest do
       assert html =~ author.name
       assert html =~ author.bio
       assert html =~ post.title
+
+      assert html =~
+               MetaTagHelpers.render_profile_page_schema(%{author: author})
+               |> HTML.Safe.to_iodata()
+               |> IO.iodata_to_binary()
     end
 
     test "renders single post page", %{conn: conn, author: author, tag: tag, post: post} do

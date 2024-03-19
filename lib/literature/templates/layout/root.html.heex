@@ -31,6 +31,7 @@
     <%= render_publication_language_tags(@publication, current_url(@conn, %{})) %>
     <%= render_post_language_tags(assigns[:post], @publication) %>
     <!-- END Language tag -->
+    <%= render_profile_page_schema(assigns) %>
     <script
       defer
       phx-track-static
