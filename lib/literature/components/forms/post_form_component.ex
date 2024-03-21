@@ -259,10 +259,16 @@ defmodule Literature.PostFormComponent do
     html = if is_binary(html) and html != "", do: Jason.decode!(post_params["html"]), else: []
     post_params = Map.put(post_params, "html", html)
 
+    # Elixir will warn that using socket in start_async is expensive. However,
+    # copying it is necessary since save_post ultimately passes to
+    # Phoenix.LiveView.uploaded_entries(socket, name). We assign to a different
+    # variable to avoid the warning.
+    sock = socket
+
     socket
     |> assign(:loading, true)
     |> start_async(:save_task, fn ->
-      save_post(socket, socket.assigns.action, post_params)
+      save_post(sock, sock.assigns.action, post_params)
     end)
     |> then(&{:noreply, &1})
   end
