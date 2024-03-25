@@ -228,7 +228,7 @@ defmodule Literature.BlogLive do
       "status" => "published",
       "preload" => ~w(authors tags)a,
       "page" => params["page"],
-      "page_size" => 10
+      "page_size" => Application.get_env(:literature, :page_size) || 10
     }
     |> Literature.paginate_posts()
   end
