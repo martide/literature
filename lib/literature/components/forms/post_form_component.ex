@@ -257,18 +257,14 @@ defmodule Literature.PostFormComponent do
   def handle_event("save", %{"post" => post_params}, socket) do
     html = post_params["html"]
     html = if is_binary(html) and html != "", do: Jason.decode!(post_params["html"]), else: []
-    post_params = Map.put(post_params, "html", html)
-
-    # Elixir will warn that using socket in start_async is expensive. However,
-    # copying it is necessary since save_post ultimately passes to
-    # Phoenix.LiveView.uploaded_entries(socket, name). We assign to a different
-    # variable to avoid the warning.
-    sock = socket
+    action = socket.assigns.action
+    post_params = post_params |> Map.put("html", html) |> merge_post_params(socket, action)
+    post = socket.assigns.post
 
     socket
     |> assign(:loading, true)
     |> start_async(:save_task, fn ->
-      save_post(sock, sock.assigns.action, post_params)
+      save_post(post, action, post_params)
     end)
     |> then(&{:noreply, &1})
   end
@@ -301,25 +297,27 @@ defmodule Literature.PostFormComponent do
   defp save_flash_message(:new_post), do: "Post created successfully"
   defp save_flash_message(:edit_post), do: "Post updated successfully"
 
-  defp save_post(socket, :edit_post, post_params) do
-    post_params =
-      post_params
-      |> Map.merge(build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a))
-      |> build_images()
-      |> build_html()
-      |> Map.put_new("locales", [])
-
-    Literature.update_post(socket.assigns.post, post_params)
+  defp merge_post_params(post_params, socket, :edit_post) do
+    post_params
+    |> Map.merge(build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a))
+    |> build_images()
+    |> build_html()
+    |> Map.put_new("locales", [])
   end
 
-  defp save_post(socket, :new_post, post_params) do
-    post_params =
-      post_params
-      |> put_publication_id(socket)
-      |> Map.merge(build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a))
-      |> build_images()
-      |> build_html()
+  defp merge_post_params(post_params, socket, :new_post) do
+    post_params
+    |> put_publication_id(socket)
+    |> Map.merge(build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a))
+    |> build_images()
+    |> build_html()
+  end
 
+  defp save_post(post, :edit_post, post_params) do
+    Literature.update_post(post, post_params)
+  end
+
+  defp save_post(_, :new_post, post_params) do
     Literature.create_post(post_params)
   end
 
