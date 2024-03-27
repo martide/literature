@@ -9,6 +9,8 @@ defmodule Literature.BlogLive do
   alias Literature.Repo
   alias Literature.Tag
 
+  @page_size Application.compile_env(:literature, :page_size, 10)
+
   @layout {Literature.LayoutView, :live}
 
   @impl Phoenix.LiveView
@@ -228,7 +230,7 @@ defmodule Literature.BlogLive do
       "status" => "published",
       "preload" => ~w(authors tags)a,
       "page" => params["page"],
-      "page_size" => Application.get_env(:literature, :page_size) || 10
+      "page_size" => @page_size
     }
     |> Literature.paginate_posts()
   end
