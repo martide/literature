@@ -140,6 +140,28 @@ defmodule LiteratureTest do
       assert another_post.id not in post_ids
     end
 
+    test "paginate_posts/1 returns filtered posts based on tag slug" do
+      publication = publication_fixture()
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+      tag_2 = tag_fixture(publication_id: publication.id, name: "test")
+
+      post =
+        post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
+
+      _ =
+        post_fixture(
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag_2.id],
+          title: "test"
+        )
+
+      attrs = %{"tag_slug" => tag.slug, "preload" => ~w(authors tags)a}
+      assert %Scrivener.Page{entries: entries} = Literature.paginate_posts(attrs)
+      assert entries == [%{post | status: nil, authors_ids: nil, tags_ids: nil}]
+    end
+
     test "paginate_posts/1 returns filtered posts based on status" do
       publication = publication_fixture()
       author = author_fixture(publication_id: publication.id)
