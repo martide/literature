@@ -206,9 +206,35 @@ defmodule Literature.BlogLive do
     |> assign(:authors, list_authors(socket))
   end
 
-  defp apply_action(socket, action, slug, _params) when action in [:show_tag, :show_author] do
+  defp apply_action(socket, :show_tag, slug, params) do
     publication = Literature.get_publication!(slug: slug)
-    meta_tags = get_meta_tags_from_view_module(socket, action, socket.assigns)
+
+    page =
+      Literature.paginate_posts(%{
+        "publication_slug" => slug,
+        "tag_slug" => params["tag_slug"],
+        "status" => "published",
+        "page" => params["page"],
+        "page_size" => @page_size
+      })
+
+    meta_tags = get_meta_tags_from_view_module(socket, :show_tag, socket.assigns)
+
+    socket =
+      case meta_tags do
+        %{title: _} -> assign_meta_tags(socket, meta_tags) |> override_title_with_page(page)
+        %{} -> socket
+      end
+
+    socket
+    |> assign(:publication, publication || %{name: nil})
+    |> assign(:posts, page.entries)
+    |> assign(:page, page)
+  end
+
+  defp apply_action(socket, :show_author, slug, _params) do
+    publication = Literature.get_publication!(slug: slug)
+    meta_tags = get_meta_tags_from_view_module(socket, :show_author, socket.assigns)
 
     socket =
       case meta_tags do

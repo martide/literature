@@ -365,6 +365,15 @@ defmodule Literature.BlogLiveTest do
           tags_ids: [tag.id]
         )
 
+      for i <- 1..20 do
+        post_fixture(
+          title: "Post #{i}",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+      end
+
       {:ok, binding()}
     end
 
@@ -392,6 +401,19 @@ defmodule Literature.BlogLiveTest do
       # Show post should work as usual
       assert {:ok, _view, _html} =
                live(conn, Routes.custom_routes_path(conn, :show, post.slug))
+
+      # Redirects to / when path is /page/1
+      assert {_, {:live_redirect, %{to: to}}} =
+               live(conn, Routes.custom_routes_path(conn, :show_tag, tag.slug, 1))
+
+      assert to == "/custom-routes/tags/#{tag.slug}"
+
+      # Renders /page/:page
+      assert {:ok, view, html} =
+               live(conn, Routes.custom_routes_path(conn, :show_tag, tag.slug, 2))
+
+      assert html =~ tag.name
+      assert page_title(view) == "#{BlogView.meta_tags(:show_tag, %{tag: tag}).title} Page (2)"
     end
 
     test "show_author", %{
