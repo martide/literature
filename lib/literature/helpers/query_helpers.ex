@@ -69,6 +69,14 @@ defmodule Literature.QueryHelpers do
 
   def where_preload(query, _), do: query
 
+  def where_id_not_in(query, %{"exclude_ids" => ids}) do
+    where(query, [q], q.id not in ^ids)
+  end
+
+  def where_id_not_in(query, _) do
+    query
+  end
+
   def where_status(query, %{"status" => "drafts"}) do
     where(query, [q], not q.is_published)
   end

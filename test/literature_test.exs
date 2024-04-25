@@ -234,6 +234,51 @@ defmodule LiteratureTest do
       assert Literature.list_posts() == [post]
     end
 
+    test "list_posts/1 returns filtered posts based on tag slug" do
+      publication = publication_fixture()
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+      tag_2 = tag_fixture(publication_id: publication.id, name: "test")
+
+      post =
+        post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
+
+      _ =
+        post_fixture(
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag_2.id],
+          title: "test"
+        )
+
+      assert Literature.list_posts(%{
+               "publication_slug" => publication.slug,
+               "tag_slug" => tag.slug
+             }) == [post]
+    end
+
+    test "list_posts/1 returns filtered posts based on excluded ids" do
+      publication = publication_fixture()
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+
+      post =
+        post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
+
+      post_2 =
+        post_fixture(
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id],
+          title: "test"
+        )
+
+      assert Literature.list_posts(%{
+               "publication_slug" => publication.slug,
+               "exclude_ids" => [post_2.id]
+             }) == [post]
+    end
+
     test "get_post!/1 returns the post with given id" do
       publication = publication_fixture()
       author = author_fixture(publication_id: publication.id)
