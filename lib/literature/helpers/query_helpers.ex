@@ -69,6 +69,14 @@ defmodule Literature.QueryHelpers do
 
   def where_preload(query, _), do: query
 
+  def where_id_not_in(query, %{"exclude_ids" => ids}) do
+    where(query, [q], q.id not in ^ids)
+  end
+
+  def where_id_not_in(query, _) do
+    query
+  end
+
   def where_status(query, %{"status" => "drafts"}) do
     where(query, [q], not q.is_published)
   end
@@ -111,11 +119,17 @@ defmodule Literature.QueryHelpers do
 
   def where_publication(query, %{"publication_slug" => slug}) do
     query
-    |> join(:left, [q], p in assoc(q, :publication))
-    |> where([_, p], p.slug == ^slug)
+    |> join(:inner, [q], p in assoc(q, :publication), on: p.slug == ^slug)
   end
 
   def where_publication(query, _), do: query
+
+  def where_tag(query, %{"tag_slug" => slug}) do
+    query
+    |> join(:inner, [q], t in assoc(q, :tags), on: t.slug == ^slug)
+  end
+
+  def where_tag(query, _), do: query
 
   def include_tag_post_custom_position(query, tag_ids) do
     # Get the position of the posts for the tag

@@ -168,6 +168,7 @@ defmodule Literature do
     |> sort_by(attrs, {:desc, :published_at})
     |> where_preload(attrs)
     |> where_status(attrs)
+    |> where_tag(attrs)
     |> where_publication(attrs)
     |> Repo.paginate(attrs)
   end
@@ -186,7 +187,9 @@ defmodule Literature do
     |> set_limit(attrs)
     |> sort_by(attrs, {:desc, :published_at})
     |> where_preload(%{"preload" => ~w(authors tags)a})
+    |> where_id_not_in(attrs)
     |> where_status(attrs)
+    |> where_tag(attrs)
     |> where_publication(attrs)
     |> Repo.all()
     |> Enum.map(&Post.resolve/1)
