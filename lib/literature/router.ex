@@ -241,6 +241,9 @@ defmodule Literature.Router do
     quote do
       if :show_tag in unquote(custom_routes) do
         live("/tags/:tag_slug", BlogLive, :show_tag, unquote(route_opts))
+      end
+
+      if :show_tag_pages in unquote(custom_routes) do
         live("/tags/:tag_slug/page/:page", BlogLive, :show_tag, unquote(route_opts))
       end
     end

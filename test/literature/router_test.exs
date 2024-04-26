@@ -125,6 +125,9 @@ defmodule Literature.RouterTest do
     assert Routes.custom_routes_path(conn, :show_tag, "test") ==
              "/custom-routes/tags/test"
 
+    assert Routes.custom_routes_path(conn, :show_tag, "test", 1) ==
+             "/custom-routes/tags/test/page/1"
+
     assert Routes.custom_routes_path(conn, :authors) == "/custom-routes/authors"
 
     assert Routes.custom_routes_path(conn, :show_author, "test") ==
