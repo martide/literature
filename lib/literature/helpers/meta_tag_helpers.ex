@@ -1,6 +1,6 @@
 defmodule Literature.MetaTagHelpers do
   @moduledoc false
-  use Phoenix.HTML
+  import Literature.HTMLHelpers
 
   @metatags %{
     "og_type" => "website",
@@ -213,4 +213,5 @@ defmodule Literature.MetaTagHelpers do
     |> String.replace_suffix("/", "")
     |> Kernel.<>("/page/#{page_number}")
   end
+
 end

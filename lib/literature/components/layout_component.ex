@@ -46,19 +46,14 @@ defmodule Literature.LayoutComponent do
       </div>
       <:footer>
         <div class="text-center">
-          <%= link("Yes, I'm sure",
-            to: "#",
-            phx_click: "delete",
-            phx_value_id: @item.id,
-            class:
-              "text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
-          ) %>
-          <%= link("No, cancel",
-            to: "#",
-            phx_click: @on_close,
-            class:
-              "text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10"
-          ) %>
+          <.link href="#" phx-click="delete" phx-value-id={@item.id}
+            class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
+            Yes, I'm sure
+          </.link>
+          <.link href="#" phx-click={@on_close} phx-value-id={@item.id}
+            class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">
+            No, cancel
+          </.link>
         </div>
       </:footer>
     </.modal>
@@ -75,7 +70,7 @@ defmodule Literature.LayoutComponent do
     >
       <div class="relative p-4 w-full max-w-md h-full md:h-auto">
         <div class="relative bg-white rounded-lg shadow">
-          <%= link to: "#", phx_click: @on_close, class: "absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" do %>
+          <.link navigate="#" phx-lick={@on_close} class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
             <svg
               aria-hidden="true"
               class="w-5 h-5"
@@ -91,7 +86,7 @@ defmodule Literature.LayoutComponent do
               </path>
             </svg>
             <span class="sr-only">Close modal</span>
-          <% end %>
+          </.link>
           <div class="p-6">
             <div>
               <%= render_slot(@inner_block) %>

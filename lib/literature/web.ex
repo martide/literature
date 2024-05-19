@@ -53,7 +53,7 @@ defmodule Literature.Web do
 
       # Import convenience functions from controllers
       import Phoenix.Controller,
-        only: [current_url: 1, current_url: 2, get_flash: 2]
+        only: [current_url: 1, current_url: 2, get_flash: 2, get_csrf_token: 0]
 
       unquote(view_helpers())
     end
@@ -96,7 +96,8 @@ defmodule Literature.Web do
 
   defp view_helpers do
     quote do
-      use Phoenix.HTML
+      import Phoenix.HTML
+      import Phoenix.HTML.Form
 
       import Phoenix.LiveView.Helpers
       import Literature.Helpers

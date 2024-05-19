@@ -1,6 +1,7 @@
 defmodule Literature.FormComponent do
   @moduledoc false
   use Literature.Web, :html
+  import Phoenix.HTML.Form
 
   alias Phoenix.LiveView.JS
 
@@ -158,14 +159,19 @@ defmodule Literature.FormComponent do
   end
 
   def submit_button(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:disabled, fn -> false end)
+
     ~H"""
-    <%= submit(@label,
-      class:
-        "w-full md:w-auto text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 md:mr-2 mb-2 focus:outline-none disabled:bg-opacity-70",
-      phx_disable_with: "Saving...",
-      form: assigns[:form],
-      disabled: assigns[:disabled] || false
-    ) %>
+    <button
+      type="submit"
+      class="w-full md:w-auto text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 md:mr-2 mb-2 focus:outline-none disabled:bg-opacity-70"
+      disabled={@disabled}
+      phx-disable-with="Saving..."
+    >
+      <%= @label %>
+    </button>
     """
   end
 
@@ -176,12 +182,17 @@ defmodule Literature.FormComponent do
       |> assign_rest(~w(classes form field label required)a)
 
     ~H"""
-    <%= label @form, @field, [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest do %>
+    <label
+      for={input_name(@form, @field)}
+      class={@classes}
+      phx-feedback-for={input_name(@form, @field)}
+      {@rest}
+    >
       <%= @label %>
       <%= if @required do %>
         <span class="text-red-500">*</span>
       <% end %>
-    <% end %>
+    </label>
     """
   end
 
@@ -193,11 +204,13 @@ defmodule Literature.FormComponent do
       |> assign_new(:characters, fn -> "" end)
 
     ~H"""
-    <%= text_input(
-      @form,
-      @field,
-      [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest
-    ) %>
+    <input
+      type="text"
+      name={input_name(@form, @field)}
+      phx-feedback-for={input_name(@form, @field)}
+      class={@classes}
+      {@rest}
+    />
     <%= if @maxcharacters do %>
       <small class="text-gray-500">
         Recommended: <span class="font-bold"><%= @maxcharacters %></span>
@@ -220,11 +233,13 @@ defmodule Literature.FormComponent do
     assigns = assign_defaults(assigns, text_input_classes(assigns))
 
     ~H"""
-    <%= url_input(
-      @form,
-      @field,
-      [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest
-    ) %>
+    <input
+      type="url"
+      name={input_name(@form, @field)}
+      class={@classes}
+      phx-feedback-for={input_name(@form, @field)}
+      {@rest}
+    />
     """
   end
 
@@ -232,12 +247,13 @@ defmodule Literature.FormComponent do
     assigns = assign_defaults(assigns, radio_classes(assigns))
 
     ~H"""
-    <%= radio_button(
-      @form,
-      @field,
-      @value,
-      [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest
-    ) %>
+    <input
+      type="radio"
+      name={input_name(@form, @field)}
+      class={@classes}
+      phx-feedback-for={input_name(@form, @field)}
+      {@rest}
+    />
     """
   end
 
@@ -271,9 +287,8 @@ defmodule Literature.FormComponent do
         </div>
         <p class="uppercase font-semibold text-xs text-center">Drag & Drop or Click to upload</p>
       </div>
-      <%= img_tag(literature_image_url(@form.data, @field),
-        class: "object-cover object-center absolute top-0"
-      ) %>
+      <img src={literature_image_url(@form.data, @field)}
+        class="object-cover object-center absolute top-0" />
       <%= for entry <- @upload_field.entries do %>
         <.live_img_preview entry={entry} class="object-cover object-center absolute top-0" />
         <%= if entry.progress < 100 do %>
@@ -298,11 +313,13 @@ defmodule Literature.FormComponent do
 
     ~H"""
     <div class="datetime-select-wrapper">
-      <%= datetime_local_input(
-        @form,
-        @field,
-        [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest
-      ) %>
+      <input
+        type="datetime-local"
+        name={input_name(@form, @field)}
+        class={@classes}
+        phx-feedback-for={input_name(@form, @field)}
+        {@rest}
+      />
     </div>
     """
   end
@@ -315,11 +332,13 @@ defmodule Literature.FormComponent do
       |> assign_new(:characters, fn -> "" end)
 
     ~H"""
-    <%= textarea(
-      @form,
-      @field,
-      [class: @classes, rows: "6", phx_feedback_for: input_name(@form, @field)] ++ @rest
-    ) %>
+    <textarea
+      name={input_name(@form, @field)}
+      class={@classes}
+      rows="6"
+      phx-feedback-for={input_name(@form, @field)}
+      {@rest}
+    />
     <%= if @maxcharacters do %>
       <small class="text-gray-500">
         Recommended: <span class="font-bold"><%= @maxcharacters %></span>
@@ -342,12 +361,15 @@ defmodule Literature.FormComponent do
     assigns = assign_defaults(assigns, text_input_classes(assigns))
 
     ~H"""
-    <%= select(
-      @form,
-      @field,
-      @options,
-      [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest
-    ) %>
+    <select
+      id={@id}
+      name={input_name(@form, @field)}
+      phx-feedback-for={input_name(@form, @field)}
+      {@rest}
+    >
+      <option :if={@prompt} value=""><%= @prompt %></option>
+      <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+    </select>
     """
   end
 
@@ -355,11 +377,13 @@ defmodule Literature.FormComponent do
     assigns = assign_defaults(assigns, checkbox_classes(assigns))
 
     ~H"""
-    <%= checkbox(
-      @form,
-      @field,
-      [class: @classes, phx_feedback_for: input_name(@form, @field)] ++ @rest
-    ) %>
+    <input
+      type="checkbox"
+      name={input_name(@form, @field)}
+      phx-feedback-for={input_name(@form, @field)}
+      class={@classes}
+      {@rest}
+    />
     """
   end
 
@@ -382,7 +406,7 @@ defmodule Literature.FormComponent do
 
     ~H"""
     <div class="">
-      <%= hidden_input(@form, @field, name: input_name(@form, @field), value: "") %>
+      <input type="hidden" name={input_name(@form, @field)} value="" />
       <%= for {label, value} <- @options do %>
         <label class="flex items-center space-x-3 space-y-1">
           <.checkbox

@@ -51,8 +51,8 @@ defmodule Literature.PostFormComponent do
               phx-hook="EditorJS"
             >
             </div>
-            <%= hidden_input(f, :editor_json) %>
-            <%= hidden_input(f, :html) %>
+            <input type="hidden" name="post[editor_json]" />
+            <input type="hidden" name="post[html]" />
           </div>
           <div class="w-full md:w-2/3 md:border-l md:pl-8">
             <div class="space-y-5 mb-5">

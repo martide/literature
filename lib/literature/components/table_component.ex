@@ -38,13 +38,15 @@ defmodule Literature.TableComponent do
                 clip-rule="evenodd"
               />
             </svg>
-            <%= search_input(:search, :q,
-              value: @params["q"],
-              class: "text-sm rounded-lg focus:outline-none block w-full p-2.5",
-              placeholder: "Find",
-              autofocus: true,
-              phx_debounce: 300
-            ) %>
+            <input
+              type="search"
+              name="search['q']"
+              value={@params["q"]}
+              class="text-sm rounded-lg focus:outline-none block w-full p-2.5"
+              placeholder="Find"
+              autofocus={true}
+              phx_debounce={300}
+            />
           </form>
           <%= filter_status(Enum.into(@columns, %{}), assigns) %>
         </div>
@@ -170,7 +172,7 @@ defmodule Literature.TableComponent do
           <.edit_icon />
         </.link>
       <% end %>
-      <%= link to: "#", phx_click: "open_delete_modal", phx_value_id: @item.id, id: "delete-#{@item.id}", class: "hover:text-red-600 transition duration-300 ease-in-out" do %>
+      <.link href="#" phx-click="open_delete_modal" phx-value-id={@item.id} id="delete-#{@item.id}" class="hover:text-red-600 transition duration-300 ease-in-out">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -185,7 +187,7 @@ defmodule Literature.TableComponent do
             d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
           />
         </svg>
-      <% end %>
+      </.link>
     </div>
     """
   end
@@ -329,13 +331,16 @@ defmodule Literature.TableComponent do
   defp radio_button(assigns) do
     ~H"""
     <li class="hover:bg-gray-100 w-full rounded transition duration-300 ease-in-out">
-      <%= label class: "flex items-center cursor-pointer p-3" do %>
-        <%= radio_button(:filter, :status, @value,
-          class: "w-4 h-4 border-gray-300 text-primary-700 bg-primary-700",
-          checked: @status == @value
-        ) %>
+      <label class="flex items-center cursor-pointer p-3">
+        <input
+          type="radio"
+          name="filter['status']"
+          value={@value}
+          class="w-4 h-4 border-gray-300 text-primary-700 bg-primary-700"
+          checked={@status == @value}
+        />
         <span class="px-2"><%= @label %></span>
-      <% end %>
+      </label>
     </li>
     """
   end
