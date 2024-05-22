@@ -44,6 +44,9 @@ defmodule Literature.Test.Fixtures do
     {:ok, publication} =
       attrs
       |> Keyword.put_new(:name, "some name")
+      |> Keyword.put_new(:rss_url, "https://www.example.com")
+      |> Keyword.put_new(:rss_author, "Literature Team")
+      |> Keyword.put_new(:rss_email, "literature@example.com")
       |> Enum.into(%{})
       |> Literature.create_publication()
 

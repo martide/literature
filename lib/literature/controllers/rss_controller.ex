@@ -3,15 +3,18 @@ defmodule Literature.RSSController do
 
   alias Atomex.Entry
   alias Atomex.Feed
-  alias Literature.Config
   alias Literature.Repo
 
   @default_path "/feed"
 
   def rss(conn, _params) do
-    base_path = String.replace(current_path(conn), @default_path, "")
-    base_url = Config.feed_url() <> base_path
+    publication_slug = conn.private[:publication_slug]
 
+    publication =
+      Literature.get_publication!(slug: publication_slug) |> Repo.preload(:public_tags)
+
+    base_path = String.replace(current_path(conn), @default_path, "")
+    base_url = publication.rss_url <> base_path
     view_module = conn.private.view_module
 
     favicon_path =
@@ -20,11 +23,6 @@ defmodule Literature.RSSController do
       else
         nil
       end
-
-    publication_slug = conn.private[:publication_slug]
-
-    publication =
-      Literature.get_publication!(slug: publication_slug) |> Repo.preload(:public_tags)
 
     conn
     |> put_resp_content_type("text/xml")
@@ -44,19 +42,18 @@ defmodule Literature.RSSController do
   def build_feed(posts, publication, favicon_path, base_url) do
     Feed.new(base_url <> @default_path, DateTime.utc_now(), publication.name)
     |> Feed.add_field(:published, %{}, DateTime.from_naive!(publication.inserted_at, "Etc/UTC"))
-    |> maybe_author()
+    |> maybe_author(publication)
     |> Feed.icon(favicon_path)
     |> Feed.generator("Wordpress", uri: "https://wordpress.org/", version: "6.4.3")
     |> Feed.link(base_url <> @default_path, rel: "self")
     |> feed_categories(publication.public_tags)
-    |> Feed.entries(Enum.map(posts, &get_entry(base_url, &1)))
+    |> Feed.entries(Enum.map(posts, &get_entry(base_url, publication, &1)))
     |> Feed.build()
     |> Atomex.generate_document()
   end
 
-  defp maybe_author(feed) do
-    case {Config.feed_author(), Config.feed_email()} do
-      {nil, nil} -> feed
+  defp maybe_author(feed, publication) do
+    case {publication.rss_author, publication.rss_email} do
       {nil, _} -> feed
       {author, nil} -> Feed.author(feed, author)
       {author, email} -> Feed.author(feed, author, email: email)
@@ -71,7 +68,7 @@ defmodule Literature.RSSController do
     feed_categories(Feed.add_field(feed, :category, %{}, {:cdata, tag.name}), rest)
   end
 
-  defp get_entry(base_url, %{
+  defp get_entry(base_url, publication, %{
          id: id,
          title: title,
          slug: slug,
@@ -90,7 +87,7 @@ defmodule Literature.RSSController do
       end
 
     content =
-      case excerpt do
+      case html do
         nil -> nil
         _ -> {:cdata, html}
       end
@@ -98,8 +95,15 @@ defmodule Literature.RSSController do
     Entry.new(entry_id, DateTime.from_naive!(published_at, "Etc/UTC"), {:cdata, title}, "html")
     |> Entry.link(post_path)
     |> Entry.author(author.name)
-    |> Entry.content(content, %{type: "html"})
     |> Entry.summary(excerpt, "html")
+    |> maybe_content(publication, content)
     |> Entry.build()
+  end
+
+  defp maybe_content(entry, publication, content) do
+    case publication.rss_is_excerpt_only do
+      false -> Entry.content(entry, content, %{type: "html"})
+      _ -> entry
+    end
   end
 end
