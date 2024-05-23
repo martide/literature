@@ -21,6 +21,10 @@ defmodule Literature.Publication do
     field(:twitter_description, :string)
     field(:locale, :string)
     field(:ex_default_locale, :string)
+    field(:rss_url, :string)
+    field(:rss_author, :string)
+    field(:rss_email, :string)
+    field(:rss_is_excerpt_only, :boolean)
 
     has_many(:authors, Author)
     has_many(:tags, Tag)
@@ -57,6 +61,10 @@ defmodule Literature.Publication do
     twitter_description
     locale
     ex_default_locale
+    rss_url
+    rss_author
+    rss_email
+    rss_is_excerpt_only
   )a
 
   @attachments ~w(

@@ -29,8 +29,3 @@ config :literature, :sitemap,
   router: Literature.Test.Router,
   changefreq: :daily,
   path: "priv/static"
-
-config :literature, :rss,
-  url: "https://www.example.com",
-  author: "Literature Team",
-  email: "literature@example.com"

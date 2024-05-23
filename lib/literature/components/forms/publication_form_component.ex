@@ -99,6 +99,22 @@ defmodule Literature.PublicationFormComponent do
             label="Twitter Description"
           />
         </.accordion>
+        <.accordion id="rss-settings" title="RSS Settings">
+          <.form_field form={f} type="text_input" field={:rss_url} label="RSS URL" />
+          <.form_field form={f} type="text_input" field={:rss_author} label="RSS Author" />
+          <.form_field form={f} type="text_input" field={:rss_email} label="RSS Email" />
+          <div class="space-y-2">
+            <div class="font-semibold text-gray-900">For each post in a feed, include</div>
+            <.radio_buttons
+              form={f}
+              field={:rss_is_excerpt_only}
+              options={[{"false", "Full text"}, {"true", "Excerpt"}]}
+            />
+            <p class="italic text-gray-500">
+              Sets whether RSS subscribers can read full posts in their RSS reader, or just an excerpt and link to the full version on your site.
+            </p>
+          </div>
+        </.accordion>
         <.button_group>
           <.back_button label="Cancel" return_to={@return_to} />
           <.submit_button label="Save changes" />
@@ -157,4 +173,17 @@ defmodule Literature.PublicationFormComponent do
 
   defp put_validation(changeset, :new_publication), do: changeset
   defp put_validation(changeset, :edit_publication), do: Map.put(changeset, :action, :validate)
+
+  defp radio_buttons(assigns) do
+    ~H"""
+    <%= for {value, label} <- @options do %>
+      <%= label class: "flex items-center cursor-pointer" do %>
+        <%= radio_button(@form, @field, value,
+          class: "w-4 h-4 border-gray-300 text-primary-700 bg-primary-700"
+        ) %>
+        <span class="px-2"><%= label %></span>
+      <% end %>
+    <% end %>
+    """
+  end
 end
