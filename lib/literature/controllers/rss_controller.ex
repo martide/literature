@@ -41,10 +41,12 @@ defmodule Literature.RSSController do
 
   def build_feed(posts, publication, favicon_path, base_url) do
     Feed.new(base_url <> @default_path, DateTime.utc_now(), publication.name)
-    |> Feed.add_field(:published, %{}, DateTime.from_naive!(publication.inserted_at, "Etc/UTC"))
     |> maybe_author(publication)
     |> Feed.icon(favicon_path)
-    |> Feed.generator("Wordpress", uri: "https://wordpress.org/", version: "6.4.3")
+    |> Feed.generator("Literature",
+      uri: "https://github.com/martide/literature",
+      version: Application.spec(:literature, :vsn)
+    )
     |> Feed.link(base_url <> @default_path, rel: "self")
     |> feed_categories(publication.public_tags)
     |> Feed.entries(Enum.map(posts, &get_entry(base_url, publication, &1)))
@@ -75,6 +77,7 @@ defmodule Literature.RSSController do
          html: html,
          excerpt: excerpt,
          published_at: published_at,
+         updated_at: updated_at,
          authors: [author | _]
        }) do
     post_path = "#{base_url}/#{slug}"
@@ -92,9 +95,10 @@ defmodule Literature.RSSController do
         _ -> {:cdata, html}
       end
 
-    Entry.new(entry_id, DateTime.from_naive!(published_at, "Etc/UTC"), {:cdata, title}, "html")
+    Entry.new(entry_id, DateTime.from_naive!(updated_at, "Etc/UTC"), {:cdata, title}, "html")
     |> Entry.link(post_path)
     |> Entry.author(author.name)
+    |> Entry.published(DateTime.from_naive!(published_at, "Etc/UTC"))
     |> Entry.summary(excerpt, "html")
     |> maybe_content(publication, content)
     |> Entry.build()
