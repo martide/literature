@@ -179,12 +179,10 @@ defmodule Literature.PublicationFormComponent do
   defp radio_buttons(assigns) do
     ~H"""
     <%= for {value, label} <- @options do %>
-      <%= label class: "flex items-center cursor-pointer" do %>
-        <%= radio_button(@form, @field, value,
-          class: "w-4 h-4 border-gray-300 text-primary-700 bg-primary-700"
-        ) %>
+      <label class="flex items-center cursor-pointer">
+        <input type="radio" name={@form[@field].name} value={value} class="w-4 h-4 border-gray-300 text-primary-700 bg-primary-700" />
         <span class="px-2"><%= label %></span>
-      <% end %>
+      </label>
     <% end %>
     """
   end

@@ -245,7 +245,7 @@ defmodule Literature.FormComponent do
   attr :name, :any
   attr :multiple, :boolean, default: false
   attr :maxcharacters, :integer
-  attr :classes, :string, default: ""
+  attr :classes, :string
   attr :label_classes, :string
   attr :prompt, :string, default: nil
   attr :checked, :boolean
@@ -274,7 +274,14 @@ defmodule Literature.FormComponent do
     <div class="flex items-center border border-gray-300 rounded-md divide-x divide-gray-300">
       <%= for {value, label} <- @options do %>
         <label class="flex items-center justify-center w-full cursor-pointer">
-          <.input type="radio" name={@name} value={value} {@rest} />
+          <.input
+            type="radio"
+            class="sr-only peer"
+            name={@name}
+            value={value}
+            checked={@value == value || @value == String.to_atom(value)}
+            {@rest}
+          />
           <div class={@label_classes}><%= label %></div>
         </label>
       <% end %>
@@ -292,6 +299,7 @@ defmodule Literature.FormComponent do
       class={@classes}
       value={normalize_value("radio", @value)}
       phx-feedback-for={@name}
+      checked={@checked}
       {@rest}
     />
     """
@@ -299,7 +307,7 @@ defmodule Literature.FormComponent do
 
   def input(%{type: "select"} = assigns) do
     ~H"""
-    <select id={@id} name={@name} phx-feedback-for={@name} {@rest}>
+    <select id={@id} name={@name} class={@classes} phx-feedback-for={@name} {@rest}>
       <option :if={@prompt} value=""><%= @prompt %></option>
       <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
     </select>
@@ -321,7 +329,7 @@ defmodule Literature.FormComponent do
 
     ~H"""
     <div>
-      <.input type="hidden" name={@name} phx-feedback-for={@name} />
+      <.input type="hidden" name={@name} classes="" phx-feedback-for={@name} />
       <%= for {label, value} <- @options do %>
         <label class="flex items-center space-x-3 space-y-1">
           <.input
@@ -348,7 +356,7 @@ defmodule Literature.FormComponent do
       |> assign_new(:checked, fn -> false end)
       |> assign_new(:value, fn -> normalize_value("checkbox", assigns[:value]) end)
       |> assign_new(:feedback_for, fn -> assigns.name end)
-      |> assign_defaults(checkbox_classes(assigns))
+      |> assign_new(:class, fn -> checkbox_classes(assigns) end)
 
     ~H"""
     <input
@@ -356,7 +364,7 @@ defmodule Literature.FormComponent do
       value={@value}
       name={@name}
       phx-feedback-for={@feedback_for}
-      class={@classes}
+      class={@class}
       checked={@checked}
       {@rest}
     />
@@ -384,7 +392,9 @@ defmodule Literature.FormComponent do
       |> assign_new(:characters, fn -> "" end)
 
     ~H"""
-    <textarea name={@name} class={@classes} rows="6" phx-feedback-for={@name} {@rest} />
+    <textarea name={@name} class={@classes} rows="6" phx-feedback-for={@name} {@rest}>
+      <%= normalize_value("textarea", @value) %>
+    </textarea>
     <%= if @maxcharacters do %>
       <small class="text-gray-500">
         Recommended: <span class="font-bold"><%= @maxcharacters %></span>
