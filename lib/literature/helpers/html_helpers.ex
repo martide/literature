@@ -1,4 +1,5 @@
 defmodule Literature.HTMLHelpers do
+  @moduledoc false
   import Phoenix.HTML
   def tag(name), do: tag(name, [])
 
