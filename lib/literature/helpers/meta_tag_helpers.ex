@@ -213,5 +213,4 @@ defmodule Literature.MetaTagHelpers do
     |> String.replace_suffix("/", "")
     |> Kernel.<>("/page/#{page_number}")
   end
-
 end

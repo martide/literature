@@ -172,7 +172,13 @@ defmodule Literature.TableComponent do
           <.edit_icon />
         </.link>
       <% end %>
-      <.link href="#" phx-click="open_delete_modal" phx-value-id={@item.id} id={"delete-#{@item.id}"} class="hover:text-red-600 transition duration-300 ease-in-out">
+      <.link
+        href="#"
+        phx-click="open_delete_modal"
+        phx-value-id={@item.id}
+        id={"delete-#{@item.id}"}
+        class="hover:text-red-600 transition duration-300 ease-in-out"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

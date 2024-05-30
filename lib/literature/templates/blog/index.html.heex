@@ -96,7 +96,11 @@
       <div class="grid grid-cols-3">
         <div class="justify-self-start">
           <%= if @page.page_number > 1 do %>
-            <.link navigate={literature_path(@socket, :index, @page.page_number - 1)} class="font-semibold flex items-center space-x-2 group" rel="prev">
+            <.link
+              navigate={literature_path(@socket, :index, @page.page_number - 1)}
+              class="font-semibold flex items-center space-x-2 group"
+              rel="prev"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -120,7 +124,11 @@
         </div>
         <div class="justify-self-end">
           <%= if @page.page_number < @page.total_pages do %>
-            <.link href={literature_path(@socket, :index, @page.page_number + 1)} class="font-semibold flex items-center space-x-2 group" rel="next">
+            <.link
+              href={literature_path(@socket, :index, @page.page_number + 1)}
+              class="font-semibold flex items-center space-x-2 group"
+              rel="next"
+            >
               <span>Next Post</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
