@@ -53,11 +53,13 @@ defmodule Literature.PublicationFormComponent do
           />
           <.form_field form={f} type="textarea" field={:description} label="Description" />
           <.form_field
+            id="publication-languages"
             form={f}
             type="select"
             options={@available_languages}
             field={:locale}
             label="Language"
+            prompt=""
           />
           <.form_field
             form={f}

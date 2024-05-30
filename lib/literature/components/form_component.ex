@@ -29,16 +29,16 @@ defmodule Literature.FormComponent do
             label={@label}
             required={assigns[:required]}
           />
-          <.text_input form={@form} field={@field} {@input_opts} />
+          <.input type="text" field={@form[@field]} {@input_opts} />
         <% "textarea" -> %>
           <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
-          <.textarea form={@form} field={@field} {@input_opts} />
+          <.input type="textarea" field={@form[@field]} {@input_opts} />
         <% "checkbox_group" -> %>
           <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
-          <.checkbox_group form={@form} field={@field} {@input_opts} />
+          <.input type="checkbox-group" field={@form[@field]} {@input_opts} />
         <% "radio_group" -> %>
           <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
-          <.radio_group form={@form} field={@field} {@input_opts} />
+          <.input type="radio-group" field={@form[@field]} {@input_opts} />
         <% "select" -> %>
           <.form_label
             :if={@label}
@@ -47,16 +47,16 @@ defmodule Literature.FormComponent do
             label={@label}
             required={assigns[:required]}
           />
-          <.select form={@form} field={@field} {@input_opts} />
+          <.input type="select" field={@form[@field]} {@input_opts} />
         <% "url_input" -> %>
           <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
-          <.url_input form={@form} field={@field} {@input_opts} />
+          <.input type="url" field={@form[@field]} {@input_opts} />
         <% "image_upload" -> %>
           <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
           <.image_upload form={@form} field={@field} {@input_opts} />
         <% "datetime_local_input" -> %>
           <.form_label form={@form} field={@field} label={@label} required={assigns[:required]} />
-          <.datetime_local_input form={@form} field={@field} {@input_opts} />
+          <.input type="datetime-local" field={@form[@field]} {@input_opts} />
       <% end %>
       <.form_field_error form={@form} field={@field} />
     </div>
@@ -132,21 +132,6 @@ defmodule Literature.FormComponent do
     """
   end
 
-  def radio_group(assigns) do
-    assigns = assign_defaults(assigns, text_input_classes(assigns))
-
-    ~H"""
-    <div class="flex items-center border border-gray-300 rounded-md divide-x divide-gray-300">
-      <%= for {value, label} <- @options do %>
-        <label class="flex items-center justify-center w-full cursor-pointer">
-          <.radio form={@form} field={@field} value={value} {@rest} />
-          <div class={label_classes(%{form: @form, field: @field, type: "radio"})}><%= label %></div>
-        </label>
-      <% end %>
-    </div>
-    """
-  end
-
   def back_button(assigns) do
     ~H"""
     <.link
@@ -196,67 +181,6 @@ defmodule Literature.FormComponent do
     """
   end
 
-  defp text_input(assigns) do
-    assigns =
-      assigns
-      |> assign_defaults(text_input_classes(assigns))
-      |> assign_new(:maxcharacters, fn -> nil end)
-      |> assign_new(:characters, fn -> "" end)
-
-    ~H"""
-    <input
-      type="text"
-      name={input_name(@form, @field)}
-      phx-feedback-for={input_name(@form, @field)}
-      class={@classes}
-      {@rest}
-    />
-    <%= if @maxcharacters do %>
-      <small class="text-gray-500">
-        Recommended: <span class="font-bold"><%= @maxcharacters %></span>
-        characters. You've used
-        <%= if @maxcharacters < String.length(@characters || "") do %>
-          <span class="font-bold text-red-500">
-            <%= String.length(@characters || "") %>.
-          </span>
-        <% else %>
-          <span class="font-bold text-green-500">
-            <%= String.length(@characters || "") %>.
-          </span>
-        <% end %>
-      </small>
-    <% end %>
-    """
-  end
-
-  defp url_input(assigns) do
-    assigns = assign_defaults(assigns, text_input_classes(assigns))
-
-    ~H"""
-    <input
-      type="url"
-      name={input_name(@form, @field)}
-      class={@classes}
-      phx-feedback-for={input_name(@form, @field)}
-      {@rest}
-    />
-    """
-  end
-
-  def radio(assigns) do
-    assigns = assign_defaults(assigns, radio_classes(assigns))
-
-    ~H"""
-    <input
-      type="radio"
-      name={input_name(@form, @field)}
-      class={@classes}
-      phx-feedback-for={input_name(@form, @field)}
-      {@rest}
-    />
-    """
-  end
-
   defp image_upload(assigns) do
     assigns = assign_new(assigns, :upload_field, fn -> image_field(assigns) end)
 
@@ -287,8 +211,10 @@ defmodule Literature.FormComponent do
         </div>
         <p class="uppercase font-semibold text-xs text-center">Drag & Drop or Click to upload</p>
       </div>
-      <img src={literature_image_url(@form.data, @field)}
-        class="object-cover object-center absolute top-0" />
+      <img
+        src={literature_image_url(@form.data, @field)}
+        class="object-cover object-center absolute top-0"
+      />
       <%= for entry <- @upload_field.entries do %>
         <.live_img_preview entry={entry} class="object-cover object-center absolute top-0" />
         <%= if entry.progress < 100 do %>
@@ -308,35 +234,187 @@ defmodule Literature.FormComponent do
   defp image_field(%{field: field, uploads: uploads}),
     do: Map.get(uploads, field)
 
-  defp datetime_local_input(assigns) do
-    assigns = assign_defaults(assigns, text_input_classes(assigns))
+  attr :id, :string, default: nil
+  attr :class, :string, default: ""
+  attr :label, :string
+  attr :field, Phoenix.HTML.FormField
+  attr :type, :string, default: "text"
+  attr :options, :list
+  attr :layout, :atom
+  attr :value, :any
+  attr :name, :any
+  attr :multiple, :boolean, default: false
+  attr :maxcharacters, :integer
+  attr :classes, :string, default: ""
+  attr :label_classes, :string
+  attr :prompt, :string, default: nil
+  attr :checked, :boolean
 
+  attr :rest, :global,
+    include:
+      ~w(accept autocomplete capture cols disabled form list max maxlength min minlength
+                multiple pattern placeholder readonly required rows size step maxcharacters characters)a
+
+  def input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    assigns
+    |> assign(field: nil, id: assigns[:id] || field.id)
+    |> assign_new(:name, fn ->
+      if assigns[:multiple], do: field.name <> "[]", else: field.name
+    end)
+    |> assign_new(:maxcharacters, fn -> nil end)
+    |> assign_new(:characters, fn -> "" end)
+    |> assign_new(:value, fn -> field.value end)
+    |> assign_new(:label_classes, fn -> label_classes(assigns) end)
+    |> assign_defaults(text_input_classes(assigns))
+    |> input()
+  end
+
+  def input(%{type: "radio-group"} = assigns) do
+    ~H"""
+    <div class="flex items-center border border-gray-300 rounded-md divide-x divide-gray-300">
+      <%= for {value, label} <- @options do %>
+        <label class="flex items-center justify-center w-full cursor-pointer">
+          <.input type="radio" name={@name} value={value} {@rest} />
+          <div class={@label_classes}><%= label %></div>
+        </label>
+      <% end %>
+    </div>
+    """
+  end
+
+  def input(%{type: "radio"} = assigns) do
+    assigns = assign(assigns, :classes, radio_classes(assigns))
+
+    ~H"""
+    <input
+      type="radio"
+      name={@name}
+      class={@classes}
+      value={normalize_value("radio", @value)}
+      phx-feedback-for={@name}
+      {@rest}
+    />
+    """
+  end
+
+  def input(%{type: "select"} = assigns) do
+    ~H"""
+    <select id={@id} name={@name} phx-feedback-for={@name} {@rest}>
+      <option :if={@prompt} value=""><%= @prompt %></option>
+      <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+    </select>
+    """
+  end
+
+  def input(%{type: "checkbox-group"} = assigns) do
+    checked =
+      case assigns.value do
+        value when is_binary(value) -> [value]
+        value when is_list(value) -> value
+        _ -> []
+      end
+
+    assigns =
+      assigns
+      |> assign(checked: checked)
+      |> assign_new(:layout, fn -> :col end)
+
+    ~H"""
+    <div>
+      <.input type="hidden" name={@name} phx-feedback-for={@name} />
+      <%= for {label, value} <- @options do %>
+        <label class="flex items-center space-x-3 space-y-1">
+          <.input
+            name={@name <> "[]"}
+            type="checkbox"
+            id={@id <> "_#{value}"}
+            value={value}
+            checked={to_string(value) in @checked}
+            {@rest}
+          />
+          <div class="font-medium"><%= label %></div>
+        </label>
+      <% end %>
+      <%= if Enum.empty?(@options) do %>
+        <p class="text-sm font-semibold text-red-500">No available options</p>
+      <% end %>
+    </div>
+    """
+  end
+
+  def input(%{type: "checkbox"} = assigns) do
+    assigns =
+      assigns
+      |> assign_new(:checked, fn -> false end)
+      |> assign_new(:value, fn -> normalize_value("checkbox", assigns[:value]) end)
+      |> assign_new(:feedback_for, fn -> assigns.name end)
+      |> assign_defaults(checkbox_classes(assigns))
+
+    ~H"""
+    <input
+      type="checkbox"
+      value={@value}
+      name={@name}
+      phx-feedback-for={@feedback_for}
+      class={@classes}
+      checked={@checked}
+      {@rest}
+    />
+    """
+  end
+
+  def input(%{type: "datetime-local"} = assigns) do
     ~H"""
     <div class="datetime-select-wrapper">
       <input
-        type="datetime-local"
-        name={input_name(@form, @field)}
+        type={@type}
+        name={@name}
+        phx-feedback-for={@name}
         class={@classes}
-        phx-feedback-for={input_name(@form, @field)}
+        value={normalize_value(@type, @value)}
         {@rest}
       />
     </div>
     """
   end
 
-  defp textarea(assigns) do
+  def input(%{type: "textarea"} = assigns) do
     assigns =
       assigns
-      |> assign_defaults(text_input_classes(assigns))
-      |> assign_new(:maxcharacters, fn -> nil end)
       |> assign_new(:characters, fn -> "" end)
 
     ~H"""
-    <textarea
-      name={input_name(@form, @field)}
+    <textarea name={@name} class={@classes} rows="6" phx-feedback-for={@name} {@rest} />
+    <%= if @maxcharacters do %>
+      <small class="text-gray-500">
+        Recommended: <span class="font-bold"><%= @maxcharacters %></span>
+        characters. You've used
+        <%= if @maxcharacters < String.length(@characters || "") do %>
+          <span class="font-bold text-red-500">
+            <%= String.length(@characters || "") %>.
+          </span>
+        <% else %>
+          <span class="font-bold text-green-500">
+            <%= String.length(@characters || "") %>.
+          </span>
+        <% end %>
+      </small>
+    <% end %>
+    """
+  end
+
+  def input(%{type: "text"} = assigns) do
+    assigns =
+      assigns
+      |> assign_new(:characters, fn -> "" end)
+
+    ~H"""
+    <input
+      type={@type}
+      name={@name}
+      phx-feedback-for={@name}
       class={@classes}
-      rows="6"
-      phx-feedback-for={input_name(@form, @field)}
+      value={normalize_value(@type, @value)}
       {@rest}
     />
     <%= if @maxcharacters do %>
@@ -357,77 +435,9 @@ defmodule Literature.FormComponent do
     """
   end
 
-  defp select(assigns) do
-    assigns = assign_defaults(assigns, text_input_classes(assigns))
-
+  def input(assigns) do
     ~H"""
-    <select
-      id={@id}
-      name={input_name(@form, @field)}
-      phx-feedback-for={input_name(@form, @field)}
-      {@rest}
-    >
-      <option :if={@prompt} value=""><%= @prompt %></option>
-      <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
-    </select>
-    """
-  end
-
-  def checkbox(assigns) do
-    assigns = assign_defaults(assigns, checkbox_classes(assigns))
-
-    ~H"""
-    <input
-      type="checkbox"
-      name={input_name(@form, @field)}
-      phx-feedback-for={input_name(@form, @field)}
-      class={@classes}
-      {@rest}
-    />
-    """
-  end
-
-  def checkbox_group(assigns) do
-    assigns =
-      assigns
-      |> assign_defaults(text_input_classes(assigns))
-      |> assign_new(:checked, fn ->
-        values =
-          case input_value(assigns[:form], assigns[:field]) do
-            value when is_binary(value) -> [value]
-            value when is_list(value) -> value
-            _ -> []
-          end
-
-        Enum.map(values, &to_string/1)
-      end)
-      |> assign_new(:id_prefix, fn -> input_id(assigns[:form], assigns[:field]) <> "_" end)
-      |> assign_new(:layout, fn -> :col end)
-
-    ~H"""
-    <div class="">
-      <input type="hidden" name={input_name(@form, @field)} value="" />
-      <%= for {label, value} <- @options do %>
-        <label class="flex items-center space-x-3 space-y-1">
-          <.checkbox
-            form={@form}
-            field={@field}
-            id={@id_prefix <> to_string(value)}
-            name={input_name(@form, @field) <> "[]"}
-            checked_value={value}
-            unchecked_value=""
-            value={value}
-            checked={to_string(value) in @checked}
-            hidden_input={false}
-            {@rest}
-          />
-          <div class="font-medium"><%= label %></div>
-        </label>
-      <% end %>
-      <%= if Enum.empty?(@options) do %>
-        <p class="text-sm font-semibold text-red-500">No available options</p>
-      <% end %>
-    </div>
+    <input type={@type} name={@name} class={@classes} phx-feedback-for={@name} {@rest} />
     """
   end
 
@@ -449,7 +459,6 @@ defmodule Literature.FormComponent do
   defp assign_defaults(assigns, base_classes) do
     assigns
     |> assign_new(:type, fn -> "text" end)
-    |> assign_rest(~w(class label form field type options layout)a)
     |> assign_new(:classes, fn -> base_classes end)
   end
 

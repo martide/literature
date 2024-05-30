@@ -13,7 +13,7 @@
       <%= for {post, i} <- Enum.with_index(@author.published_posts) do %>
         <article class={"#{if i == 0, do: "row-span-3", else: "px-8 pb-10"} group"}>
           <%= if i == 0 do %>
-            <.link navigate={literature_path(@socket, :shot, post.slug)}>
+            <.link navigate={literature_path(@socket, :show, post.slug)}>
               <img
                 src={literature_image_url(post, :feature_image)}
                 alt={post.title}
