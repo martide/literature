@@ -107,7 +107,7 @@ defmodule Literature.MetaTagHelpers do
       |> assign(locales: Enum.filter(locales, &(&1.locale == ex_default_locale or show_tags?)))
 
     ~H"""
-    <link :for={locale <- @locales} href={locale.url} hreflang={locale.locale} ref="alternate" />
+    <link :for={locale <- @locales} href={locale.url} hreflang={locale.locale} rel="alternate" />
     """
   end
 

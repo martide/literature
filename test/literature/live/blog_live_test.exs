@@ -206,17 +206,17 @@ defmodule Literature.BlogLiveTest do
 
       assert get_element(
                html,
-               "link[href='#{current_url}'][hreflang='en'][rel='alternate']"
+               "link[href=\"#{current_url}\"][hreflang=\"en\"][rel=\"alternate\"]"
              )
 
       assert get_element(
                html,
-               "link[href='#{current_url}'][hreflang='x-default'][rel='alternate']"
+               "link[href=\"#{current_url}\"][hreflang='x-default'][rel='alternate']"
              )
 
       assert get_element(
                html,
-               "link[href='http://example.com/de'][hreflang='de'][rel='alternate']"
+               "link[href=\"http://example.com/de\"][hreflang=\"de\"][rel=\"alternate\"]"
              )
 
       refute get_element(

@@ -220,8 +220,8 @@
         <div>
           <%= if @post.prev_post do %>
             <.link
-              navigate={literature_path(@socket, :show, @post.prev_post.slug)}
               class="font-semibold text-lg flex items-center space-x-2 group"
+              patch={literature_path(@socket, :show, @post.prev_post.slug)}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -245,7 +245,7 @@
         <div>
           <%= if @post.next_post do %>
             <.link
-              navigate={literature_path(@socket, :show, @post.next_post.slug)}
+              patch={literature_path(@socket, :show, @post.next_post.slug)}
               class="font-semibold text-lg flex items-center space-x-2 group"
             >
               <span>Next Post</span>

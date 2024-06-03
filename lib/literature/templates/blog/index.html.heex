@@ -13,7 +13,7 @@
             <.responsive_img_tag post={post} field={:feature_image} alt={post.feature_image_alt} />
           </div>
           <div class="max-w-3xl mx-auto py-8">
-            <.link navigate={literature_path(@socket, :show, post.slug)}>
+            <.link patch={literature_path(@socket, :show, post.slug)}>
               <h2 class="mb-3 font-extrabold text-3xl group-hover:text-primary-700 transition duration-300 ease-in-out">
                 <%= post.title %>
               </h2>
@@ -24,7 +24,7 @@
                 <span>·</span>
                 <%= for {tag, index} <- Enum.with_index(post.tags) do %>
                   <.link
-                    navigate={literature_path(@socket, :show, tag.slug)}
+                    patch={literature_path(@socket, :show, tag.slug)}
                     class="text-primary-500 hover:text-primary-700 uppercase text-xs font-semibold transition duration-300 ease-in-out"
                   >
                     <%= tag.name %><%= if index < length(post.tags) - 1, do: ", ", else: "" %>
@@ -38,7 +38,7 @@
             <div class="flex items-center justify-between font-semibold text-xs border-t border-gray-300 mt-10 py-5">
               <div class="uppercase flex items-center space-x-5 font-bold">
                 <.link
-                  href={literature_path(@socket, :show, post.slug)}
+                  patch={literature_path(@socket, :show, post.slug)}
                   class="text-primary-500 flex items-center space-x-1"
                 >
                   <svg
@@ -97,7 +97,7 @@
         <div class="justify-self-start">
           <%= if @page.page_number > 1 do %>
             <.link
-              navigate={literature_path(@socket, :index, @page.page_number - 1)}
+              patch={literature_path(@socket, :index, @page.page_number - 1)}
               class="font-semibold flex items-center space-x-2 group"
               rel="prev"
             >
@@ -125,7 +125,7 @@
         <div class="justify-self-end">
           <%= if @page.page_number < @page.total_pages do %>
             <.link
-              href={literature_path(@socket, :index, @page.page_number + 1)}
+              patch={literature_path(@socket, :index, @page.page_number + 1)}
               class="font-semibold flex items-center space-x-2 group"
               rel="next"
             >
