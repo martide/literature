@@ -26,7 +26,7 @@ defmodule Literature.ImageComponent do
               width={width}
               height={height}
               class={@classes}
-              loading={if @lazy_load, do: "lazy", else: []}
+              loading={if @lazy_load, do: "lazy"}
             />
           </picture>
         <% _nil -> %>
@@ -34,7 +34,7 @@ defmodule Literature.ImageComponent do
             src={literature_image_url(@post, @field)}
             alt={@alt}
             class={@classes}
-            loading={if @lazy_load, do: "lazy", else: []}
+            loading={if @lazy_load, do: "lazy"}
           />
       <% end %>
     <% end %>

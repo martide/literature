@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={"Literature #{Application.spec(:literature, :vsn)}"} />
 
-    <%= render_all_tags(assigns[:meta_tags] || %{}, current_url(@conn)) %>
+    <.meta_tags tags={assigns[:meta_tags] || %{}} current_url={current_url(@conn)} />
 
     <link rel="canonical" href={canonical_path(@conn)} />
-    <%= render_pagination_link_tags(
-      assigns,
-      current_url(@conn, %{}),
-      @conn.private.routes
-    ) %>
+    <.pagination_link_tags
+      routes={@conn.private.routes}
+      page={assigns[:page]}
+      current_url={current_url(@conn, %{})}
+    />
     <link
       rel="shortcut icon"
       type="image/png"
@@ -28,8 +28,8 @@
 
     <link phx-track-static rel="stylesheet" href={application_css_path(@conn, @view_module)} />
     <!-- Language tag -->
-    <%= render_publication_language_tags(@publication, current_url(@conn, %{})) %>
-    <%= render_post_language_tags(assigns[:post], @publication) %>
+    <.publication_language_tags publication={@publication} current_url={current_url(@conn, %{})} />
+    <.post_language_tags post={assigns[:post]} publication={@publication} />
     <!-- END Language tag -->
     <script
       defer
@@ -37,6 +37,8 @@
       type="text/javascript"
       src={application_js_path(@conn, @view_module)}
     >
+      tagstagstags
+          
     </script>
   </head>
   <body>

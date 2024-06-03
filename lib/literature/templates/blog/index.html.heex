@@ -38,7 +38,7 @@
             <div class="flex items-center justify-between font-semibold text-xs border-t border-gray-300 mt-10 py-5">
               <div class="uppercase flex items-center space-x-5 font-bold">
                 <.link
-                  navigate={literature_path(@socket, :show, post.slug)}
+                  href={literature_path(@socket, :show, post.slug)}
                   class="text-primary-500 flex items-center space-x-1"
                 >
                   <svg

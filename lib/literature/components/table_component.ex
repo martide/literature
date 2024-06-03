@@ -45,7 +45,7 @@ defmodule Literature.TableComponent do
               class="text-sm rounded-lg focus:outline-none block w-full p-2.5"
               placeholder="Find"
               autofocus={true}
-              phx_debounce={300}
+              phx-debounce={300}
             />
           </form>
           <%= filter_status(Enum.into(@columns, %{}), assigns) %>
@@ -340,7 +340,7 @@ defmodule Literature.TableComponent do
       <label class="flex items-center cursor-pointer p-3">
         <input
           type="radio"
-          name="filter['status']"
+          name="filter[status]"
           value={@value}
           class="w-4 h-4 border-gray-300 text-primary-700 bg-primary-700"
           checked={@status == @value}
