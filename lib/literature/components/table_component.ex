@@ -21,7 +21,10 @@ defmodule Literature.TableComponent do
     <div class="col-span-4 relative sm:rounded-lg w-full">
       <div class="flex items-center justify-between mb-5">
         <div class="w-1/2 space-y-3">
-          <form
+          <.form
+            :let={f}
+            for={%{}}
+            as={:search}
             phx-target={@myself}
             phx-change="search"
             class="flex items-center border-gray-300 border rounded-lg text-gray-900 pl-2.5"
@@ -40,14 +43,14 @@ defmodule Literature.TableComponent do
             </svg>
             <input
               type="search"
-              name="search['q']"
+              name={f[:q].name}
               value={@params["q"]}
               class="text-sm rounded-lg focus:outline-none block w-full p-2.5"
               placeholder="Find"
               autofocus={true}
               phx-debounce={300}
             />
-          </form>
+          </.form>
           <%= filter_status(Enum.into(@columns, %{}), assigns) %>
         </div>
         <%= if @actions_modal? do %>

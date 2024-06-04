@@ -13,7 +13,7 @@
             <.responsive_img_tag post={post} field={:feature_image} alt={post.feature_image_alt} />
           </div>
           <div class="max-w-3xl mx-auto py-8">
-            <.link patch={literature_path(@socket, :show, post.slug)}>
+            <.link navigate={literature_path(@socket, :show, post.slug)}>
               <h2 class="mb-3 font-extrabold text-3xl group-hover:text-primary-700 transition duration-300 ease-in-out">
                 <%= post.title %>
               </h2>
@@ -22,14 +22,13 @@
                 <span>·</span>
                 <span><%= reading_time(post.html) %></span>
                 <span>·</span>
-                <%= for {tag, index} <- Enum.with_index(post.tags) do %>
-                  <.link
-                    patch={literature_path(@socket, :show, tag.slug)}
-                    class="text-primary-500 hover:text-primary-700 uppercase text-xs font-semibold transition duration-300 ease-in-out"
-                  >
-                    <%= tag.name %><%= if index < length(post.tags) - 1, do: ", ", else: "" %>
-                  </.link>
-                <% end %>
+                <.link
+                  :for={{tag, index} <- Enum.with_index(post.tags)}
+                  navigate={literature_path(@socket, :show, tag.slug)}
+                  class="text-primary-500 hover:text-primary-700 uppercase text-xs font-semibold transition duration-300 ease-in-out"
+                >
+                  <%= tag.name %><%= if index < length(post.tags) - 1, do: ", ", else: "" %>
+                </.link>
               </div>
               <p class="font-light tracking-wide text-gray-700">
                 <%= post.excerpt %>
@@ -38,8 +37,9 @@
             <div class="flex items-center justify-between font-semibold text-xs border-t border-gray-300 mt-10 py-5">
               <div class="uppercase flex items-center space-x-5 font-bold">
                 <.link
-                  patch={literature_path(@socket, :show, post.slug)}
+                  navigate={literature_path(@socket, :show, post.slug)}
                   class="text-primary-500 flex items-center space-x-1"
+                  target="_blank"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -55,9 +55,11 @@
                   </svg>
                   <span>Read Now</span>
                 </.link>
+
                 <.link
                   href={"https://getpocket.com/save?url=#{literature_path(@socket, :show, post.slug)}"}
                   target="_blank"
+                  rel="noopener"
                   class="text-gray-900 flex items-center space-x-1"
                 >
                   <svg

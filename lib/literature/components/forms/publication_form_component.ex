@@ -64,6 +64,7 @@ defmodule Literature.PublicationFormComponent do
           <.form_field
             form={f}
             type="select"
+            prompt=""
             options={@available_languages}
             field={:ex_default_locale}
             label="Ex-default Language"
