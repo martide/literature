@@ -8,9 +8,12 @@
         <span><%= reading_time(@post.html) %></span>
         <span>·</span>
         <%= for {tag, index} <- Enum.with_index(@post.tags) do %>
-          <%= link to: literature_path(@socket, :show, tag.slug), class: "text-primary-500 hover:text-primary-700 uppercase text-xs font-semibold transition duration-300 ease-in-out" do %>
+          <.link
+            navigate={literature_path(@socket, :show, tag.slug)}
+            class="text-primary-500 hover:text-primary-700 uppercase text-xs font-semibold transition duration-300 ease-in-out"
+          >
             <%= tag.name %><%= if index < length(@post.tags) - 1, do: ", ", else: "" %>
-          <% end %>
+          </.link>
         <% end %>
       </div>
       <div class="h-[32rem] overflow-hidden relative my-14">
@@ -200,11 +203,12 @@
       </div>
       <%= for author <- @post.authors do %>
         <div class="mt-14 flex space-x-6">
-          <%= img_tag(literature_image_url(author, :profile_image),
-            alt: author.name,
-            loading: "lazy",
-            class: "rounded-full w-16 h-16 flex-shrink-0"
-          ) %>
+          <img
+            src={literature_image_url(author, :profile_image)}
+            alt={author.name}
+            loading="lazy"
+            class="rounded-full w-16 h-16 flex-shrink-0"
+          />
           <div class="space-y-4">
             <p class="font-bold text-lg"><%= author.name %></p>
             <p class="text-gray-500"><%= author.bio %></p>
@@ -215,7 +219,10 @@
       <div class="flex justify-between mt-12">
         <div>
           <%= if @post.prev_post do %>
-            <%= link to: literature_path(@socket, :show, @post.prev_post.slug), class: "font-semibold text-lg flex items-center space-x-2 group" do %>
+            <.link
+              class="font-semibold text-lg flex items-center space-x-2 group"
+              patch={literature_path(@socket, :show, @post.prev_post.slug)}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -232,12 +239,15 @@
               </svg>
 
               <span>Previous Post</span>
-            <% end %>
+            </.link>
           <% end %>
         </div>
         <div>
           <%= if @post.next_post do %>
-            <%= link to: literature_path(@socket, :show, @post.next_post.slug), class: "font-semibold text-lg flex items-center space-x-2 group" do %>
+            <.link
+              patch={literature_path(@socket, :show, @post.next_post.slug)}
+              class="font-semibold text-lg flex items-center space-x-2 group"
+            >
               <span>Next Post</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -253,7 +263,7 @@
                   d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
                 />
               </svg>
-            <% end %>
+            </.link>
           <% end %>
         </div>
       </div>
@@ -261,16 +271,17 @@
         <p class="uppercase font-semibold mb-8 text-sm tracking-wider">You might also like...</p>
         <div class="grid md:grid-cols-3 gap-5 font-semibold">
           <%= for similar_post <- @post.similar_posts do %>
-            <%= link to: literature_path(@socket, :show, similar_post.slug), class: "space-y-4" do %>
-              <%= img_tag(literature_image_url(similar_post, :feature_image),
-                alt: similar_post.title,
-                loading: "lazy"
-              ) %>
+            <.link navigate={literature_path(@socket, :show, similar_post.slug)} class="space-y-4">
+              <img
+                src={literature_image_url(similar_post, :feature_image)}
+                alt={similar_post.title}
+                loading="lazy"
+              />
               <p class="capitalize tracking-wide"><%= similar_post.title %></p>
               <p class="text-xs uppercase text-gray-500">
                 <%= date_format(similar_post.published_at) %>
               </p>
-            <% end %>
+            </.link>
           <% end %>
         </div>
       </div>

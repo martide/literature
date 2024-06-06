@@ -20,17 +20,22 @@ defmodule Literature.ImageComponent do
           <picture>
             <source srcset={load_srcset(:jpg, {file, @post})} />
             <source srcset={load_srcset(:webp, {file, @post})} />
-            <%= img_tag(
-              literature_image_url(@post, @field),
-              [class: @classes, alt: @alt, width: width, height: height] ++
-                if(@lazy_load, do: [loading: "lazy"], else: [])
-            ) %>
+            <img
+              src={literature_image_url(@post, @field)}
+              alt={@alt}
+              width={width}
+              height={height}
+              class={@classes}
+              loading={if @lazy_load, do: "lazy"}
+            />
           </picture>
         <% _nil -> %>
-          <%= img_tag(
-            literature_image_url(@post, @field),
-            [class: @classes, alt: @alt] ++ if(@lazy_load, do: [loading: "lazy"], else: [])
-          ) %>
+          <img
+            src={literature_image_url(@post, @field)}
+            alt={@alt}
+            class={@classes}
+            loading={if @lazy_load, do: "lazy"}
+          />
       <% end %>
     <% end %>
     """

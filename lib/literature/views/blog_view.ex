@@ -1,5 +1,6 @@
 defmodule Literature.BlogView do
   use Literature.Web, :view
+  use Phoenix.Component
 
   import Literature.ImageComponent
   import Literature.LayoutView, only: [asset_path: 2]

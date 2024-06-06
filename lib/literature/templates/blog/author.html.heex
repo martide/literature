@@ -1,10 +1,11 @@
 <section>
   <div class="my-10">
     <div class="text-center space-y-3 max-w-2xl mx-auto">
-      <%= img_tag(literature_image_url(@author, :profile_image),
-        alt: @author.name,
-        class: "rounded-full h-40 w-40 mx-auto"
-      ) %>
+      <img
+        src={literature_image_url(@author, :profile_image)}
+        alt={@author.name}
+        class="rounded-full h-40 w-40 mx-auto"
+      />
       <h2 class="text-4xl font-bold"><%= @author.name %></h2>
       <p class="text-gray-500 text-xl font-light tracking-wide"><%= @author.bio %></p>
     </div>
@@ -12,21 +13,25 @@
       <%= for {post, i} <- Enum.with_index(@author.published_posts) do %>
         <article class={"#{if i == 0, do: "row-span-3", else: "px-8 pb-10"} group"}>
           <%= if i == 0 do %>
-            <%= link to: literature_path(@socket, :show, post.slug) do %>
-              <%= img_tag(literature_image_url(post, :feature_image),
-                alt: post.title,
-                class: "rounded-lg mb-5",
-                loading: "lazy"
-              ) %>
-            <% end %>
+            <.link navigate={literature_path(@socket, :show, post.slug)}>
+              <img
+                src={literature_image_url(post, :feature_image)}
+                alt={post.title}
+                class="rounded-lg mb-5"
+                loading="lazy"
+              />
+            </.link>
           <% end %>
           <h2 class="font-bold text-2xl mb-2 group-hover:text-primary-500 transition duration-300 ease-in-out">
-            <%= link(post.title, to: literature_path(@socket, :show, post.slug)) %>
+            <.link navigate={literature_path(@socket, :show, post.slug)}><%= post.title %></.link>
           </h2>
           <p class="font-light text-gray-500 tracking-wide mb-4">
             <%= post.excerpt %>
           </p>
-          <%= link to: literature_path(@socket, :show, post.slug), class: "text-primary-600 flex items-center space-x-2 font-medium" do %>
+          <.link
+            navigate={literature_path(@socket, :show, post.slug)}
+            class="text-primary-600 flex items-center space-x-2 font-medium"
+          >
             <span>Read more</span>
             <svg
               class="w-4 h-4"
@@ -41,7 +46,7 @@
               >
               </path>
             </svg>
-          <% end %>
+          </.link>
         </article>
       <% end %>
     </div>

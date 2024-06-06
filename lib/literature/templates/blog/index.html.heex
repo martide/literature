@@ -13,7 +13,7 @@
             <.responsive_img_tag post={post} field={:feature_image} alt={post.feature_image_alt} />
           </div>
           <div class="max-w-3xl mx-auto py-8">
-            <%= link to: literature_path(@socket, :show, post.slug) do %>
+            <.link navigate={literature_path(@socket, :show, post.slug)}>
               <h2 class="mb-3 font-extrabold text-3xl group-hover:text-primary-700 transition duration-300 ease-in-out">
                 <%= post.title %>
               </h2>
@@ -22,19 +22,25 @@
                 <span>·</span>
                 <span><%= reading_time(post.html) %></span>
                 <span>·</span>
-                <%= for {tag, index} <- Enum.with_index(post.tags) do %>
-                  <%= link to: literature_path(@socket, :show, tag.slug), class: "text-primary-500 hover:text-primary-700 uppercase text-xs font-semibold transition duration-300 ease-in-out" do %>
-                    <%= tag.name %><%= if index < length(post.tags) - 1, do: ", ", else: "" %>
-                  <% end %>
-                <% end %>
+                <.link
+                  :for={{tag, index} <- Enum.with_index(post.tags)}
+                  navigate={literature_path(@socket, :show, tag.slug)}
+                  class="text-primary-500 hover:text-primary-700 uppercase text-xs font-semibold transition duration-300 ease-in-out"
+                >
+                  <%= tag.name %><%= if index < length(post.tags) - 1, do: ", ", else: "" %>
+                </.link>
               </div>
               <p class="font-light tracking-wide text-gray-700">
                 <%= post.excerpt %>
               </p>
-            <% end %>
+            </.link>
             <div class="flex items-center justify-between font-semibold text-xs border-t border-gray-300 mt-10 py-5">
               <div class="uppercase flex items-center space-x-5 font-bold">
-                <%= link to: literature_path(@socket, :show, post.slug), class: "text-primary-500 flex items-center space-x-1" do %>
+                <.link
+                  navigate={literature_path(@socket, :show, post.slug)}
+                  class="text-primary-500 flex items-center space-x-1"
+                  target="_blank"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -48,8 +54,14 @@
                     />
                   </svg>
                   <span>Read Now</span>
-                <% end %>
-                <%= link to: "https://getpocket.com/save?url=#{literature_path(@socket, :show, post.slug)}", target: "_blank", class: "text-gray-900 flex items-center space-x-1" do %>
+                </.link>
+
+                <.link
+                  href={"https://getpocket.com/save?url=#{literature_path(@socket, :show, post.slug)}"}
+                  target="_blank"
+                  rel="noopener"
+                  class="text-gray-900 flex items-center space-x-1"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -63,15 +75,16 @@
                     />
                   </svg>
                   <span>Read Later</span>
-                <% end %>
+                </.link>
               </div>
               <div class="flex items-center">
                 <%= for author <- post.authors do %>
-                  <%= img_tag(literature_image_url(author, :profile_image),
-                    class: "rounded-full h-7 w-7 mr-2",
-                    loading: "lazy",
-                    alt: author.name
-                  ) %>
+                  <img
+                    src={literature_image_url(author, :profile_image)}
+                    class="rounded-full h-7 w-7 mr-2"
+                    loading="lazy"
+                    alt={author.name}
+                  />
                   <span class="mr-1 text-gray-400">By: </span>
                   <span class="text-gray-900">
                     <%= author.name %>
@@ -85,7 +98,11 @@
       <div class="grid grid-cols-3">
         <div class="justify-self-start">
           <%= if @page.page_number > 1 do %>
-            <%= link to: literature_path(@socket, :index, @page.page_number - 1), class: "font-semibold flex items-center space-x-2 group", rel: "prev" do %>
+            <.link
+              patch={literature_path(@socket, :index, @page.page_number - 1)}
+              class="font-semibold flex items-center space-x-2 group"
+              rel="prev"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -101,7 +118,7 @@
                 />
               </svg>
               <span>Older Post</span>
-            <% end %>
+            </.link>
           <% end %>
         </div>
         <div class="invisible sm:visible border rounded-full text-gray-400 font-semibold text-sm px-5 py-2 justify-self-center">
@@ -109,7 +126,11 @@
         </div>
         <div class="justify-self-end">
           <%= if @page.page_number < @page.total_pages do %>
-            <%= link to: literature_path(@socket, :index, @page.page_number + 1), class: "font-semibold flex items-center space-x-2 group", rel: "next" do %>
+            <.link
+              patch={literature_path(@socket, :index, @page.page_number + 1)}
+              class="font-semibold flex items-center space-x-2 group"
+              rel="next"
+            >
               <span>Next Post</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -125,7 +146,7 @@
                   d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
                 />
               </svg>
-            <% end %>
+            </.link>
           <% end %>
         </div>
       </div>
