@@ -10,7 +10,7 @@ by adding `literature` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:literature, "~> 0.1"}
+    {:literature, "~> 0.3"}
   ]
 end
 ```
@@ -18,4 +18,3 @@ end
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at <https://hexdocs.pm/literature>.
-
