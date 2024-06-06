@@ -17,8 +17,8 @@ const customImageParser = ({ data }) => {
 const parser = editorParser({ image: customImageParser });
 
 const HTMLEditorJS = element => {
-  const inputEditorJSON = document.querySelector('#post-form_editor_json')
-  const inputHTML = document.querySelector('#post-form_html')
+  const inputEditorJSON = document.querySelector('#form-editor-json')
+  const inputHTML = document.querySelector('#form-html')
 
   inputHTML.value = element.dataset.postData ?
     JSON.stringify(parser.parse(JSON.parse(element.dataset.postData))) : ""
