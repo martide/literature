@@ -245,6 +245,7 @@ defmodule Literature.FormComponent do
   attr :name, :any
   attr :multiple, :boolean, default: false
   attr :maxcharacters, :integer
+  attr :characters, :string
   attr :classes, :string
   attr :label_classes, :string
   attr :prompt, :string, default: nil
@@ -392,9 +393,7 @@ defmodule Literature.FormComponent do
       |> assign_new(:characters, fn -> "" end)
 
     ~H"""
-    <textarea name={@name} class={@classes} rows="6" phx-feedback-for={@name} {@rest}>
-      <%= normalize_value("textarea", @value) %>
-    </textarea>
+    <textarea name={@name} class={@classes} rows="6" phx-feedback-for={@name} {@rest}><%= normalize_value("textarea", @value) %></textarea>
     <%= if @maxcharacters do %>
       <small class="text-gray-500">
         Recommended: <span class="font-bold"><%= @maxcharacters %></span>
