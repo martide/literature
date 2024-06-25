@@ -106,7 +106,7 @@ defmodule Literature.AuthorFormComponent do
         {:noreply,
          socket
          |> put_flash(:success, "Author updated successfully")
-         |> push_redirect(to: socket.assigns.return_to)}
+         |> push_navigate(to: socket.assigns.return_to)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, :changeset, changeset)}
@@ -124,7 +124,7 @@ defmodule Literature.AuthorFormComponent do
         {:noreply,
          socket
          |> put_flash(:success, "Author created successfully")
-         |> push_redirect(to: socket.assigns.return_to)}
+         |> push_navigate(to: socket.assigns.return_to)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}

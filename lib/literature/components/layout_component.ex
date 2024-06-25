@@ -115,7 +115,7 @@ defmodule Literature.LayoutComponent do
 
   def success_alert(assigns) do
     ~H"""
-    <%= if live_flash(@flash, :success) do %>
+    <%= if Phoenix.Flash.get(@flash, :success) do %>
       <div class="flex p-4 mb-4 bg-primary-100 rounded-lg" role="alert">
         <svg
           aria-hidden="true"
@@ -133,7 +133,7 @@ defmodule Literature.LayoutComponent do
         </svg>
         <span class="sr-only">Success</span>
         <div class="ml-3 text-sm font-medium text-primary-700">
-          <%= live_flash(@flash, :success) %>
+          <%= Phoenix.Flash.get(@flash, :success) %>
         </div>
         <button
           type="button"
@@ -165,7 +165,7 @@ defmodule Literature.LayoutComponent do
 
   def error_alert(assigns) do
     ~H"""
-    <%= if live_flash(@flash, :error) do %>
+    <%= if Phoenix.Flash.get(@flash, :error) do %>
       <div class="flex p-4 mb-4 bg-red-100 rounded-lg" role="alert">
         <svg
           aria-hidden="true"
@@ -183,7 +183,7 @@ defmodule Literature.LayoutComponent do
         </svg>
         <span class="sr-only">Success</span>
         <div class="ml-3 text-sm font-medium text-red-700">
-          <%= live_flash(@flash, :error) %>
+          <%= Phoenix.Flash.get(@flash, :error) %>
         </div>
         <button
           type="button"
