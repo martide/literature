@@ -94,7 +94,7 @@ defmodule Literature.PostLive do
   def handle_info({:redirect, path, {type, msg}}, socket) do
     socket
     |> put_flash(type, msg)
-    |> push_redirect(to: path)
+    |> push_navigate(to: path)
     |> then(&{:noreply, &1})
   end
 
