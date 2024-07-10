@@ -12,14 +12,15 @@ defmodule Literature.ImageComponent do
       |> assign_new(:alt, fn -> "" end)
       |> assign_new(:classes, fn -> "object-cover object-center w-full" end)
       |> assign_new(:lazy_load, fn -> true end)
+      |> assign_new(:sizes, fn -> nil end)
 
     ~H"""
     <%= if file = Map.get(@post, @field) do %>
       <%= case get_img_size(@post, @field) do %>
         <% {width, height} -> %>
           <picture>
-            <source srcset={load_srcset(:jpg, {file, @post})} />
-            <source srcset={load_srcset(:webp, {file, @post})} />
+            <source srcset={load_srcset(:webp, {file, @post})} sizes={@sizes} />
+            <source srcset={load_srcset(:jpg, {file, @post})} sizes={@sizes} />
             <img
               src={literature_image_url(@post, @field)}
               alt={@alt}
