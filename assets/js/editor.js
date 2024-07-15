@@ -20,6 +20,8 @@ const HTMLEditorJS = element => {
   const inputEditorJSON = document.querySelector('#form-editor-json')
   const inputHTML = document.querySelector('#form-html')
 
+  inputEditorJSON.value = element.dataset.postData?
+    JSON.stringify(JSON.parse(element.dataset.postData)) : ""
   inputHTML.value = element.dataset.postData ?
     JSON.stringify(parser.parse(JSON.parse(element.dataset.postData))) : ""
 
