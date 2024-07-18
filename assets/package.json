@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "@editorjs/editorjs": "^2.29.1",
-    "@editorjs/header": "^2.8.1",
+    "@editorjs/header": "^2.8.7",
     "@editorjs/image": "github:martide/editor-js-image#WEB-8452-image-alt",
     "@editorjs/list": "^1.9.0",
     "@tailwindcss/typography": "^0.5.13",
