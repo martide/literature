@@ -1,6 +1,11 @@
 # https://github.com/elixir-lang/elixir/releases
-elixir 1.16.1-otp-26
+
+elixir 1.17.3-otp-27
+
 # https://github.com/erlang/otp/releases
-erlang 26.2.3
+
+erlang 27.1
+
 # https://nodejs.org/en
-nodejs 20.11.1
+
+nodejs 20.17.0
