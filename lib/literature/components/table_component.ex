@@ -2,7 +2,7 @@ defmodule Literature.TableComponent do
   @moduledoc false
   use Literature.Web, :live_component
 
-  import Literature.Pagination
+  import Literature.PaginationComponent
 
   alias Plug.Conn.Query
 

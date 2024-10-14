@@ -29,3 +29,9 @@ config :literature, :sitemap,
   router: Literature.Test.Router,
   changefreq: :daily,
   path: "priv/static"
+
+config :flop,
+  repo: Literature.Test.Repo,
+  default_limit: 50,
+  max_limit: 10_000,
+  default_pagination_type: :page
