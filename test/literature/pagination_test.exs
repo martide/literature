@@ -57,7 +57,7 @@ defmodule Literature.PaginationTest do
     end
 
     test "can respect a max_limit configuration", %{posts: posts} do
-      Application.put_env(:flop, :max_limit, 10)
+      Application.put_env(:flop, :max_limit, 3)
 
       assert_raise Flop.InvalidParamsError, fn ->
         Repo.paginate(posts, page: 2, page_size: 200)
