@@ -84,7 +84,7 @@ defmodule LiteratureTest do
         post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
 
       attrs = %{"preload" => ~w(authors tags)a}
-      assert %Scrivener.Page{entries: entries} = Literature.paginate_posts(attrs)
+      assert %Literature.Pagination.Page{entries: entries} = Literature.paginate_posts(attrs)
       assert entries == [%{post | status: nil, authors_ids: nil, tags_ids: nil}]
     end
 
@@ -130,7 +130,7 @@ defmodule LiteratureTest do
 
       attrs = %{"q" => "keyword phrase", "preload" => ~w(authors tags)a}
 
-      assert %Scrivener.Page{entries: entries} = Literature.paginate_posts(attrs)
+      assert %Literature.Pagination.Page{entries: entries} = Literature.paginate_posts(attrs)
 
       post_ids = Enum.map(entries, & &1.id)
 
@@ -158,7 +158,7 @@ defmodule LiteratureTest do
         )
 
       attrs = %{"tag_slug" => tag.slug, "preload" => ~w(authors tags)a}
-      assert %Scrivener.Page{entries: entries} = Literature.paginate_posts(attrs)
+      assert %Literature.Pagination.Page{entries: entries} = Literature.paginate_posts(attrs)
       assert entries == [%{post | status: nil, authors_ids: nil, tags_ids: nil}]
     end
 
@@ -202,7 +202,7 @@ defmodule LiteratureTest do
           published_at: DateTime.utc_now() |> DateTime.add(2, :day)
         )
 
-      assert %Scrivener.Page{entries: entries} =
+      assert %Literature.Pagination.Page{entries: entries} =
                Literature.paginate_posts(%{"status" => "published"})
 
       post_ids = Enum.map(entries, & &1.id)
@@ -212,12 +212,12 @@ defmodule LiteratureTest do
       refute draft_post.id in post_ids
       refute scheduled_post.id in post_ids
 
-      assert %Scrivener.Page{entries: [post]} =
+      assert %Literature.Pagination.Page{entries: [post]} =
                Literature.paginate_posts(%{"status" => "drafts"})
 
       assert post.id == draft_post.id
 
-      assert %Scrivener.Page{entries: [post]} =
+      assert %Literature.Pagination.Page{entries: [post]} =
                Literature.paginate_posts(%{"status" => "scheduled"})
 
       assert post.id == scheduled_post.id
@@ -730,7 +730,7 @@ defmodule LiteratureTest do
       publication = publication_fixture()
       redirect = redirect_fixture(publication_id: publication.id)
 
-      assert %Scrivener.Page{entries: entries} =
+      assert %Literature.Pagination.Page{entries: entries} =
                Literature.paginate_redirects(%{"publication_slug" => publication.slug})
 
       assert entries == [redirect]
@@ -755,8 +755,7 @@ defmodule LiteratureTest do
 
       attrs = %{"q" => "keyword", "publication_slug" => publication.slug}
 
-      assert %Scrivener.Page{entries: entries} =
-               Literature.paginate_redirects(attrs)
+      assert %Literature.Pagination.Page{entries: entries} = Literature.paginate_redirects(attrs)
 
       redirect_ids = Enum.map(entries, & &1.id)
 

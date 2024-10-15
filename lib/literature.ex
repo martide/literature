@@ -25,7 +25,7 @@ defmodule Literature do
   ## Examples
 
       iex> paginate_authors()
-      %Scrivener.Page{entries: [%Author{}, ...], ...}
+      %Literature.Pagination.Page{entries: [%Author{}, ...], ...}
 
   """
   def paginate_authors(attrs \\ []) do
@@ -156,7 +156,7 @@ defmodule Literature do
   ## Examples
 
       iex> paginate_posts()
-      %Scrivener.Page{entries: [%Post{}, ...], ...}
+      %Literature.Pagination.Page{entries: [%Post{}, ...], ...}
 
   """
   def paginate_posts(attrs \\ []) do
@@ -407,7 +407,7 @@ defmodule Literature do
   ## Examples
 
       iex> paginate_tags()
-      %Scrivener.Page{entries: [%Tag{}, ...], ...}
+      %Literature.Pagination.Page{entries: [%Tag{}, ...], ...}
 
   """
   def paginate_tags(attrs \\ []) do
@@ -540,7 +540,7 @@ defmodule Literature do
   ## Examples
 
       iex> paginate_redirects()
-      %Scrivener.Page{entries: [%Redirect{}, ...], ...}
+      %Literature.Pagination.Page{entries: [%Redirect{}, ...], ...}
 
   """
   def paginate_redirects(attrs \\ []) do

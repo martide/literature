@@ -53,7 +53,7 @@ defmodule Literature.MixProject do
       {:postgrex, ">= 0.0.0", only: :test},
 
       # Pagination
-      {:scrivener_ecto, "~> 3.0"},
+      {:flop, "~> 0.26"},
 
       # Images
       {:mogrify, "~> 0.9"},

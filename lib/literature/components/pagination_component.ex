@@ -1,4 +1,4 @@
-defmodule Literature.Pagination do
+defmodule Literature.PaginationComponent do
   @moduledoc false
   use Phoenix.Component
 

@@ -5,5 +5,5 @@ defmodule Literature.Test.Repo do
     otp_app: :literature,
     adapter: Ecto.Adapters.Postgres
 
-  use Scrivener, page_size: 50
+  use Literature.Pagination
 end

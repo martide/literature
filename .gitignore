@@ -27,3 +27,4 @@ npm-debug.log
 /assets/node_modules/
 
 .DS_Store
+*.elixir_ls
