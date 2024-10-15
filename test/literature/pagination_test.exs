@@ -10,6 +10,11 @@ defmodule Literature.PaginationTest do
 
   setup :setup_posts
 
+  setup do
+    original_config = Application.get_all_env(:flop)
+    on_exit(fn -> Application.put_all_env(flop: original_config) end)
+  end
+
   describe "paginate Literature resource / and Ecto query using repo module" do
     test "can paginate resource using a Repo module", %{posts: posts} do
       page = Repo.paginate(Post)

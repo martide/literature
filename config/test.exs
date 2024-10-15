@@ -33,5 +33,5 @@ config :literature, :sitemap,
 config :flop,
   repo: Literature.Test.Repo,
   default_limit: 50,
-  max_limit: 10_000,
+  max_limit: false,
   default_pagination_type: :page
