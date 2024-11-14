@@ -41,6 +41,8 @@ defmodule Literature.RedirectLiveTest do
       |> element("button", "Create new")
       |> render_click()
 
+      assert has_element?(view, "button[type='submit'][form='redirect-form']", "Save")
+
       view
       |> form("#redirect-form", redirect: @create_attrs)
       |> render_submit()
@@ -60,6 +62,8 @@ defmodule Literature.RedirectLiveTest do
       assert html =~ "Redirects"
 
       assert view |> element("#edit-#{redirect.id}") |> render_click() =~ "Edit Redirect"
+
+      assert has_element?(view, "button[type='submit'][form='redirect-form']", "Save")
 
       assert view
              |> form("#redirect-form", redirect: @invalid_attrs)
