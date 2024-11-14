@@ -4,6 +4,7 @@ defmodule LiteratureTest do
   import Literature.Helpers, only: [atomize_keys_to_string: 1]
   import Literature.Test.Fixtures
 
+  alias Ecto.Adapters.SQL
   alias Literature
   alias Literature.Tag
 
@@ -451,8 +452,7 @@ defmodule LiteratureTest do
       local_now = utc_now |> Timex.local()
       query_2 = where(Post, [q], q.is_published and q.published_at <= ^local_now)
 
-      assert Ecto.Adapters.SQL.to_sql(:all, Repo, query_1) ==
-               Ecto.Adapters.SQL.to_sql(:all, Repo, query_2)
+      assert SQL.to_sql(:all, Repo, query_1) == SQL.to_sql(:all, Repo, query_2)
     end
 
     test "custom_position update and preloading" do
