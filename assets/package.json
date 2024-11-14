@@ -8,7 +8,7 @@
     "watch": "npm-run-all --parallel watch:*"
   },
   "devDependencies": {
-    "@editorjs/editorjs": "^2.30.6",
+    "@editorjs/editorjs": "^2.30.7",
     "@editorjs/header": "^2.8.8",
     "@editorjs/image": "github:martide/editor-js-image#WEB-8452-image-alt",
     "@editorjs/list": "^1.10.0",
