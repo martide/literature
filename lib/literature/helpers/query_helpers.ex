@@ -82,13 +82,13 @@ defmodule Literature.QueryHelpers do
   end
 
   def where_status(query, %{"status" => "scheduled"}) do
-    datetime = Timex.now() |> Timex.local()
-    where(query, [q], q.is_published and q.published_at > ^datetime)
+    now = DateTime.utc_now()
+    where(query, [q], q.is_published and q.published_at > ^now)
   end
 
   def where_status(query, %{"status" => "published"}) do
-    datetime = Timex.now() |> Timex.local()
-    where(query, [q], q.is_published and q.published_at <= ^datetime)
+    now = DateTime.utc_now()
+    where(query, [q], q.is_published and q.published_at <= ^now)
   end
 
   def where_status(query, %{"status" => "public"}) do

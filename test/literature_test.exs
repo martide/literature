@@ -4,6 +4,7 @@ defmodule LiteratureTest do
   import Literature.Helpers, only: [atomize_keys_to_string: 1]
   import Literature.Test.Fixtures
 
+  alias Ecto.Adapters.SQL
   alias Literature
   alias Literature.Tag
 
@@ -183,6 +184,15 @@ defmodule LiteratureTest do
           tags_ids: [tag.id]
         )
 
+      published_post_3 =
+        post_fixture(
+          title: "Published post 3",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id],
+          published_at: Timex.now() |> Timex.local()
+        )
+
       draft_post =
         post_fixture(
           title: "Draft post",
@@ -209,6 +219,8 @@ defmodule LiteratureTest do
 
       assert published_post_1.id in post_ids
       assert published_post_2.id in post_ids
+      assert published_post_3.id in post_ids
+
       refute draft_post.id in post_ids
       refute scheduled_post.id in post_ids
 
@@ -431,6 +443,16 @@ defmodule LiteratureTest do
         post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
 
       assert %Ecto.Changeset{} = Literature.change_post(post)
+    end
+
+    test "switch from Timex.local() time to DateTime.utc_now() for published filter" do
+      utc_now = Timex.now()
+      query_1 = where(Post, [q], q.is_published and q.published_at <= ^utc_now)
+
+      local_now = utc_now |> Timex.local()
+      query_2 = where(Post, [q], q.is_published and q.published_at <= ^local_now)
+
+      assert SQL.to_sql(:all, Repo, query_1) == SQL.to_sql(:all, Repo, query_2)
     end
 
     test "custom_position update and preloading" do
