@@ -185,12 +185,12 @@ defmodule Literature.Post do
   end
 
   defp get_status(%{published_at: published_at, is_published: is_published}) do
-    datetime = Timex.now() |> Timex.local()
+    datetime = DateTime.utc_now()
 
     cond do
       not is_published or is_nil(published_at) -> "draft"
-      is_published and Timex.compare(published_at, datetime) < 1 -> "published"
-      is_published and Timex.compare(published_at, datetime) == 1 -> "scheduled"
+      is_published and DateTime.compare(published_at, datetime) in [:lt, :eq] -> "published"
+      is_published and DateTime.compare(published_at, datetime) == :gt -> "scheduled"
     end
   end
 
