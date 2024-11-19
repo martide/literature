@@ -78,7 +78,7 @@ jobs:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
       - run: mix do deps.get, compile --all-warnings --warnings-as-errors
-      - run: mix coveralls.github
+      - run: mix test
 
   elixir_1_16:
     runs-on: ubuntu-latest
@@ -108,7 +108,7 @@ jobs:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
       - run: mix do deps.get, compile --all-warnings --warnings-as-errors
-      - run: mix coveralls.github
+      - run: mix test
 
   elixir_1_15:
     runs-on: ubuntu-latest
@@ -138,7 +138,7 @@ jobs:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
       - run: mix do deps.get, compile --all-warnings --warnings-as-errors
-      - run: mix coveralls.github
+      - run: mix test
 
   elixir_1_14:
     runs-on: ubuntu-latest
@@ -168,4 +168,4 @@ jobs:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
       - run: mix do deps.get, compile --all-warnings --warnings-as-errors
-      - run: mix coveralls.github
+      - run: mix test
