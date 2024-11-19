@@ -49,6 +49,8 @@ jobs:
       - run: mix dialyzer
       - run: elixir --logger-sasl-reports true -S mix coveralls.json
       - uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   elixir_1_17:
     runs-on: ubuntu-latest
