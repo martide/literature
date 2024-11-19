@@ -48,7 +48,7 @@ jobs:
       - run: mix credo --strict
       - run: mix dialyzer
       - run: elixir --logger-sasl-reports true -S mix coveralls.json
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
