@@ -11,7 +11,7 @@
     "@editorjs/editorjs": "^2.30.7",
     "@editorjs/header": "^2.8.8",
     "@editorjs/image": "github:martide/editor-js-image#WEB-8452-image-alt",
-    "@editorjs/list": "^2.0.0",
+    "@editorjs/list": "^2.0.2",
     "@tailwindcss/typography": "^0.5.15",
     "editorjs-html": "^3.4.3",
     "esbuild": "^0.24.0",
