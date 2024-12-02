@@ -26,10 +26,7 @@ defmodule Literature.ReadingTimeHelpersTest do
       for i <- 1..div(@words_per_minute, 5) do
         # 5 words per paragraph
         # Create paragraphs with 5 words each to fill out 1 minute
-        ~s"""
-          <p>Paragraph with five words #{i} </p>
-          <p></p>
-        """
+        "<p>Paragraph with five</p><p>words #{i}</p>"
       end
 
     assert ReadingTimeHelpers.reading_time(@sample_html ++ additional_html) == "1 min read"
@@ -41,20 +38,14 @@ defmodule Literature.ReadingTimeHelpersTest do
       for i <- 1..80 do
         # 5 words per paragraph
         # Create paragraphs with 5 words each to fill out 1 minute
-        ~s"""
-          <p> Paragraph with five words #{i} </p>
-          <p></p>
-        """
+        "<p>Paragraph with five</p><p>words #{i}</p>"
       end
 
     assert ReadingTimeHelpers.reading_time(@sample_html ++ additional_html) == "3 mins read"
 
     additional_html =
       for i <- 1..(div(@words_per_minute, 5) * 5) do
-        ~s"""
-          <p> Paragraph with five words #{i} </p>
-          <p></p>
-        """
+        "<p>Paragraph with five</p><p>words #{i}</p>"
       end
 
     assert ReadingTimeHelpers.reading_time(@sample_html ++ additional_html) == "5 mins read"
