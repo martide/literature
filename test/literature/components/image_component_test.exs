@@ -4,7 +4,7 @@ defmodule Literature.ImageComponentTest do
 
   test "it converts image tags with size attributes to picture tags" do
     tag =
-      "<img src=\"/path/to/image-w300x453.jpg\" alt=\"An image's test\"> caption=\"An image's test\">"
+      "<img src=\"/path/to/image-w300x453.jpg\" alt=\"An image's test\" caption=\"An image's test\">"
 
     expected = ~s"""
     <picture>
@@ -24,7 +24,7 @@ defmodule Literature.ImageComponentTest do
     assert ImageComponent.parse_image_tag(tag) == tag
   end
 
-  test "it does not convert image tags based on integergers set in the file name" do
+  test "it does not convert image tags based on integers set in the file name" do
     tag =
       "<img src=https://images.martide.com/en-employers/2022/07/aframax-tanker-1.jpg alt='Image' />"
 
