@@ -356,12 +356,30 @@ defmodule Literature.BlogLive do
 
     view_module.meta_tags(action, resource)
     |> Kernel.||(%{})
+    |> convert_image_tags_to_url()
     |> atomize_keys_to_string()
   rescue
     _ -> %{}
   end
 
   defp get_meta_tags_from_view_module(_, _), do: %{}
+
+  defp convert_image_tags_to_url(meta_tags) do
+    image_tags =
+      meta_tags
+      |> Map.take([:image, :og_image, :twitter_image])
+      |> Enum.reduce(%{}, fn {key, value}, acc ->
+        value =
+          case value do
+            %{} -> literature_image_url(meta_tags, key)
+            _ -> value
+          end
+
+        Map.put(acc, key, value)
+      end)
+
+    Map.merge(meta_tags, image_tags)
+  end
 
   defp override_title_with_page(socket, %{page_number: 1}), do: socket
 
