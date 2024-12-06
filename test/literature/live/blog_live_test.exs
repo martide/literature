@@ -2,6 +2,7 @@ defmodule Literature.BlogLiveTest do
   use Literature.ConnCase
 
   import Floki, only: [parse_document!: 1, find: 2]
+  import Literature.TestHelpers
   import Literature.Test.Fixtures
   import Phoenix.LiveViewTest
 
@@ -41,6 +42,7 @@ defmodule Literature.BlogLiveTest do
         authors_ids: [author.id],
         tags_ids: [tag.id],
         html: ["<p>content</p>"],
+        feature_image: file_upload_image(),
         locales: [
           %{locale: "en", url: "http://example.com/en"},
           %{locale: "de", url: "http://example.com/de"}

@@ -8,4 +8,6 @@ defmodule Literature.Test.Endpoint do
   )
 
   plug(Literature.Test.Router)
+
+  plug(Plug.Static, at: "/tmp", from: Path.expand("/tmp"), gzip: false)
 end
