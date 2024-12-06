@@ -341,9 +341,7 @@ defmodule Literature.BlogLiveTest do
           twitter_url: url
         })
 
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
 
       # Fallback values
       {:ok, publication} =
@@ -368,9 +366,7 @@ defmodule Literature.BlogLiveTest do
 
       {:ok, view, html} = live(conn, Routes.literature_path(conn, :index))
       document = parse_document!(html)
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
 
       title = publication.name <> " Page (2)"
       url = @endpoint.url() <> "/blog/page/2"
@@ -395,9 +391,7 @@ defmodule Literature.BlogLiveTest do
 
       {:ok, view, html} = live(conn, Routes.literature_path(conn, :index, 2))
       document = parse_document!(html)
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
     end
 
     test "show post", %{conn: conn, post: post} do
@@ -417,9 +411,7 @@ defmodule Literature.BlogLiveTest do
           twitter_url: url
         })
 
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
 
       # Fallback values
       # Fallback images to feature image
@@ -451,9 +443,7 @@ defmodule Literature.BlogLiveTest do
 
       {:ok, view, html} = live(conn, Routes.literature_path(conn, :show, post.slug))
       document = parse_document!(html)
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
 
       # Fallback to publication images
       {:ok, post} = Literature.update_post(post, %{feature_image: nil})
@@ -466,9 +456,7 @@ defmodule Literature.BlogLiveTest do
 
       {:ok, view, html} = live(conn, Routes.literature_path(conn, :show, post.slug))
       document = parse_document!(html)
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
     end
 
     test "authors index", %{conn: conn, publication: publication} do
@@ -488,9 +476,7 @@ defmodule Literature.BlogLiveTest do
           twitter_url: url
         })
 
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
 
       # Fallback values
       {:ok, publication} =
@@ -517,9 +503,7 @@ defmodule Literature.BlogLiveTest do
 
       {:ok, view, html} = live(conn, Routes.literature_path(conn, :authors))
       document = parse_document!(html)
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
     end
 
     test "show author", %{conn: conn, author: author} do
@@ -543,9 +527,7 @@ defmodule Literature.BlogLiveTest do
           twitter_url: url
         })
 
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
 
       # Fallback to cover image
       {:ok, author} =
@@ -565,9 +547,7 @@ defmodule Literature.BlogLiveTest do
 
       {:ok, view, html} = live(conn, Routes.literature_path(conn, :show, author.slug))
       document = parse_document!(html)
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
 
       # Fallback to publication image
       {:ok, author} = Literature.update_author(author, %{cover_image: nil})
@@ -582,9 +562,7 @@ defmodule Literature.BlogLiveTest do
 
       {:ok, view, html} = live(conn, Routes.literature_path(conn, :show, author.slug))
       document = parse_document!(html)
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
     end
 
     test "tags index", %{conn: conn, publication: publication} do
@@ -604,9 +582,7 @@ defmodule Literature.BlogLiveTest do
           twitter_url: url
         })
 
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
 
       # Fallback values
       {:ok, publication} =
@@ -633,9 +609,7 @@ defmodule Literature.BlogLiveTest do
 
       {:ok, view, html} = live(conn, Routes.literature_path(conn, :tags))
       document = parse_document!(html)
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
     end
 
     test "show tag", %{conn: conn, tag: tag} do
@@ -655,9 +629,7 @@ defmodule Literature.BlogLiveTest do
           twitter_url: url
         })
 
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
 
       # Fallback values
       # Fallback images to feature image
@@ -687,9 +659,7 @@ defmodule Literature.BlogLiveTest do
 
       {:ok, view, html} = live(conn, Routes.literature_path(conn, :show, tag.slug))
       document = parse_document!(html)
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
 
       # Fallback to publication images
       {:ok, tag} = Literature.update_tag(tag, %{feature_image: nil})
@@ -702,9 +672,7 @@ defmodule Literature.BlogLiveTest do
 
       {:ok, view, html} = live(conn, Routes.literature_path(conn, :show, tag.slug))
       document = parse_document!(html)
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
     end
   end
 
@@ -920,9 +888,7 @@ defmodule Literature.BlogLiveTest do
           twitter_url: url
         })
 
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
 
       # Fallback values
       # Fallback images to feature image
@@ -956,9 +922,7 @@ defmodule Literature.BlogLiveTest do
                live(conn, Routes.custom_routes_path(conn, :show_tag, tag.slug))
 
       document = parse_document!(html)
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
 
       # Fallback to publication images
       {:ok, tag} = Literature.update_tag(tag, %{feature_image: nil})
@@ -973,9 +937,7 @@ defmodule Literature.BlogLiveTest do
                live(conn, Routes.custom_routes_path(conn, :show_tag, tag.slug))
 
       document = parse_document!(html)
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
 
       # with pagination
       assert {:ok, view, html} =
@@ -994,9 +956,7 @@ defmodule Literature.BlogLiveTest do
           twitter_url: url
         })
 
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
     end
 
     test "show_author", %{conn: conn, author: author, post: post} do
@@ -1052,9 +1012,7 @@ defmodule Literature.BlogLiveTest do
           twitter_url: url
         })
 
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
 
       # Fallback values
       # Fallback images to cover image
@@ -1083,9 +1041,7 @@ defmodule Literature.BlogLiveTest do
                live(conn, Routes.custom_routes_path(conn, :show_author, author.slug))
 
       document = parse_document!(html)
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
 
       # Fallback to publication images
       {:ok, author} = Literature.update_author(author, %{cover_image: nil})
@@ -1100,9 +1056,7 @@ defmodule Literature.BlogLiveTest do
                live(conn, Routes.custom_routes_path(conn, :show_author, author.slug))
 
       document = parse_document!(html)
-      assert_default_meta_tags(view, document, resources)
-      assert_og_meta_tags(document, resources)
-      assert_twitter_meta_tags(document, resources)
+      assert_meta_tags(view, document, resources)
     end
   end
 
@@ -1114,6 +1068,12 @@ defmodule Literature.BlogLiveTest do
       assert html =~ "Page not found"
       assert html =~ "Sorry, we could not find the page you are looking for."
     end
+  end
+
+  defp assert_meta_tags(view, document, resources) do
+    assert_default_meta_tags(view, document, resources)
+    assert_og_meta_tags(document, resources)
+    assert_twitter_meta_tags(document, resources)
   end
 
   def assert_default_meta_tags(view, html, resources) do
