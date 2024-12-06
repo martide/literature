@@ -263,15 +263,16 @@ defmodule Literature.BlogLive do
       Literature.get_publication!(slug: slug) |> Repo.preload(published_posts: ~w(authors tags)a)
 
     post
+    |> Repo.preload([:publication])
     |> Post.resolve_prev_and_next_post(publication)
     |> Post.resolve_similar_posts(publication)
   end
 
   defp preload_tag(tag),
-    do: Repo.preload(tag, ~w(published_posts)a)
+    do: Repo.preload(tag, ~w(published_posts publication)a)
 
   defp preload_author(author),
-    do: Repo.preload(author, ~w(published_posts)a)
+    do: Repo.preload(author, ~w(published_posts publication)a)
 
   defp assign_to_socket(socket, name, struct) do
     socket
@@ -291,7 +292,7 @@ defmodule Literature.BlogLive do
     struct
     |> Map.take(meta_tag_keys())
     |> maybe_convert_name_to_title(struct)
-    |> maybe_convert_excerpt_to_description(struct)
+    |> maybe_put_description(struct)
     |> convert_image_to_url(struct)
     |> atomize_keys_to_string()
     |> then(&assign(socket, :meta_tags, Map.merge(&1, meta_tags_from_view)))
@@ -303,10 +304,13 @@ defmodule Literature.BlogLive do
 
   defp maybe_convert_name_to_title(meta_tags, _), do: meta_tags
 
-  defp maybe_convert_excerpt_to_description(meta_tags, %Post{} = post),
+  defp maybe_put_description(meta_tags, %Post{} = post),
     do: Map.put(meta_tags, :description, post.excerpt)
 
-  defp maybe_convert_excerpt_to_description(meta_tags, _), do: meta_tags
+  defp maybe_put_description(meta_tags, %Author{} = author),
+    do: Map.put(meta_tags, :description, author.bio)
+
+  defp maybe_put_description(meta_tags, _), do: meta_tags
 
   defp convert_image_to_url(meta_tags, resource) do
     {image, publication} =
@@ -322,11 +326,15 @@ defmodule Literature.BlogLive do
           {nil, publication}
       end
 
-    # default to publication image if author has no image
+    # default to publication if resource has no og or twitter image
     Map.merge(meta_tags, %{
       image: image,
-      og_image: image || literature_image_url(publication, :og_image),
-      twitter_image: image || literature_image_url(publication, :twitter_image)
+      og_image:
+        literature_image_url(resource, :og_image) || image ||
+          literature_image_url(publication, :og_image),
+      twitter_image:
+        literature_image_url(resource, :twitter_image) || image ||
+          literature_image_url(publication, :twitter_image)
     })
   end
 
