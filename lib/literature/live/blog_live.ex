@@ -6,6 +6,7 @@ defmodule Literature.BlogLive do
 
   alias Literature.Author
   alias Literature.Post
+  alias Literature.Publication
   alias Literature.Repo
   alias Literature.Tag
 
@@ -15,8 +16,7 @@ defmodule Literature.BlogLive do
 
   @impl Phoenix.LiveView
   def mount(%{"tag_slug" => tag_slug} = params, session, socket) do
-    socket =
-      assign_defaults(socket, params, session)
+    socket = assign_defaults(socket, params, session)
 
     Literature.get_tag!(
       slug: tag_slug,
@@ -34,8 +34,7 @@ defmodule Literature.BlogLive do
   end
 
   def mount(%{"author_slug" => author_slug} = params, session, socket) do
-    socket =
-      assign_defaults(socket, params, session)
+    socket = assign_defaults(socket, params, session)
 
     Literature.get_author!(
       slug: author_slug,
@@ -52,8 +51,7 @@ defmodule Literature.BlogLive do
   end
 
   def mount(%{"slug" => slug} = params, session, socket) do
-    socket =
-      assign_defaults(socket, params, session)
+    socket = assign_defaults(socket, params, session)
 
     # Check if custom routes includes :show_tag and :show_author which are specific routes for tag and author
     # Render not found when :show_tag or :show_author is enabled,
@@ -183,25 +181,23 @@ defmodule Literature.BlogLive do
     |> assign(:publication, publication)
     |> assign(:page, page)
     |> assign(:posts, page.entries)
-    |> path_not_found_when_page_number_exceeds_from_total_pages(params, page.total_pages)
+    |> handle_page_exceeds_total(params, page.total_pages)
   end
 
   defp apply_action(socket, :tags, slug, _params) do
     publication = Literature.get_publication!(slug: slug)
-    meta_tags = get_meta_tags_from_view_module(socket, :tags, publication)
 
     socket
-    |> assign_meta_tags(meta_tags)
+    |> assign_meta_tags(publication)
     |> assign(:publication, publication)
     |> assign(:tags, list_tags(socket))
   end
 
   defp apply_action(socket, :authors, slug, _params) do
     publication = Literature.get_publication!(slug: slug)
-    meta_tags = get_meta_tags_from_view_module(socket, :authors, publication)
 
     socket
-    |> assign_meta_tags(meta_tags)
+    |> assign_meta_tags(publication)
     |> assign(:publication, publication)
     |> assign(:authors, list_authors(socket))
   end
@@ -218,15 +214,9 @@ defmodule Literature.BlogLive do
         "page_size" => @page_size
       })
 
-    meta_tags = get_meta_tags_from_view_module(socket, :show_tag, socket.assigns)
-
-    socket =
-      case meta_tags do
-        %{title: _} -> assign_meta_tags(socket, meta_tags) |> override_title_with_page(page)
-        %{} -> socket
-      end
-
     socket
+    |> assign_meta_tags(socket.assigns.tag)
+    |> override_title_with_page(page)
     |> assign(:publication, publication || %{name: nil})
     |> assign(:posts, page.entries)
     |> assign(:page, page)
@@ -234,15 +224,10 @@ defmodule Literature.BlogLive do
 
   defp apply_action(socket, :show_author, slug, _params) do
     publication = Literature.get_publication!(slug: slug)
-    meta_tags = get_meta_tags_from_view_module(socket, :show_author, socket.assigns)
 
-    socket =
-      case meta_tags do
-        %{title: _} -> assign_meta_tags(socket, meta_tags)
-        %{} -> socket
-      end
-
-    assign(socket, :publication, publication || %{name: nil})
+    socket
+    |> assign_meta_tags(socket.assigns.author)
+    |> assign(:publication, publication || %{name: nil})
   end
 
   defp apply_action(socket, _, slug, _) do
@@ -278,58 +263,122 @@ defmodule Literature.BlogLive do
       Literature.get_publication!(slug: slug) |> Repo.preload(published_posts: ~w(authors tags)a)
 
     post
+    |> Repo.preload([:publication])
     |> Post.resolve_prev_and_next_post(publication)
     |> Post.resolve_similar_posts(publication)
   end
 
   defp preload_tag(tag),
-    do: Repo.preload(tag, ~w(published_posts)a)
+    do: Repo.preload(tag, ~w(published_posts publication)a)
 
   defp preload_author(author),
-    do: Repo.preload(author, ~w(published_posts)a)
+    do: Repo.preload(author, ~w(published_posts publication)a)
 
   defp assign_to_socket(socket, name, struct) do
     socket
-    |> assign(name, struct_to_map(struct))
+    |> assign(name, struct)
     |> assign_meta_tags(struct)
   end
 
   defp assign_meta_tags(socket, struct) do
+    publication =
+      case struct do
+        %Publication{} -> struct
+        _ -> struct.publication
+      end
+
+    meta_tags_from_view = get_meta_tags_from_view_module(socket, publication)
+
     struct
-    |> struct_to_map()
-    |> convert_name_to_title()
-    |> convert_excerpt_to_description()
-    |> convert_image_to_url()
+    |> Map.take(meta_tag_keys())
+    |> maybe_convert_name_to_title(struct)
+    |> maybe_put_description(struct)
+    |> convert_image_to_url(struct)
     |> atomize_keys_to_string()
-    |> then(&assign(socket, :meta_tags, &1))
+    |> then(&assign(socket, :meta_tags, Map.merge(&1, meta_tags_from_view)))
   end
 
-  defp struct_to_map(struct) when is_struct(struct),
-    do: Map.from_struct(struct)
+  defp maybe_convert_name_to_title(meta_tags, %struct{} = author_or_tag)
+       when struct in [Author, Tag, Publication],
+       do: Map.put(meta_tags, :title, author_or_tag.name)
 
-  defp struct_to_map(map), do: map
+  defp maybe_convert_name_to_title(meta_tags, _), do: meta_tags
 
-  defp convert_name_to_title(author_or_tag),
-    do: Map.put_new(author_or_tag, :title, author_or_tag[:name])
+  defp maybe_put_description(meta_tags, %Post{} = post),
+    do: Map.put(meta_tags, :description, post.excerpt)
 
-  defp convert_excerpt_to_description(post),
-    do: Map.put_new(post, :description, post[:excerpt])
+  defp maybe_put_description(meta_tags, %Author{} = author),
+    do: Map.put(meta_tags, :description, author.bio)
 
-  defp convert_image_to_url(author_or_tag_or_post) do
-    image =
-      literature_image_url(author_or_tag_or_post, :feature_image) ||
-        literature_image_url(author_or_tag_or_post, :profile_image)
+  defp maybe_put_description(meta_tags, _), do: meta_tags
 
-    author_or_tag_or_post
-    |> Map.put(:image, image)
-    |> Map.put(:og_image, literature_image_url(author_or_tag_or_post, :og_image))
-    |> Map.put(:twitter_image, literature_image_url(author_or_tag_or_post, :twitter_image))
+  defp convert_image_to_url(meta_tags, resource) do
+    {image, publication} =
+      case resource do
+        %Author{} = author ->
+          {literature_image_url(author, :profile_image) ||
+             literature_image_url(author, :cover_image), author.publication}
+
+        %struct{} = tag_or_post when struct in [Post, Tag] ->
+          {literature_image_url(tag_or_post, :feature_image), tag_or_post.publication}
+
+        publication ->
+          {nil, publication}
+      end
+
+    # default to publication if resource has no og or twitter image
+    Map.merge(meta_tags, %{
+      image: image,
+      og_image:
+        literature_image_url(resource, :og_image) || image ||
+          literature_image_url(publication, :og_image),
+      twitter_image:
+        literature_image_url(resource, :twitter_image) || image ||
+          literature_image_url(publication, :twitter_image)
+    })
   end
 
-  defp get_meta_tags_from_view_module(socket, action, publication) do
-    socket.assigns.view_module.meta_tags(action, publication) || %{}
+  defp get_meta_tags_from_view_module(
+         %{
+           assigns:
+             %{
+               view_module: view_module,
+               live_action: action
+             } = assigns
+         },
+         publication
+       ) do
+    resource =
+      case action do
+        action when action in [:show_tag, :show_author] -> assigns
+        _ -> publication
+      end
+
+    view_module.meta_tags(action, resource)
+    |> Kernel.||(%{})
+    |> convert_image_tags_to_url()
+    |> atomize_keys_to_string()
   rescue
     _ -> %{}
+  end
+
+  defp get_meta_tags_from_view_module(_, _), do: %{}
+
+  defp convert_image_tags_to_url(meta_tags) do
+    image_tags =
+      meta_tags
+      |> Map.take([:image, :og_image, :twitter_image])
+      |> Enum.reduce(%{}, fn {key, value}, acc ->
+        value =
+          case value do
+            %{} -> literature_image_url(meta_tags, key)
+            _ -> value
+          end
+
+        Map.put(acc, key, value)
+      end)
+
+    Map.merge(meta_tags, image_tags)
   end
 
   defp override_title_with_page(socket, %{page_number: 1}), do: socket
@@ -342,7 +391,8 @@ defmodule Literature.BlogLive do
     |> then(&assign(socket, :meta_tags, &1))
   end
 
-  defp path_not_found_when_page_number_exceeds_from_total_pages(
+  # Render not found when page exceeds total pages
+  defp handle_page_exceeds_total(
          socket,
          %{"page" => page},
          total_pages
@@ -356,7 +406,7 @@ defmodule Literature.BlogLive do
     end
   end
 
-  defp path_not_found_when_page_number_exceeds_from_total_pages(socket, _, _), do: socket
+  defp handle_page_exceeds_total(socket, _, _), do: socket
 
   def render_not_found(%Phoenix.LiveView.Socket{} = socket) do
     if socket.assigns.error_view_module do
@@ -364,5 +414,22 @@ defmodule Literature.BlogLive do
     else
       raise Literature.PageNotFound
     end
+  end
+
+  defp meta_tag_keys do
+    [
+      :title,
+      :meta_title,
+      :description,
+      :meta_description,
+      :meta_keywords,
+      :image,
+      :og_title,
+      :og_image,
+      :og_description,
+      :twitter_image,
+      :twitter_title,
+      :twitter_description
+    ]
   end
 end
