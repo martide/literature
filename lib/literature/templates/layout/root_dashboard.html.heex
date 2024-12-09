@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content={get_csrf_token()} />
     <.live_title suffix=" · Literature">
-      <%= assigns[:page_title] || "Literature" %>
+      {assigns[:page_title] || "Literature"}
     </.live_title>
     <link rel="shortcut icon" type="image/png" href="/favicon.ico" />
     <link phx-track-static rel="stylesheet" href={asset_path(@conn, :css)} />
@@ -14,6 +14,6 @@
     </script>
   </head>
   <body>
-    <%= @inner_content %>
+    {@inner_content}
   </body>
 </html>

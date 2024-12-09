@@ -187,7 +187,7 @@ defmodule Literature.PublicationFormComponent do
           value={value}
           class="w-4 h-4 border-gray-300 text-primary-700 bg-primary-700"
         />
-        <span class="px-2"><%= label %></span>
+        <span class="px-2">{label}</span>
       </label>
     <% end %>
     """

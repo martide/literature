@@ -19,7 +19,7 @@ defmodule Literature.SortTagPostsLive do
     ~H"""
     <.sidebar_default id="tag-sidebar" live_action={@live_action} slug={@slug} socket={@socket} />
     <.container>
-      <.h1><%= @page_title %></.h1>
+      <.h1>{@page_title}</.h1>
       <.posts_table {assigns} />
     </.container>
     """
@@ -55,7 +55,7 @@ defmodule Literature.SortTagPostsLive do
               <td scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">
                 <div class="flex items-center">
                   <.menu_icon />
-                  <span class="ml-2"><%= post.title %></span>
+                  <span class="ml-2">{post.title}</span>
                 </div>
               </td>
             </tr>

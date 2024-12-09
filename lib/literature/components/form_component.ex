@@ -84,12 +84,12 @@ defmodule Literature.FormComponent do
     >
       <.chevron />
       <span>
-        <%= @title %>
+        {@title}
       </span>
     </button>
     <div id={"#{@id}-collapse-body"} aria-labelledby={"#{@id}"} class="hidden">
       <div class={(assigns[:nogrid] && "space-y-5") || "grid grid-cols-2 gap-5 pb-5"}>
-        <%= render_slot(@inner_block) %>
+        {render_slot(@inner_block)}
       </div>
     </div>
     """
@@ -117,7 +117,7 @@ defmodule Literature.FormComponent do
   def button_group(assigns) do
     ~H"""
     <div class="flex flex-col md:flex-row items-center md:justify-end">
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -125,9 +125,9 @@ defmodule Literature.FormComponent do
   def form_group(assigns) do
     ~H"""
     <hr class="mb-6 border-gray-200 sm:mx-auto" />
-    <p class="text-primary-700 font-semibold uppercase mb-3"><%= @title %></p>
+    <p class="text-primary-700 font-semibold uppercase mb-3">{@title}</p>
     <div class="grid grid-cols-2 gap-5 pb-5">
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -138,7 +138,7 @@ defmodule Literature.FormComponent do
       patch={@return_to}
       class="w-full md:w-auto text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 md:mr-2 mb-2 text-center order-last md:order-first"
     >
-      <%= @label %>
+      {@label}
     </.link>
     """
   end
@@ -157,7 +157,7 @@ defmodule Literature.FormComponent do
       disabled={@disabled}
       phx-disable-with="Saving..."
     >
-      <%= @label %>
+      {@label}
     </button>
     """
   end
@@ -175,7 +175,7 @@ defmodule Literature.FormComponent do
       phx-feedback-for={input_name(@form, @field)}
       {@rest}
     >
-      <%= @label %>
+      {@label}
       <%= if @required do %>
         <span class="text-red-500">*</span>
       <% end %>
@@ -225,7 +225,7 @@ defmodule Literature.FormComponent do
           </div>
         <% end %>
         <%= for err <- upload_errors(@upload_field, entry) do %>
-          <p class="absolute top-0 bg-red-600 text-white"><%= err %></p>
+          <p class="absolute top-0 bg-red-600 text-white">{err}</p>
         <% end %>
       <% end %>
       <.live_file_input upload={@upload_field} class="hidden" />
@@ -285,7 +285,7 @@ defmodule Literature.FormComponent do
             checked={@value == value || @value == String.to_atom(value)}
             {@rest}
           />
-          <div class={@label_classes}><%= label %></div>
+          <div class={@label_classes}>{label}</div>
         </label>
       <% end %>
     </div>
@@ -311,8 +311,8 @@ defmodule Literature.FormComponent do
   def input(%{type: "select"} = assigns) do
     ~H"""
     <select id={@id} name={@name} class={@classes} phx-feedback-for={@name} {@rest}>
-      <option :if={@prompt} value=""><%= @prompt %></option>
-      <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+      <option :if={@prompt} value="">{@prompt}</option>
+      {Phoenix.HTML.Form.options_for_select(@options, @value)}
     </select>
     """
   end
@@ -343,7 +343,7 @@ defmodule Literature.FormComponent do
             checked={to_string(value) in @checked}
             {@rest}
           />
-          <div class="font-medium"><%= label %></div>
+          <div class="font-medium">{label}</div>
         </label>
       <% end %>
       <%= if Enum.empty?(@options) do %>
@@ -398,15 +398,15 @@ defmodule Literature.FormComponent do
     <textarea name={@name} class={@classes} rows="6" phx-feedback-for={@name} {@rest}><%= normalize_value("textarea", @value) %></textarea>
     <%= if @maxcharacters do %>
       <small class="text-gray-500">
-        Recommended: <span class="font-bold"><%= @maxcharacters %></span>
+        Recommended: <span class="font-bold">{@maxcharacters}</span>
         characters. You've used
         <%= if @maxcharacters < String.length(@characters || "") do %>
           <span class="font-bold text-red-500">
-            <%= String.length(@characters || "") %>.
+            {String.length(@characters || "")}.
           </span>
         <% else %>
           <span class="font-bold text-green-500">
-            <%= String.length(@characters || "") %>.
+            {String.length(@characters || "")}.
           </span>
         <% end %>
       </small>
@@ -430,15 +430,15 @@ defmodule Literature.FormComponent do
     />
     <%= if @maxcharacters do %>
       <small class="text-gray-500">
-        Recommended: <span class="font-bold"><%= @maxcharacters %></span>
+        Recommended: <span class="font-bold">{@maxcharacters}</span>
         characters. You've used
         <%= if @maxcharacters < String.length(@characters || "") do %>
           <span class="font-bold text-red-500">
-            <%= String.length(@characters || "") %>.
+            {String.length(@characters || "")}.
           </span>
         <% else %>
           <span class="font-bold text-green-500">
-            <%= String.length(@characters || "") %>.
+            {String.length(@characters || "")}.
           </span>
         <% end %>
       </small>
@@ -460,7 +460,7 @@ defmodule Literature.FormComponent do
           class="text-xs text-red-500 invalid-feedback"
           phx-feedback-for={input_name(@form, @field)}
         >
-          <%= message %>
+          {message}
         </div>
       <% end %>
     </div>

@@ -13,7 +13,7 @@ defmodule Literature.PublicationLive do
   def render(assigns) do
     ~H"""
     <div class={"col-span-5 #{if @live_action != :list_publications, do: "bg-white p-10 rounded-lg shadow-md"}"}>
-      <.h1><%= @page_title %></.h1>
+      <.h1>{@page_title}</.h1>
       <%= if @live_action == :list_publications do %>
         <.card_container>
           <%= for publication <- @publications do %>

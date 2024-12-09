@@ -51,7 +51,7 @@ defmodule Literature.TableComponent do
               phx-debounce={300}
             />
           </.form>
-          <%= filter_status(Enum.into(@columns, %{}), assigns) %>
+          {filter_status(Enum.into(@columns, %{}), assigns)}
         </div>
         <%= if @actions_modal? do %>
           <button
@@ -245,18 +245,18 @@ defmodule Literature.TableComponent do
 
     ~H"""
     <span class={"capitalize text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg #{@class}"}>
-      <%= Map.get(@item, :status) %>
+      {Map.get(@item, :status)}
     </span>
     """
   end
 
   defp item(%{field: :published_at} = assigns) do
     ~H"""
-    <%= Map.get(@item, :published_at)
+    {Map.get(@item, :published_at)
     |> case do
       nil -> ""
       datetime -> Timex.format!(datetime, "%d %b %Y at %I:%M %p", :strftime)
-    end %>
+    end}
     """
   end
 
@@ -270,7 +270,7 @@ defmodule Literature.TableComponent do
 
     ~H"""
     <span class={"text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg #{@class}"}>
-      <%= @label %>
+      {@label}
     </span>
     """
   end
@@ -278,7 +278,7 @@ defmodule Literature.TableComponent do
   defp item(%{field: :posts} = assigns) do
     ~H"""
     <span class="text-xs font-semibold mr-2 px-2.5 py-1 rounded-lg">
-      <%= @item |> Map.get(:posts) |> length() %>
+      {@item |> Map.get(:posts) |> length()}
     </span>
     """
   end
@@ -300,7 +300,7 @@ defmodule Literature.TableComponent do
 
   defp item(assigns) do
     ~H"""
-    <%= Map.get(@item, @field) %>
+    {Map.get(@item, @field)}
     """
   end
 
@@ -348,7 +348,7 @@ defmodule Literature.TableComponent do
           class="w-4 h-4 border-gray-300 text-primary-700 bg-primary-700"
           checked={@status == @value}
         />
-        <span class="px-2"><%= @label %></span>
+        <span class="px-2">{@label}</span>
       </label>
     </li>
     """
@@ -357,7 +357,7 @@ defmodule Literature.TableComponent do
   defp table_sort(%{column: {:posts, _text}} = assigns) do
     ~H"""
     <% {:posts, text} = @column %>
-    <%= text %>
+    {text}
     """
   end
 
@@ -377,7 +377,7 @@ defmodule Literature.TableComponent do
 
     ~H"""
     <.link patch={"#{@base_path}?#{query_string(@params, @opts)}"}>
-      <%= @text %>
+      {@text}
     </.link>
     """
   end
