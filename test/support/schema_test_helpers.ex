@@ -1,4 +1,6 @@
 defmodule Literature.SchemaTestHelpers do
+  @moduledoc false
+
   def timestamps, do: ~w(inserted_at updated_at)a
 
   defmacro has_associations(model, assocs) do
