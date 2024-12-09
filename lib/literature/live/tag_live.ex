@@ -21,7 +21,7 @@ defmodule Literature.TagLive do
     ~H"""
     <.sidebar_default id="tag-sidebar" live_action={@live_action} slug={@slug} socket={@socket} />
     <.container>
-      <.h1><%= @page_title %></.h1>
+      <.h1>{@page_title}</.h1>
       <%= if @live_action == :list_tags do %>
         <.live_component
           module={TableComponent}

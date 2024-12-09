@@ -23,7 +23,7 @@ defmodule Literature.PostLive do
     ~H"""
     <.sidebar_default id="post-sidebar" live_action={@live_action} slug={@slug} socket={@socket} />
     <.container>
-      <.h1><%= @page_title %></.h1>
+      <.h1>{@page_title}</.h1>
       <%= if @live_action == :list_posts do %>
         <.live_component
           module={TableComponent}

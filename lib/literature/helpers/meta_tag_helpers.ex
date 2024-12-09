@@ -23,7 +23,7 @@ defmodule Literature.MetaTagHelpers do
   defp default_tags(assigns) do
     ~H"""
     <%= if title = get_tag_value(@tags, "title", "meta_title") do %>
-      <title><%= title %></title>
+      <title>{title}</title>
     <% end %>
     <.meta name="description" content={get_tag_value(@tags, "description", "meta_description")} />
     <.meta name="keywords" content={get_tag_value(@tags, "meta_keywords", "meta_keywords")} />

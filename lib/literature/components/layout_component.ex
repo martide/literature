@@ -5,7 +5,7 @@ defmodule Literature.LayoutComponent do
   def h1(assigns) do
     ~H"""
     <h1 class="font-extrabold text-3xl text-primary-700 mb-5">
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </h1>
     """
   end
@@ -13,7 +13,7 @@ defmodule Literature.LayoutComponent do
   def container(assigns) do
     ~H"""
     <div class="mt-4 p-10 rounded-lg bg-white shadow-md">
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -101,10 +101,10 @@ defmodule Literature.LayoutComponent do
           </.link>
           <div class="p-6">
             <div>
-              <%= render_slot(@inner_block) %>
+              {render_slot(@inner_block)}
             </div>
             <div class="mt-5">
-              <%= render_slot(@footer, %{on_close: @on_close}) %>
+              {render_slot(@footer, %{on_close: @on_close})}
             </div>
           </div>
         </div>
@@ -133,7 +133,7 @@ defmodule Literature.LayoutComponent do
         </svg>
         <span class="sr-only">Success</span>
         <div class="ml-3 text-sm font-medium text-primary-700">
-          <%= Phoenix.Flash.get(@flash, :success) %>
+          {Phoenix.Flash.get(@flash, :success)}
         </div>
         <button
           type="button"
@@ -183,7 +183,7 @@ defmodule Literature.LayoutComponent do
         </svg>
         <span class="sr-only">Success</span>
         <div class="ml-3 text-sm font-medium text-red-700">
-          <%= Phoenix.Flash.get(@flash, :error) %>
+          {Phoenix.Flash.get(@flash, :error)}
         </div>
         <button
           type="button"

@@ -26,7 +26,7 @@ defmodule Literature.RedirectLive do
     ~H"""
     <.sidebar_default id="redirect-sidebar" live_action={@live_action} slug={@slug} socket={@socket} />
     <.container>
-      <.h1><%= @page_title %></.h1>
+      <.h1>{@page_title}</.h1>
       <.live_component
         module={TableComponent}
         id="redirects-table"
@@ -64,7 +64,7 @@ defmodule Literature.RedirectLive do
 
     ~H"""
     <.modal id="redirect-modal" on_close="close_modal">
-      <h2 class="text-primary-700 font-bold text-3xl mb-4"><%= @title %></h2>
+      <h2 class="text-primary-700 font-bold text-3xl mb-4">{@title}</h2>
       <.form :let={f} for={@changeset} id="redirect-form" phx-submit={@phx_submit}>
         <.form_field form={f} type="text_input" field={:from} label="From" required={true} />
         <.form_field form={f} type="text_input" field={:to} label="To" required={true} />

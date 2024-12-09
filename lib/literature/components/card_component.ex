@@ -5,7 +5,7 @@ defmodule Literature.CardComponent do
   def card_container(assigns) do
     ~H"""
     <div class="grid grid-cols-3 gap-5">
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -14,22 +14,22 @@ defmodule Literature.CardComponent do
     ~H"""
     <div class="border-2 border-gray-100 shadow-sm hover:border-primary-500 hover:-translate-y-1 hover:shadow-lg rounded-lg p-5 space-y-3 bg-white transition duration-300 ease-in-out flex flex-col">
       <.link navigate={@show_path}>
-        <h2 class="text-primary-700 font-bold text-4xl"><%= @item.name %></h2>
+        <h2 class="text-primary-700 font-bold text-4xl">{@item.name}</h2>
         <dl class="grid grid-cols-3 gap-8 p-4 text-gray-900">
           <div class="flex flex-col justify-center items-center">
-            <dt class="mb-2 text-3xl font-extrabold"><%= length(@item.posts) %></dt>
+            <dt class="mb-2 text-3xl font-extrabold">{length(@item.posts)}</dt>
             <dd class="font-light text-gray-500">Posts</dd>
           </div>
           <div class="flex flex-col justify-center items-center">
-            <dt class="mb-2 text-3xl font-extrabold"><%= length(@item.tags) %></dt>
+            <dt class="mb-2 text-3xl font-extrabold">{length(@item.tags)}</dt>
             <dd class="font-light text-gray-500">Tags</dd>
           </div>
           <div class="flex flex-col justify-center items-center">
-            <dt class="mb-2 text-3xl font-extrabold"><%= length(@item.authors) %></dt>
+            <dt class="mb-2 text-3xl font-extrabold">{length(@item.authors)}</dt>
             <dd class="font-light text-gray-500">Authors</dd>
           </div>
         </dl>
-        <p class="text-gray-500 flex-1"><%= @item.description %></p>
+        <p class="text-gray-500 flex-1">{@item.description}</p>
       </.link>
       <div class="flex items-center justify-end">
         <.link

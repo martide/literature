@@ -40,10 +40,10 @@ defmodule Literature.PaginationComponent do
 
           <%= if item.type == "page" do %>
             <%= if item.current? do %>
-              <span class={get_box_class(item)}><%= item.number %></span>
+              <span class={get_box_class(item)}>{item.number}</span>
             <% else %>
               <.link patch={get_path(@path, item.number, @current_page)} class={get_box_class(item)}>
-                <%= item.number %>
+                {item.number}
               </.link>
             <% end %>
           <% end %>
@@ -100,14 +100,14 @@ defmodule Literature.PaginationComponent do
       <span class="text-sm text-gray-700">
         <span class="text-gray-500">Show</span>
         <span class="font-semibold text-gray-900">
-          <%= entry_start(@page_number, @page_size) %>
+          {entry_start(@page_number, @page_size)}
         </span>
         -
         <span class="font-semibold text-gray-900">
-          <%= entry_end(@page_number, @page_size, @total_entries) %>
+          {entry_end(@page_number, @page_size, @total_entries)}
         </span>
         <span class="text-gray-500">of</span>
-        <span class="font-semibold text-gray-900"><%= @total_entries %></span>
+        <span class="font-semibold text-gray-900">{@total_entries}</span>
       </span>
     </div>
     """

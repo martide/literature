@@ -62,8 +62,8 @@ defmodule Literature.SidebarComponent do
   defp render_tab(assigns) do
     ~H"""
     <.link navigate={@path} class={@classes}>
-      <%= render_slot(@inner_block) %>
-      <span class="flex-1 ml-3 whitespace-nowrap"><%= @title %></span>
+      {render_slot(@inner_block)}
+      <span class="flex-1 ml-3 whitespace-nowrap">{@title}</span>
     </.link>
     """
   end

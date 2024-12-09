@@ -1,9 +1,9 @@
 <section>
   <div class="my-10">
     <div class="text-center space-y-3 max-w-2xl mx-auto">
-      <h2 class="text-4xl font-bold"><%= @publication.name %></h2>
+      <h2 class="text-4xl font-bold">{@publication.name}</h2>
       <p class="text-gray-500 text-xl font-light tracking-wide">
-        <%= @publication.description %>
+        {@publication.description}
       </p>
     </div>
     <div class="space-y-8 my-20 max-w-5xl px-6 mx-auto">
@@ -15,23 +15,23 @@
           <div class="max-w-3xl mx-auto py-8">
             <.link navigate={literature_path(@socket, :show, post.slug)}>
               <h2 class="mb-3 font-extrabold text-3xl group-hover:text-primary-700 transition duration-300 ease-in-out">
-                <%= post.title %>
+                {post.title}
               </h2>
               <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-8">
-                <span><%= date_format(post.published_at) %></span>
+                <span>{date_format(post.published_at)}</span>
                 <span>·</span>
-                <span><%= reading_time(post.html) %></span>
+                <span>{reading_time(post.html)}</span>
                 <span>·</span>
                 <.link
                   :for={{tag, index} <- Enum.with_index(post.tags)}
                   navigate={literature_path(@socket, :show, tag.slug)}
                   class="text-primary-500 hover:text-primary-700 uppercase text-xs font-semibold transition duration-300 ease-in-out"
                 >
-                  <%= tag.name %><%= if index < length(post.tags) - 1, do: ", ", else: "" %>
+                  {tag.name}{if index < length(post.tags) - 1, do: ", ", else: ""}
                 </.link>
               </div>
               <p class="font-light tracking-wide text-gray-700">
-                <%= post.excerpt %>
+                {post.excerpt}
               </p>
             </.link>
             <div class="flex items-center justify-between font-semibold text-xs border-t border-gray-300 mt-10 py-5">
@@ -87,7 +87,7 @@
                   />
                   <span class="mr-1 text-gray-400">By: </span>
                   <span class="text-gray-900">
-                    <%= author.name %>
+                    {author.name}
                   </span>
                 <% end %>
               </div>
@@ -122,7 +122,7 @@
           <% end %>
         </div>
         <div class="invisible sm:visible border rounded-full text-gray-400 font-semibold text-sm px-5 py-2 justify-self-center">
-          <%= "Page #{@page.page_number} to #{@page.total_pages}" %>
+          {"Page #{@page.page_number} to #{@page.total_pages}"}
         </div>
         <div class="justify-self-end">
           <%= if @page.page_number < @page.total_pages do %>
