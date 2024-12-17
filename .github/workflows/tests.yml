@@ -24,6 +24,8 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
+      - run: sudo apt update
+      - run: sudo apt install -y imagemagick
       - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
         with:
@@ -74,6 +76,8 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
+      - run: sudo apt update
+      - run: sudo apt install -y imagemagick
       - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
         with:
@@ -104,6 +108,8 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
+      - run: sudo apt update
+      - run: sudo apt install -y imagemagick
       - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
         with:
@@ -134,6 +140,8 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
+      - run: sudo apt update
+      - run: sudo apt install -y imagemagick
       - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
         with:
@@ -164,6 +172,8 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
+      - run: sudo apt update
+      - run: sudo apt install -y imagemagick
       - uses: actions/checkout@v4
       - uses: erlef/setup-beam@v1
         with:
