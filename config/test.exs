@@ -35,3 +35,13 @@ config :flop,
   default_limit: 50,
   max_limit: false,
   default_pagination_type: :page
+
+config :waffle,
+  storage: Waffle.Storage.Local,
+  storage_dir_prefix: "/tmp/",
+  asset_host: "/tmp"
+
+config :literature,
+  storage: Waffle.Storage.Local,
+  storage_dir_prefix: "/tmp/",
+  asset_host: "/tmp"

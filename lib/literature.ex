@@ -781,7 +781,7 @@ defmodule Literature do
 
     for {field, _} <- attachment_changes do
       file = Map.get(scope, field)
-      async_upload_different_sizes(file, scope)
+      if file, do: async_upload_different_sizes(file, scope)
     end
 
     result
