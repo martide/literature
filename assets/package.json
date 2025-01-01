@@ -19,6 +19,6 @@
     "phoenix": "^1.7.18",
     "phoenix_live_view": "^1.0.1",
     "sortablejs": "^1.15.6",
-    "tailwindcss": "^3.4.16"
+    "tailwindcss": "^3.4.17"
   }
 }
