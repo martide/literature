@@ -13,12 +13,12 @@
     "@editorjs/image": "github:martide/editor-js-image#WEB-8452-image-alt",
     "@editorjs/list": "^2.0.2",
     "@tailwindcss/typography": "^0.5.15",
-    "editorjs-html": "^3.4.3",
-    "esbuild": "^0.24.0",
+    "editorjs-html": "^4.0.0",
+    "esbuild": "^0.24.2",
     "npm-run-all": "^4.1.5",
-    "phoenix": "^1.7.17",
-    "phoenix_live_view": "^1.0.0",
+    "phoenix": "^1.7.18",
+    "phoenix_live_view": "^1.0.1",
     "sortablejs": "^1.15.6",
-    "tailwindcss": "^3.4.16"
+    "tailwindcss": "^3.4.17"
   }
 }
