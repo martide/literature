@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 #editorjs {
-  @apply prose prose-sm sm:prose max-w-full
+  @apply prose prose-sm sm:prose max-w-full;
 }
 
 /* Pagination */

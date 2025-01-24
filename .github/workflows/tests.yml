@@ -31,6 +31,10 @@ jobs:
         with:
           otp-version: "27.x"
           elixir-version: "1.18.x"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
       - uses: actions/cache@v4
         with:
           path: |
@@ -39,6 +43,11 @@ jobs:
           key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: |
             ${{ runner.os }}-mix-
+      - run: npm install --prefix assets
+      - run: npm run eslint
+        working-directory: assets
+      - run: npm run prettier
+        working-directory: assets
       - run: mix deps.get
       - run: mix compile --warnings-as-errors
       - run: mix deps.unlock --check-unused
