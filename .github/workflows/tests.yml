@@ -30,7 +30,7 @@ jobs:
       - uses: erlef/setup-beam@v1
         with:
           otp-version: "27.x"
-          elixir-version: "1.17.x"
+          elixir-version: "1.18.x"
       - uses: actions/cache@v4
         with:
           path: |
@@ -53,6 +53,38 @@ jobs:
       - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  elixir_1_18:
+    runs-on: ubuntu-latest
+    name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
+    strategy:
+      matrix:
+        otp: [25.x, 26.x, 27.x]
+        elixir: [1.18.x]
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_literature
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - run: sudo apt update
+      - run: sudo apt install -y imagemagick
+      - uses: actions/checkout@v4
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir}}
+      - run: mix do deps.get, compile --all-warnings --warnings-as-errors
+      - run: mix test
 
   elixir_1_17:
     runs-on: ubuntu-latest
