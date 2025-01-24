@@ -255,10 +255,8 @@ defmodule Literature.PostFormComponent do
 
   @impl Phoenix.LiveComponent
   def handle_event("save", %{"post" => post_params}, socket) do
-    html = post_params["html"]
-    html = if is_binary(html) and html != "", do: Jason.decode!(post_params["html"]), else: []
     action = socket.assigns.action
-    post_params = post_params |> Map.put("html", html) |> merge_post_params(socket, action)
+    post_params = merge_post_params(post_params, socket, action)
     post = socket.assigns.post
 
     socket
@@ -343,9 +341,21 @@ defmodule Literature.PostFormComponent do
   defp put_validation(changeset, :edit_post), do: Map.put(changeset, :action, :validate)
 
   defp build_html(%{"html" => html} = params) do
-    html = Enum.map(html, &parse_image_tag/1)
+    html =
+      (html || "")
+      |> Floki.parse_fragment!()
+      |> Enum.map(&parse_tag/1)
+
     %{params | "html" => html}
   end
+
+  defp parse_tag({"img", _, _} = image_tag) do
+    image_tag
+    |> Floki.raw_html()
+    |> parse_image_tag()
+  end
+
+  defp parse_tag(tag), do: Floki.raw_html(tag)
 
   defp delete_icon(assigns) do
     ~H"""

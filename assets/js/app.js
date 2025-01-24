@@ -24,8 +24,6 @@ Hooks.EditorJS = {
   },
 };
 
-Hooks.HiddenInputChange = {};
-
 Hooks.HandleDragNDrop = {
   mounted() {
     const dragNDropList = document.querySelector(

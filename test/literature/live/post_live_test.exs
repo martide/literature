@@ -149,7 +149,7 @@ defmodule Literature.PostLiveTest do
 
       assert html =~ "New Post"
 
-      html = Jason.encode!(["<p>some html</p>"])
+      html = "<p>some html</p>"
 
       new_live
       |> form("#post-form",
@@ -226,7 +226,7 @@ defmodule Literature.PostLiveTest do
         Routes.literature_dashboard_path(conn, :edit_post, publication.slug, post.slug)
       )
 
-      html = Jason.encode!(["<p>some html</p>"])
+      html = "<p>some html</p>"
 
       view
       |> form("#post-form", post: @update_attrs)
@@ -237,7 +237,7 @@ defmodule Literature.PostLiveTest do
       assert path == Routes.literature_dashboard_path(conn, :list_posts, publication.slug)
       assert flash["success"] == "Post updated successfully"
 
-      assert Literature.get_post!(post.id).html == Jason.decode!(html)
+      assert Literature.get_post!(post.id).html == [html]
 
       # Will not be able to follow redirect since redirect happens after async result
     end
