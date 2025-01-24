@@ -49,6 +49,8 @@ jobs:
         working-directory: assets
       - run: npm run prettier
         working-directory: assets
+      - run: npm run build
+        working-directory: assets
       - run: mix deps.get
       - run: mix compile --warnings-as-errors
       - run: mix deps.unlock --check-unused
