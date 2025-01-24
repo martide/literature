@@ -78,7 +78,7 @@ Hooks.Accordion = {
       window.liveSocket.execJS(this.el, execOpen);
     }
 
-    this.el.addEventListener("toggle_accordion", (e) => {
+    this.el.addEventListener("toggle_accordion", () => {
       if (this.el.getAttribute("aria-expanded") === "true") {
         window.liveSocket.execJS(this.el, execClose);
       } else {
