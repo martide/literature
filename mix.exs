@@ -75,7 +75,6 @@ defmodule Literature.MixProject do
       {:credo, "~> 1.6", only: [:test, :dev], runtime: false},
       {:dialyxir, "~> 1.2", only: [:test, :dev], runtime: false},
       {:excoveralls, "~> 0.15", only: [:test, :dev], runtime: false},
-      {:floki, "~> 0.33", only: [:test, :dev], runtime: false},
       {:sobelow, "~> 0.11", only: [:test, :dev], runtime: false}
     ]
   end
