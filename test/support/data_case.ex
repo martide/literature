@@ -25,6 +25,7 @@ defmodule Literature.DataCase do
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
+      import Literature.SchemaTestHelpers
       import Literature.DataCase
     end
   end

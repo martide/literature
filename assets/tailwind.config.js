@@ -1,12 +1,12 @@
-const colors = require('tailwindcss/colors')
+const colors = require("tailwindcss/colors");
 
 module.exports = {
   content: ["../lib/**/*.{ex,heex}", "./js/**/*.js"],
   theme: {
     colors: {
       primary: colors.sky,
-      transparent: 'transparent',
-      current: 'currentColor',
+      transparent: "transparent",
+      current: "currentColor",
       gray: colors.gray,
       blue: colors.blue,
       sky: colors.sky,
@@ -15,11 +15,9 @@ module.exports = {
       yellow: colors.yellow,
       white: colors.white,
       black: colors.black,
-      slate: colors.slate
+      slate: colors.slate,
     },
     extend: {},
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-  ]
-}
+  plugins: [require("@tailwindcss/typography")],
+};
