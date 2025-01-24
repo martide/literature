@@ -6,8 +6,6 @@ defmodule Literature.Migrations.Postgres.V06 do
 
   import Ecto.Query
 
-  alias Literature.Repo
-
   def up(_opts) do
     alter table(:literature_posts) do
       add_if_not_exists(:is_published, :boolean)
@@ -29,7 +27,7 @@ defmodule Literature.Migrations.Postgres.V06 do
           )
       ]
     )
-    |> Repo.update_all([], [])
+    |> repo().update_all([], [])
   end
 
   def down(_opts) do
