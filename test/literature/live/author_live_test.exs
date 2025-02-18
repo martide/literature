@@ -4,13 +4,19 @@ defmodule Literature.AuthorLiveTest do
   import Phoenix.LiveViewTest
   import Literature.Test.Fixtures
 
-  @create_attrs %{name: "some new name"}
+  @create_attrs %{name: "some new name", bio: "some bio", website: "https://example.com"}
   @update_attrs %{name: "some updated name"}
   @invalid_attrs %{name: nil}
 
   defp create_author(_) do
     publication = publication_fixture()
-    author = author_fixture(publication_id: publication.id)
+
+    author =
+      author_fixture(
+        publication_id: publication.id,
+        bio: "some bio",
+        website: "https://example.com"
+      )
 
     %{publication: publication, author: author}
   end
@@ -87,6 +93,11 @@ defmodule Literature.AuthorLiveTest do
 
       {:ok, _, html} = follow_redirect(result, conn, path)
       assert html =~ @create_attrs.name
+
+      assert author = Literature.get_author!(name: @create_attrs.name)
+      assert author.publication_id == publication.id
+      assert author.bio == @create_attrs.bio
+      assert author.website == @create_attrs.website
     end
 
     test "updates author in listing", %{conn: conn, publication: publication, author: author} do
@@ -101,6 +112,13 @@ defmodule Literature.AuthorLiveTest do
         view,
         Routes.literature_dashboard_path(conn, :edit_author, publication.slug, author.slug)
       )
+
+      html = render(view)
+
+      assert html =~ "Edit Author"
+      assert html =~ author.name
+      assert html =~ author.bio
+      assert html =~ author.website
 
       assert view
              |> form("#author-form", author: @invalid_attrs)
@@ -117,6 +135,10 @@ defmodule Literature.AuthorLiveTest do
 
       {:ok, _, html} = follow_redirect(result, conn, path)
       assert html =~ @update_attrs.name
+      assert author = Literature.get_author!(name: @update_attrs.name)
+      assert author.publication_id == publication.id
+      assert author.bio == "some bio"
+      assert author.website == "https://example.com"
     end
 
     test "deletes author in listing", %{conn: conn, publication: publication, author: author} do

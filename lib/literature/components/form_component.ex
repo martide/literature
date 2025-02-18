@@ -448,7 +448,14 @@ defmodule Literature.FormComponent do
 
   def input(assigns) do
     ~H"""
-    <input type={@type} name={@name} class={@classes} phx-feedback-for={@name} {@rest} />
+    <input
+      type={@type}
+      name={@name}
+      value={assigns[:value]}
+      class={@classes}
+      phx-feedback-for={@name}
+      {@rest}
+    />
     """
   end
 
