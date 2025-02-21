@@ -215,6 +215,11 @@ defmodule Literature.Router do
                 live("/authors", BlogLive, :authors, route_opts)
               end
 
+              if :search in routes do
+                live("/search/page/:page", BlogLive, :search, route_opts)
+                live("/search", BlogLive, :search, route_opts)
+              end
+
               if :show in routes do
                 pipe_through(:cloudflare_cdn)
                 live("/:slug", BlogLive, :show, route_opts)

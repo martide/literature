@@ -235,6 +235,37 @@ defmodule LiteratureTest do
       assert post.id == scheduled_post.id
     end
 
+    test "paginate_posts/1 returns filtered posts based on status & search term" do
+      publication = publication_fixture()
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+
+      published_post_with_keyword =
+        post_fixture(
+          title: "Published post: Keyword phrase in the title",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+
+      draft_post_with_keyword =
+        post_fixture(
+          title: "Draft post: Keyword phrase in the title",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id],
+          is_published: false
+        )
+
+      attrs = %{"q" => "keyword phrase", "status" => "published"}
+
+      result = Literature.paginate_posts(attrs)
+      post_ids = Enum.map(result, & &1.id)
+
+      assert published_post_with_keyword.id in post_ids
+      refute draft_post_with_keyword.id in post_ids
+    end
+
     test "list_posts/0 returns all posts" do
       publication = publication_fixture()
       author = author_fixture(publication_id: publication.id)

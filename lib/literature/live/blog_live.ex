@@ -171,7 +171,7 @@ defmodule Literature.BlogLive do
     |> then(&{:noreply, &1})
   end
 
-  defp apply_action(socket, :index, slug, params) do
+  defp apply_action(socket, action, slug, params) when action in [:index, :search] do
     publication = Literature.get_publication!(slug: slug)
     page = paginate_posts(socket, params)
 
@@ -181,6 +181,7 @@ defmodule Literature.BlogLive do
     |> assign(:publication, publication)
     |> assign(:page, page)
     |> assign(:posts, page.entries)
+    |> assign(:search_term, params["q"])
     |> handle_page_exceeds_total(params, page.total_pages)
   end
 
@@ -241,7 +242,8 @@ defmodule Literature.BlogLive do
       "status" => "published",
       "preload" => ~w(authors tags)a,
       "page" => params["page"],
-      "page_size" => @page_size
+      "page_size" => @page_size,
+      "q" => params["q"]
     }
     |> Literature.paginate_posts()
   end
