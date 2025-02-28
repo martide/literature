@@ -152,7 +152,7 @@ defmodule Literature.Router do
     opts = Keyword.put(opts, :application_router, __CALLER__.module)
 
     # :index_pages to enable index pagination
-    routes = Keyword.get(opts, :only, ~w(index index_pages tags authors show)a)
+    routes = Keyword.get(opts, :only, ~w(index index_pages tags authors search show)a)
 
     # Custom routes to enable /tags/:tag_slug or /authors/:author_slug routes
     # Possible value for now is [:show_tag, :show_author]
@@ -213,6 +213,11 @@ defmodule Literature.Router do
 
               if :authors in routes do
                 live("/authors", BlogLive, :authors, route_opts)
+              end
+
+              if :search in routes do
+                live("/search/page/:page", BlogLive, :search, route_opts)
+                live("/search", BlogLive, :search, route_opts)
               end
 
               if :show in routes do
