@@ -23,7 +23,7 @@ defmodule Literature.Test.Router do
 
   literature("/",
     publication: "with-only",
-    only: [:index, :show],
+    only: [:index, :show, :search],
     view_module: @view_module,
     as: :with_only
   )

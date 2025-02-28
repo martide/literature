@@ -42,7 +42,9 @@ defmodule Literature.RouterTest do
                  "/blog/tags",
                  "/blog/page/:page",
                  "/blog/feed",
-                 "/literature"
+                 "/literature",
+                 "/blog/search",
+                 "/blog/search/page/:page"
                ])
 
       assert Routes.literature_path(conn, :index) == "/blog"
@@ -64,7 +66,13 @@ defmodule Literature.RouterTest do
       |> Enum.map(& &1.path)
 
     assert Enum.sort(paths) ==
-             Enum.sort(["/with-only", "/with-only/:slug", "/with-only/feed"])
+             Enum.sort([
+               "/with-only",
+               "/with-only/:slug",
+               "/with-only/feed",
+               "/with-only/search",
+               "/with-only/search/page/:page"
+             ])
 
     assert Routes.with_only_path(conn, :index) == "/with-only"
 
@@ -87,7 +95,9 @@ defmodule Literature.RouterTest do
                "/authors",
                "/tags",
                "/page/:page",
-               "/feed"
+               "/feed",
+               "/search",
+               "/search/page/:page"
              ])
 
     assert Routes.on_root_path(conn, :index) == "/"
@@ -117,7 +127,9 @@ defmodule Literature.RouterTest do
                "/custom-routes/tags/:tag_slug",
                "/custom-routes/tags/:tag_slug/page/:page",
                "/custom-routes/page/:page",
-               "/custom-routes/feed"
+               "/custom-routes/feed",
+               "/custom-routes/search",
+               "/custom-routes/search/page/:page"
              ])
 
     assert Routes.custom_routes_path(conn, :tags) == "/custom-routes/tags"
@@ -164,7 +176,9 @@ defmodule Literature.RouterTest do
                "/dynamic-on-root/authors",
                "/dynamic-on-root/tags",
                "/dynamic-on-root/page/:page",
-               "/dynamic-on-root/feed"
+               "/dynamic-on-root/feed",
+               "/dynamic-on-root/search",
+               "/dynamic-on-root/search/page/:page"
              ])
 
     assert DynamicPathRoutes.on_root_path(conn, :index) == "/dynamic-on-root"
