@@ -41,13 +41,6 @@ defmodule Literature.LayoutView do
     end
   end
 
-  defp canonical_path(conn) do
-    conn
-    |> current_url
-    |> String.split("?")
-    |> hd()
-  end
-
   def asset_path(conn_or_socket, asset) when asset in [:css, :js] do
     hash = Literature.Assets.current_hash(asset)
 

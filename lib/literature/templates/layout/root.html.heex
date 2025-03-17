@@ -6,13 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="generator" content={"Literature #{Application.spec(:literature, :vsn)}"} />
 
-    <.meta_tags tags={assigns[:meta_tags] || %{}} current_url={current_url(@conn)} />
-
-    <link rel="canonical" href={canonical_path(@conn)} />
+    <.meta_tags tags={assigns[:meta_tags] || %{}} current_url={get_full_url(@conn)} />
+    <.canonical_tag conn={@conn} />
     <.pagination_link_tags
       routes={@conn.private.routes}
       page={assigns[:page]}
-      current_url={current_url(@conn, %{})}
+      current_url={get_full_url(@conn)}
     />
     <link
       rel="shortcut icon"
@@ -28,7 +27,7 @@
 
     <link phx-track-static rel="stylesheet" href={application_css_path(@conn, @view_module)} />
     <!-- Language tag -->
-    <.publication_language_tags publication={@publication} current_url={current_url(@conn, %{})} />
+    <.publication_language_tags publication={@publication} current_url={get_full_url(@conn)} />
     <.post_language_tags post={assigns[:post]} publication={@publication} />
     <!-- END Language tag -->
     <script
@@ -37,8 +36,6 @@
       type="text/javascript"
       src={application_js_path(@conn, @view_module)}
     >
-      tagstagstags
-          
     </script>
   </head>
   <body>

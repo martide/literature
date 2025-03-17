@@ -65,6 +65,8 @@ defmodule Literature.BlogLiveTest do
     test "lists all blog posts", %{conn: conn, publication: publication, post: post} do
       {:ok, _view, html} = live(conn, Routes.literature_path(conn, :index))
 
+      assert get_element(html, "link[href='#{@endpoint.url()}/blog'][rel='canonical']")
+
       assert html =~ publication.name
       assert html =~ publication.description
       assert html =~ post.title
@@ -263,6 +265,18 @@ defmodule Literature.BlogLiveTest do
                html,
                "link[href='http://example.com/en'][hreflang='en'][rel='alternate']"
              )
+    end
+
+    test "full url from conn", %{conn: conn} do
+      conn =
+        Map.merge(
+          conn,
+          %{host: "www.localhost", port: 4001}
+        )
+
+      {:ok, _view, html} = live(conn, Routes.literature_path(conn, :index))
+
+      assert get_element(html, "link[href='http://www.localhost:4001/blog'][rel='canonical']")
     end
   end
 

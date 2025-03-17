@@ -17,6 +17,8 @@ defmodule Literature.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  @endpoint Literature.Test.Endpoint
+
   using do
     quote do
       # Import conveniences for testing with connections
@@ -33,6 +35,22 @@ defmodule Literature.ConnCase do
 
   setup tags do
     Literature.DataCase.setup_sandbox(tags)
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+
+    conn =
+      Phoenix.ConnTest.build_conn()
+      |> put_request_info()
+
+    {:ok, conn: conn}
+  end
+
+  def put_request_info(conn) do
+    uri = @endpoint.struct_url()
+
+    conn
+    |> Map.merge(%{
+      port: uri.port,
+      scheme: String.to_existing_atom(uri.scheme),
+      host: uri.host
+    })
   end
 end
