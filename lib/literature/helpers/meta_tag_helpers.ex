@@ -2,6 +2,8 @@ defmodule Literature.MetaTagHelpers do
   @moduledoc false
   use Phoenix.Component
 
+  alias Plug.Conn
+
   @metatags %{
     "og_type" => "website",
     "og_locale" => "en",
@@ -181,29 +183,9 @@ defmodule Literature.MetaTagHelpers do
 
   defp canonical_path(conn) do
     conn
-    |> get_full_url()
+    |> Conn.request_url()
     |> String.split("?")
     |> hd()
-  end
-
-  @spec get_full_url(Plug.Conn.t()) :: String.t()
-  def get_full_url(conn) do
-    conn
-    |> get_uri()
-    |> URI.to_string()
-  end
-
-  defp get_uri(conn) do
-    # Stop '?' appended if no query_string
-    query_string = if conn.query_string == "", do: nil, else: conn.query_string
-
-    %URI{
-      host: conn.host,
-      scheme: Atom.to_string(conn.scheme),
-      port: conn.port,
-      query: query_string,
-      path: conn.request_path
-    }
   end
 
   defp next_url(current_url, page_number) do
