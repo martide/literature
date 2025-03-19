@@ -2,6 +2,8 @@ defmodule Literature.MetaTagHelpers do
   @moduledoc false
   use Phoenix.Component
 
+  alias Plug.Conn
+
   @metatags %{
     "og_type" => "website",
     "og_locale" => "en",
@@ -79,9 +81,20 @@ defmodule Literature.MetaTagHelpers do
     end
   end
 
+  attr :conn, :map, required: true
+
+  def canonical_tag(assigns) do
+    ~H"""
+    <link href={canonical_path(@conn)} rel="canonical" />
+    """
+  end
+
   @doc """
   Render publication language tags
   """
+  attr :publication, :map, required: true
+  attr :current_url, :string, required: true
+
   def publication_language_tags(%{publication: %{locale: locale}} = assigns)
       when is_binary(locale) do
     ~H"""
@@ -95,6 +108,9 @@ defmodule Literature.MetaTagHelpers do
   @doc """
   Render post language tags
   """
+  attr :post, :map, required: true
+  attr :publication, :string, required: true
+
   def post_language_tags(%{post: %{locales: locales}} = assigns)
       when is_list(locales) and locales != [] do
     publication_locale = assigns[:publication].locale
@@ -163,6 +179,13 @@ defmodule Literature.MetaTagHelpers do
     ~H"""
     <meta name={@name} content={@content} property={@property} />
     """
+  end
+
+  defp canonical_path(conn) do
+    conn
+    |> Conn.request_url()
+    |> String.split("?")
+    |> hd()
   end
 
   defp next_url(current_url, page_number) do

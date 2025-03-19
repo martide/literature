@@ -52,8 +52,8 @@ defmodule Literature.Web do
         root: "lib/literature/templates"
 
       # Import convenience functions from controllers
-      import Phoenix.Controller,
-        only: [current_url: 1, current_url: 2, get_flash: 2, get_csrf_token: 0]
+      import Phoenix.Controller, only: [get_flash: 2, get_csrf_token: 0]
+      import Plug.Conn, only: [request_url: 1]
 
       unquote(view_helpers())
     end
