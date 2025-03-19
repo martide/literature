@@ -1,7 +1,7 @@
 defmodule Literature.MixProject do
   use Mix.Project
 
-  @version "0.4.10"
+  @version "0.4.11"
 
   def project do
     [
