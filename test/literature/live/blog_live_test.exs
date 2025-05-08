@@ -97,6 +97,12 @@ defmodule Literature.BlogLiveTest do
       assert get_element(html, "link[href='#{next_url}'][rel='next']")
     end
 
+    test "returns 404 error when page is not an integer", %{conn: conn} do
+      assert_raise Literature.PageNotFound, fn ->
+        get(conn, Routes.literature_path(conn, :index, "a"))
+      end
+    end
+
     test "returns 404 error when exceeds total pages", %{conn: conn} do
       assert_raise Literature.PageNotFound, fn ->
         get(conn, Routes.literature_path(conn, :index, 2))
