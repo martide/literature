@@ -153,35 +153,45 @@ defmodule Literature.Post do
 
   def resolve(post), do: post
 
-  def resolve_prev_and_next_post(post, %{published_posts: published_posts}) do
-    post_index = Enum.find_index(published_posts, &(&1.id == post.id))
+  def resolve_prev_and_next_post(post) do
+    next =
+      Literature.list_posts(%{
+        "max" => 1,
+        "publication_slug" => post.publication.slug,
+        "status" => "published",
+        "preload" => [],
+        "published_at" => {">", post.published_at}
+      })
+      |> Enum.at(0)
 
-    post
-    |> build_post(:prev, published_posts, post_index)
-    |> build_post(:next, published_posts, post_index)
+    prev =
+      Literature.list_posts(%{
+        "max" => 1,
+        "publication_slug" => post.publication.slug,
+        "status" => "published",
+        "preload" => [],
+        "published_at" => {"<", post.published_at}
+      })
+      |> Enum.at(0)
+
+    %{post | next_post: next, prev_post: prev}
   end
 
-  def resolve_similar_posts(%{tags_ids: tags_ids} = post, %{published_posts: published_posts}) do
+  def resolve_similar_posts(post) do
     similar_posts =
-      published_posts
-      |> Stream.reject(&(&1.id == post.id))
-      |> Stream.map(&resolve/1)
-      |> Stream.filter(&List.myers_difference(&1.tags_ids, tags_ids)[:eq])
-      |> Stream.take(3)
-      |> Enum.to_list()
+      Enum.flat_map(post.tags, fn tag ->
+        Literature.list_posts(%{
+          "max" => 3,
+          "exclude_ids" => [post.id],
+          "publication_slug" => post.publication.slug,
+          "tag_slug" => tag.slug,
+          "status" => "published"
+        })
+      end)
+      |> Enum.uniq()
+      |> Enum.take_random(3)
 
     %{post | similar_posts: similar_posts}
-  end
-
-  defp build_post(post, :prev, _, nil), do: post
-
-  defp build_post(post, :prev, published_posts, index),
-    do: %{post | prev_post: Enum.fetch!(published_posts, index - 1)}
-
-  defp build_post(post, :next, published_posts, index) do
-    %{post | next_post: Enum.fetch!(published_posts, index + 1)}
-  rescue
-    _ -> post
   end
 
   defp get_status(%{published_at: published_at, is_published: is_published}) do

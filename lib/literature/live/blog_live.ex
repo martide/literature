@@ -66,7 +66,7 @@ defmodule Literature.BlogLive do
     |> Enum.find(&is_struct/1)
     |> case do
       %Post{status: "published"} = post ->
-        assign_to_socket(socket, :post, build_post(post, session["publication_slug"]))
+        assign_to_socket(socket, :post, build_post(post))
 
       %Tag{visibility: true} = tag when not show_tag_route? ->
         assign_to_socket(socket, :tag, preload_tag(tag))
@@ -273,14 +273,11 @@ defmodule Literature.BlogLive do
     |> preload_author()
   end
 
-  defp build_post(post, slug) do
-    publication =
-      Literature.get_publication!(slug: slug) |> Repo.preload(published_posts: ~w(authors tags)a)
-
+  defp build_post(post) do
     post
     |> Repo.preload([:publication])
-    |> Post.resolve_prev_and_next_post(publication)
-    |> Post.resolve_similar_posts(publication)
+    |> Post.resolve_prev_and_next_post()
+    |> Post.resolve_similar_posts()
   end
 
   defp preload_tag(tag),

@@ -101,6 +101,16 @@ defmodule Literature.QueryHelpers do
 
   def where_status(query, _), do: query
 
+  def where_published_at(query, %{"published_at" => {">", published_at}}) do
+    where(query, [q], q.published_at > ^published_at)
+  end
+
+  def where_published_at(query, %{"published_at" => {"<", published_at}}) do
+    where(query, [q], q.published_at < ^published_at)
+  end
+
+  def where_published_at(query, _), do: query
+
   def filter(query, %{"post_id" => post_id}) do
     where(query, [q], q.post_id in ^List.wrap(post_id))
   end
