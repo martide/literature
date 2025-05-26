@@ -160,6 +160,8 @@ defmodule Literature.Post do
         "publication_slug" => post.publication.slug,
         "status" => "published",
         "preload" => [],
+        "sort_field" => "published_at",
+        "sort_direction" => "asc",
         "published_at" => {">", post.published_at}
       })
       |> Enum.at(0)
