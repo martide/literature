@@ -322,6 +322,41 @@ defmodule LiteratureTest do
              }) == [post]
     end
 
+    test "list_posts/1 returns filtered posts based on published at" do
+      publication = publication_fixture()
+      author = author_fixture(publication_id: publication.id)
+      tag = tag_fixture(publication_id: publication.id)
+
+      yesterday = DateTime.utc_now() |> DateTime.add(-1, :day)
+
+      previous_post =
+        post_fixture(
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id],
+          published_at: DateTime.add(yesterday, -1, :day)
+        )
+
+      next_post =
+        post_fixture(
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id],
+          title: "test",
+          published_at: DateTime.utc_now()
+        )
+
+      assert Literature.list_posts(%{
+               "publication_slug" => publication.slug,
+               "published_at" => {"<", yesterday}
+             }) == [previous_post]
+
+      assert Literature.list_posts(%{
+               "publication_slug" => publication.slug,
+               "published_at" => {">", yesterday}
+             }) == [next_post]
+    end
+
     test "get_post!/1 returns the post with given id" do
       publication = publication_fixture()
       author = author_fixture(publication_id: publication.id)
