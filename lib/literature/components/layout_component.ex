@@ -50,7 +50,7 @@ defmodule Literature.LayoutComponent do
             href="#"
             phx-click="delete"
             phx-value-id={@item.id}
-            class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
+            class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-hidden focus:ring-red-300 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
           >
             Yes, I'm sure
           </.link>
@@ -58,7 +58,7 @@ defmodule Literature.LayoutComponent do
             href="#"
             phx-click={@on_close}
             phx-value-id={@item.id}
-            class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10"
+            class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-hidden focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10"
           >
             No, cancel
           </.link>
@@ -73,7 +73,7 @@ defmodule Literature.LayoutComponent do
     <div
       id={@id}
       tabindex="-1"
-      class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 md:inset-0 h-modal md:h-full flex justify-center items-center bg-black bg-opacity-50"
+      class="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 md:inset-0 h-modal md:h-full flex justify-center items-center bg-black/50"
       aria-hidden="true"
     >
       <div class="relative p-4 w-full max-w-md h-full md:h-auto">
@@ -119,7 +119,7 @@ defmodule Literature.LayoutComponent do
       <div class="flex p-4 mb-4 bg-primary-100 rounded-lg" role="alert">
         <svg
           aria-hidden="true"
-          class="flex-shrink-0 w-5 h-5 text-primary-700"
+          class="shrink-0 w-5 h-5 text-primary-700"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +169,7 @@ defmodule Literature.LayoutComponent do
       <div class="flex p-4 mb-4 bg-red-100 rounded-lg" role="alert">
         <svg
           aria-hidden="true"
-          class="flex-shrink-0 w-5 h-5 text-red-700"
+          class="shrink-0 w-5 h-5 text-red-700"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"

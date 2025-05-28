@@ -30,7 +30,7 @@ defmodule Literature.SortTagPostsLive do
     <div class="col-span-4 relative sm:rounded-lg w-full">
       <div class="flex items-center justify-end mb-5">
         <button
-          class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center"
+          class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-hidden focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center"
           phx-hook="HandleUpdateOrder"
           data-order-attribute="data-order-id"
           data-parent-selector="#tag-posts-drag-n-drop"
@@ -49,7 +49,7 @@ defmodule Literature.SortTagPostsLive do
           <tbody id="tag-posts-drag-n-drop" data-sort="drag-n-drop-list" phx-hook="HandleDragNDrop">
             <tr
               :for={post <- @tag.posts}
-              class="sort-menu cursor-move bg-white border-b hover:bg-gray-50"
+              class="sort-menu cursor-move bg-white border-gray-200 border-b hover:bg-gray-50"
               data-order-id={post.id}
             >
               <td scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">

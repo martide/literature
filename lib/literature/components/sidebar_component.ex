@@ -16,7 +16,7 @@ defmodule Literature.SidebarComponent do
                 path={tab.path}
                 classes={tab_classes(@live_action in tab.actions)}
               >
-                <div class="flex-shrink-0 transition duration-75 group-hover:text-gray-900">
+                <div class="shrink-0 transition duration-75 group-hover:text-gray-900">
                   <.render_icon icon={tab.icon} solid={@live_action in tab.actions} />
                 </div>
               </.render_tab>
@@ -72,7 +72,7 @@ defmodule Literature.SidebarComponent do
     base_classes = "flex items-center px-5 py-3 text-base rounded-lg"
 
     if is_active,
-      do: "#{base_classes} bg-primary-600 text-white drop-shadow font-medium",
+      do: "#{base_classes} bg-primary-600 text-white drop-shadow-sm font-medium",
       else: "#{base_classes} text-gray-600"
   end
 

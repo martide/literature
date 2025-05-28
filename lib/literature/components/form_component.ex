@@ -136,7 +136,7 @@ defmodule Literature.FormComponent do
     ~H"""
     <.link
       patch={@return_to}
-      class="w-full md:w-auto text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 md:mr-2 mb-2 text-center order-last md:order-first"
+      class="w-full md:w-auto text-gray-900 bg-white border border-gray-300 focus:outline-hidden hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 md:mr-2 mb-2 text-center order-last md:order-first"
     >
       {@label}
     </.link>
@@ -153,7 +153,7 @@ defmodule Literature.FormComponent do
     <button
       form={@form}
       type="submit"
-      class="w-full md:w-auto text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 md:mr-2 mb-2 focus:outline-none disabled:bg-opacity-70"
+      class="w-full md:w-auto text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 md:mr-2 mb-2 focus:outline-hidden disabled:bg-primary-700/70"
       disabled={@disabled}
       phx-disable-with="Saving..."
     >
@@ -192,7 +192,7 @@ defmodule Literature.FormComponent do
       phx-drop-target={@upload_field.ref}
     >
       <div
-        class="relative z-30 py-20 bg-white bg-opacity-60 opacity-10 group-hover:opacity-90 transition-all duration-300 ease-in-out"
+        class="relative z-30 py-20 bg-white/60 opacity-10 group-hover:opacity-90 transition-all duration-300 ease-in-out"
         phx-click={JS.dispatch("click", to: "##{@upload_field.ref}")}
       >
         <div class="rounded-full h-14 w-14 bg-primary-100 text-primary-600 flex items-center justify-center mb-3 mx-auto group-hover:scale-110 transition duration-300 ease-in-out">
@@ -496,14 +496,14 @@ defmodule Literature.FormComponent do
 
   defp checkbox_classes(_assigns),
     do:
-      "w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 focus:ring-2"
+      "w-4 h-4 text-blue-600 bg-gray-100 rounded-sm border-gray-300 focus:ring-blue-500 focus:ring-2"
 
   defp radio_classes(_assigns), do: "sr-only peer"
 
   defp text_input_classes(%{hidden: "true"}), do: "hidden"
 
   defp text_input_classes(assigns) do
-    "#{if field_has_errors?(assigns), do: "bg-red-50 border-red-500 focus:border-red-500 focus:ring-red-500", else: "bg-gray-50 border-gray-300 focus:border-primary-500 focus:ring-primary-500"} focus:ring-1 border text-gray-900 text-sm rounded-lg focus:outline-none block w-full p-2.5 disabled:bg-primary-100"
+    "#{if field_has_errors?(assigns), do: "bg-red-50 border-red-500 focus:border-red-500 focus:ring-red-500", else: "bg-gray-50 border-gray-300 focus:border-primary-500 focus:ring-primary-500"} focus:ring-1 border text-gray-900 text-sm rounded-lg focus:outline-hidden block w-full p-2.5 disabled:bg-primary-100"
   end
 
   defp field_has_errors?(%{form: form, field: field}) do
