@@ -1,6 +1,6 @@
 <header>
-  <nav class="bg-white px-2 sm:px-4 py-2.5 fixed w-full z-50 top-0 left-0 border-b border-gray-200 shadow shadow-slate-400/50">
-    <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
+  <nav class="bg-white px-2 sm:px-4 py-2.5 fixed w-full z-50 top-0 left-0 border-b border-gray-200 shadow-sm shadow-slate-400/50">
+    <div class="max-w-(--breakpoint-xl) flex flex-wrap items-center justify-between mx-auto">
       <.link
         navigate={literature_dashboard_path(@conn, :list_publications)}
         class="flex items-center space-x-2 text-primary-700"
@@ -24,7 +24,7 @@
       <div class="flex md:order-2">
         <.link
           navigate={literature_dashboard_path(@conn, :new_publication)}
-          class="text-primary-700 focus:outline-none hover:bg-primary-100 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center transition duration-300 ease-in-out"
+          class="text-primary-700 focus:outline-hidden hover:bg-primary-100 focus:ring-4 focus:ring-primary-200 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center transition duration-300 ease-in-out"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

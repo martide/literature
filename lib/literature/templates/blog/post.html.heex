@@ -16,7 +16,7 @@
           </.link>
         <% end %>
       </div>
-      <div class="h-[32rem] overflow-hidden relative my-14">
+      <div class="h-128 overflow-hidden relative my-14">
         <.responsive_img_tag
           post={@post}
           field={:feature_image}
@@ -207,7 +207,7 @@
             src={literature_image_url(author, :profile_image)}
             alt={author.name}
             loading="lazy"
-            class="rounded-full w-16 h-16 flex-shrink-0"
+            class="rounded-full w-16 h-16 shrink-0"
           />
           <div class="space-y-4">
             <p class="font-bold text-lg">{author.name}</p>
