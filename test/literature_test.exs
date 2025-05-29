@@ -163,6 +163,28 @@ defmodule LiteratureTest do
       assert entries == [%{post | status: nil, authors_ids: nil, tags_ids: nil}]
     end
 
+    test "paginate_posts/1 returns filtered posts based on author slug" do
+      publication = publication_fixture()
+      author = author_fixture(publication_id: publication.id)
+      author_2 = author_fixture(publication_id: publication.id, name: "test")
+      tag = tag_fixture(publication_id: publication.id)
+
+      post =
+        post_fixture(publication_id: publication.id, authors_ids: [author.id], tags_ids: [tag.id])
+
+      _ =
+        post_fixture(
+          publication_id: publication.id,
+          authors_ids: [author_2.id],
+          tags_ids: [tag.id],
+          title: "test"
+        )
+
+      attrs = %{"author_slug" => author.slug, "preload" => ~w(authors tags)a}
+      assert %Literature.Pagination.Page{entries: entries} = Literature.paginate_posts(attrs)
+      assert entries == [%{post | status: nil, authors_ids: nil, tags_ids: nil}]
+    end
+
     test "paginate_posts/1 returns filtered posts based on status" do
       publication = publication_fixture()
       author = author_fixture(publication_id: publication.id)

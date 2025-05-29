@@ -169,6 +169,7 @@ defmodule Literature do
     |> where_preload(attrs)
     |> where_status(attrs)
     |> where_tag(attrs)
+    |> where_author(attrs)
     |> where_publication(attrs)
     |> Repo.paginate(attrs)
   end
