@@ -141,6 +141,13 @@ defmodule Literature.QueryHelpers do
 
   def where_tag(query, _), do: query
 
+  def where_author(query, %{"author_slug" => slug}) do
+    query
+    |> join(:inner, [q], a in assoc(q, :authors), on: a.slug == ^slug)
+  end
+
+  def where_author(query, _), do: query
+
   def include_tag_post_custom_position(query, tag_ids) do
     # Get the position of the posts for the tag
     query

@@ -37,7 +37,7 @@ defmodule Literature.Test.Router do
 
   literature("/",
     publication: "custom-routes",
-    custom_routes: [:show_tag, :show_tag_pages, :show_author],
+    custom_routes: [:show_tag, :show_tag_pages, :show_author, :show_author_pages],
     view_module: @view_module,
     as: :custom_routes
   )
