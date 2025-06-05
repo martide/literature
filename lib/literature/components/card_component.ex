@@ -12,7 +12,7 @@ defmodule Literature.CardComponent do
 
   def card(assigns) do
     ~H"""
-    <div class="border-2 border-gray-100 shadow-sm hover:border-primary-500 hover:-translate-y-1 hover:shadow-lg rounded-lg p-5 space-y-3 bg-white transition duration-300 ease-in-out flex flex-col">
+    <div class="border-2 border-gray-100 shadow-xs hover:border-primary-500 hover:-translate-y-1 hover:shadow-lg rounded-lg p-5 space-y-3 bg-white transition duration-300 ease-in-out flex flex-col">
       <.link navigate={@show_path}>
         <h2 class="text-primary-700 font-bold text-4xl">{@item.name}</h2>
         <dl class="grid grid-cols-3 gap-8 p-4 text-gray-900">
@@ -35,7 +35,7 @@ defmodule Literature.CardComponent do
         <.link
           patch={@edit_path}
           id={"edit-#{@item.id}"}
-          class="text-gray-500 bg-white focus:outline-none hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5"
+          class="text-gray-500 bg-white focus:outline-hidden hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -55,7 +55,7 @@ defmodule Literature.CardComponent do
         </.link>
         <.link
           navigate={@create_post_path}
-          class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+          class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-hidden focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
         >
           Create new post
         </.link>

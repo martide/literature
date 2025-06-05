@@ -45,7 +45,7 @@ defmodule Literature.TableComponent do
               type="search"
               name={f[:q].name}
               value={@params["q"]}
-              class="text-sm rounded-lg focus:outline-none block w-full p-2.5"
+              class="text-sm rounded-lg focus:outline-hidden block w-full p-2.5"
               placeholder="Find"
               autofocus={true}
               phx-debounce={300}
@@ -56,7 +56,7 @@ defmodule Literature.TableComponent do
         <%= if @actions_modal? do %>
           <button
             phx-click="open_create_modal"
-            class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center"
+            class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-hidden focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center"
           >
             <.create_icon />
             <span class="flex-1 ml-2 whitespace-nowrap">Create new</span>
@@ -64,7 +64,7 @@ defmodule Literature.TableComponent do
         <% else %>
           <.link
             navigate={@new_path}
-            class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center"
+            class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-hidden focus:ring-primary-300 font-medium rounded-lg text-sm px-3 py-2.5 text-center mr-3 md:mr-0 flex items-center"
           >
             <.create_icon />
             <span class="flex-1 ml-2 whitespace-nowrap">Create new</span>
@@ -88,7 +88,7 @@ defmodule Literature.TableComponent do
           <tbody>
             <%= if Enum.any?(@items) do %>
               <%= for item <- @items do %>
-                <tr class="bg-white border-b hover:bg-gray-50">
+                <tr class="bg-white border-gray-200 border-b hover:bg-gray-50">
                   <%= for {field, _} <- @columns do %>
                     <td scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">
                       <.item item={item} field={field} base_path={@base_path} />
@@ -339,7 +339,7 @@ defmodule Literature.TableComponent do
 
   defp radio_button(assigns) do
     ~H"""
-    <li class="hover:bg-gray-100 w-full rounded transition duration-300 ease-in-out">
+    <li class="hover:bg-gray-100 w-full rounded-sm transition duration-300 ease-in-out">
       <label class="flex items-center cursor-pointer p-3">
         <input
           type="radio"

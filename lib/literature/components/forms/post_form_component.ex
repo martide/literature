@@ -54,7 +54,7 @@ defmodule Literature.PostFormComponent do
             <input type="hidden" id="form-editor-json" name={f[:editor_json].name} />
             <input type="hidden" id="form-html" name={f[:html].name} />
           </div>
-          <div class="w-full md:w-2/3 md:border-l md:pl-8">
+          <div class="w-full md:w-2/3 md:border-gray-200 md:border-l md:pl-8">
             <div class="space-y-5 mb-5">
               <.form_field
                 form={f}
