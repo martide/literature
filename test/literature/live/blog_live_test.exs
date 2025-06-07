@@ -1000,6 +1000,21 @@ defmodule Literature.BlogLiveTest do
       # Show post and author should work as usual
       assert {:ok, _view, _html} =
                live(conn, Routes.custom_routes_path(conn, :show, post.slug))
+
+      # Redirects to / when path is /page/1
+      assert {_, {:live_redirect, %{to: to}}} =
+               live(conn, Routes.custom_routes_path(conn, :show_author, author.slug, 1))
+
+      assert to == "/custom-routes/authors/#{author.slug}"
+
+      # Renders /page/:page
+      assert {:ok, view, html} =
+               live(conn, Routes.custom_routes_path(conn, :show_author, author.slug, 2))
+
+      assert html =~ author.name
+
+      assert page_title(view) ==
+               "#{BlogView.meta_tags(:show_author, %{author: author}).title} Page (2)"
     end
 
     test "show_author meta authors", %{conn: conn, author: author} do

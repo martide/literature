@@ -25,7 +25,7 @@ defmodule Literature.BlogLive do
     )
     |> case do
       %Tag{} = tag ->
-        assign_to_socket(socket, :tag, preload_tag(tag))
+        assign_to_socket(socket, :tag, tag |> Repo.preload(:publication))
 
       _ ->
         render_not_found(socket)
@@ -42,7 +42,7 @@ defmodule Literature.BlogLive do
     )
     |> case do
       %Author{} = author ->
-        assign_to_socket(socket, :author, preload_author(author))
+        assign_to_socket(socket, :author, author |> Repo.preload(:publication))
 
       _ ->
         render_not_found(socket)
@@ -236,12 +236,24 @@ defmodule Literature.BlogLive do
     |> assign(:page, page)
   end
 
-  defp apply_action(socket, :show_author, slug, _params) do
+  defp apply_action(socket, :show_author, slug, params) do
     publication = Literature.get_publication!(slug: slug)
+
+    page =
+      Literature.paginate_posts(%{
+        "publication_slug" => slug,
+        "author_slug" => params["author_slug"],
+        "status" => "published",
+        "page" => params["page"],
+        "page_size" => @page_size
+      })
 
     socket
     |> assign_meta_tags(socket.assigns.author)
+    |> override_title_with_page(page)
     |> assign(:publication, publication || %{name: nil})
+    |> assign(:posts, page.entries)
+    |> assign(:page, page)
   end
 
   defp apply_action(socket, _, slug, _) do
@@ -264,13 +276,25 @@ defmodule Literature.BlogLive do
   defp list_tags(%{assigns: %{publication_slug: slug}}) do
     %{"publication_slug" => slug, "status" => "public"}
     |> Literature.list_tags()
-    |> preload_tag()
+    |> Enum.map(fn tag ->
+      Map.put(
+        tag,
+        :published_posts_count,
+        Repo.aggregate(Ecto.assoc(tag, :published_posts), :count)
+      )
+    end)
   end
 
   defp list_authors(%{assigns: %{publication_slug: slug}}) do
     %{"publication_slug" => slug}
     |> Literature.list_authors()
-    |> preload_author()
+    |> Enum.map(fn author ->
+      Map.put(
+        author,
+        :published_posts_count,
+        Repo.aggregate(Ecto.assoc(author, :published_posts), :count)
+      )
+    end)
   end
 
   defp build_post(post) do
