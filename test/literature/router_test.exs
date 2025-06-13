@@ -123,6 +123,7 @@ defmodule Literature.RouterTest do
                "/custom-routes/:slug",
                "/custom-routes/authors",
                "/custom-routes/authors/:author_slug",
+               "/custom-routes/authors/:author_slug/page/:page",
                "/custom-routes/tags",
                "/custom-routes/tags/:tag_slug",
                "/custom-routes/tags/:tag_slug/page/:page",
