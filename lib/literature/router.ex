@@ -200,6 +200,7 @@ defmodule Literature.Router do
             pipe_through(:maybe_redirect)
 
             scope path: "/feed" do
+              pipe_through(:rss)
               get("/", RSSController, :rss, route_opts)
             end
 
