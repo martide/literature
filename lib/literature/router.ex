@@ -21,7 +21,11 @@ defmodule Literature.Router do
       end
 
       pipeline :blog_browser do
-        plug(:accepts, ["html", "xml"])
+        plug(:accepts, ["html"])
+      end
+
+      pipeline :rss do
+        plug(:accepts, ["xml"])
       end
 
       pipeline :cloudflare_cdn do
@@ -195,7 +199,9 @@ defmodule Literature.Router do
           scope "/#{if root?, do: "", else: publication_slug}", Literature do
             pipe_through(:maybe_redirect)
 
-            get("/feed", RSSController, :rss, route_opts)
+            scope path: "/feed" do
+              get("/", RSSController, :rss, route_opts)
+            end
 
             live_session session_name, session_opts do
               # Blog routes
