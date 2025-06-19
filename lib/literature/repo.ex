@@ -14,11 +14,6 @@ defmodule Literature.Repo do
     Config.repo().paginate(queryable, opts)
   end
 
-  @doc "Wraps `c:Ecto.Repo.aggregate/2`."
-  def aggregate(queryable, aggregate) do
-    Config.repo().aggregate(queryable, aggregate)
-  end
-
   @doc "Wraps `c:Ecto.Repo.all/2`."
   def all(queryable, opts \\ []) do
     Config.repo().all(queryable, opts)

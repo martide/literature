@@ -17,6 +17,7 @@ defmodule Literature.Author do
     field(:meta_title, :string)
     field(:meta_description, :string)
     field(:meta_keywords, :string)
+    field(:published_posts_count, :integer, virtual: true)
 
     belongs_to(:publication, Publication)
 

@@ -274,27 +274,15 @@ defmodule Literature.BlogLive do
   end
 
   defp list_tags(%{assigns: %{publication_slug: slug}}) do
-    %{"publication_slug" => slug, "status" => "public"}
-    |> Literature.list_tags()
-    |> Enum.map(fn tag ->
-      Map.put(
-        tag,
-        :published_posts_count,
-        Repo.aggregate(Ecto.assoc(tag, :published_posts), :count)
-      )
-    end)
+    Literature.list_tags(%{
+      "publication_slug" => slug,
+      "status" => "public",
+      "with_published_posts_count" => true
+    })
   end
 
   defp list_authors(%{assigns: %{publication_slug: slug}}) do
-    %{"publication_slug" => slug}
-    |> Literature.list_authors()
-    |> Enum.map(fn author ->
-      Map.put(
-        author,
-        :published_posts_count,
-        Repo.aggregate(Ecto.assoc(author, :published_posts), :count)
-      )
-    end)
+    Literature.list_authors(%{"publication_slug" => slug, "with_published_posts_count" => true})
   end
 
   defp build_post(post) do

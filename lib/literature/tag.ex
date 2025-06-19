@@ -20,6 +20,7 @@ defmodule Literature.Tag do
     field(:twitter_image, Uploaders.Type)
     field(:twitter_title, :string)
     field(:twitter_description, :string)
+    field(:published_posts_count, :integer, virtual: true)
 
     belongs_to(:publication, Publication)
 

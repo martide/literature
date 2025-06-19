@@ -161,6 +161,17 @@ defmodule Literature.QueryHelpers do
     )
   end
 
+  def maybe_with_published_posts_count(query, %{"with_published_posts_count" => true}) do
+    query
+    |> join(:left, [q], p in assoc(q, :published_posts))
+    |> group_by([q], q.id)
+    |> select([q, p], %{q | published_posts_count: count(p.id)})
+  end
+
+  def maybe_with_published_posts_count(query, _) do
+    query
+  end
+
   ### Private Methods
 
   defp sort(%{"sort_field" => field, "sort_direction" => direction}, _)
