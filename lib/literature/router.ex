@@ -246,6 +246,10 @@ defmodule Literature.Router do
       if :show_author in unquote(custom_routes) do
         live("/authors/:author_slug", BlogLive, :show_author, unquote(route_opts))
       end
+
+      if :show_author_pages in unquote(custom_routes) do
+        live("/authors/:author_slug/page/:page", BlogLive, :show_author, unquote(route_opts))
+      end
     end
   end
 

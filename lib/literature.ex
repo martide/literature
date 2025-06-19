@@ -52,6 +52,7 @@ defmodule Literature do
     |> sort_by(attrs)
     |> where_preload(attrs)
     |> where_publication(attrs)
+    |> maybe_with_published_posts_count(attrs)
     |> Repo.all()
   end
 
@@ -169,6 +170,7 @@ defmodule Literature do
     |> where_preload(attrs)
     |> where_status(attrs)
     |> where_tag(attrs)
+    |> where_author(attrs)
     |> where_publication(attrs)
     |> Repo.paginate(attrs)
   end
@@ -437,6 +439,7 @@ defmodule Literature do
     |> sort_by(attrs)
     |> where_preload(attrs)
     |> where_publication(attrs)
+    |> maybe_with_published_posts_count(attrs)
     |> Repo.all()
   end
 

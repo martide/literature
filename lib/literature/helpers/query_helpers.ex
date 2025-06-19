@@ -141,6 +141,13 @@ defmodule Literature.QueryHelpers do
 
   def where_tag(query, _), do: query
 
+  def where_author(query, %{"author_slug" => slug}) do
+    query
+    |> join(:inner, [q], a in assoc(q, :authors), on: a.slug == ^slug)
+  end
+
+  def where_author(query, _), do: query
+
   def include_tag_post_custom_position(query, tag_ids) do
     # Get the position of the posts for the tag
     query
@@ -152,6 +159,17 @@ defmodule Literature.QueryHelpers do
       {type(tp.tag_id, :binary_id),
        %{p | custom_position: tp.position |> selected_as(:custom_position)}}
     )
+  end
+
+  def maybe_with_published_posts_count(query, %{"with_published_posts_count" => true}) do
+    query
+    |> join(:left, [q], p in assoc(q, :published_posts))
+    |> group_by([q], q.id)
+    |> select([q, p], %{q | published_posts_count: count(p.id)})
+  end
+
+  def maybe_with_published_posts_count(query, _) do
+    query
   end
 
   ### Private Methods
