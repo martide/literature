@@ -14,7 +14,8 @@ config :literature, Literature.Test.Repo,
 
 config :literature, Literature.Test.Endpoint,
   live_view: [signing_salt: "FxLLYxALKW2d8gBG"],
-  secret_key_base: "51QNvBZ+7QSi7qBdaTH4+dO08wGqKxombZ7DgXQN30mtVWVFOq3KuEgCfR5FYOp9"
+  secret_key_base: "51QNvBZ+7QSi7qBdaTH4+dO08wGqKxombZ7DgXQN30mtVWVFOq3KuEgCfR5FYOp9",
+  http: [ip: {127, 0, 0, 1}]
 
 config :literature,
   repo: Literature.Test.Repo,
@@ -45,3 +46,6 @@ config :literature,
   storage: Waffle.Storage.Local,
   storage_dir_prefix: "/tmp/",
   asset_host: "/tmp"
+
+config :literature,
+  otp_app: :literature

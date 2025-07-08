@@ -2,6 +2,7 @@ defmodule Literature.Publication do
   @moduledoc """
     Literature Publication Model
   """
+  @type t :: %__MODULE__{}
   use Literature.Web, :model
 
   alias Literature.Language
