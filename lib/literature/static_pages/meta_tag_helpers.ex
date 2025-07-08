@@ -210,14 +210,27 @@ defmodule Literature.StaticPages.MetaTagHelpers do
     |> Kernel.<>("/page/#{page_number}/index.html")
   end
 
-  @spec get_default_meta_tags(Publication.t() | Author.t() | Post.t() | Tag.t()) :: map()
-  def get_default_meta_tags(struct) do
+  @spec get_default_meta_tags(
+          Publication.t() | Author.t() | Post.t() | Tag.t(),
+          Literature.Pagination.Page.t()
+        ) :: map()
+  def get_default_meta_tags(struct, publication, page \\ nil) do
     struct
     |> Map.take(meta_tag_keys())
     |> maybe_convert_name_to_title(struct)
     |> maybe_put_description(struct)
-    |> convert_image_to_url(struct)
+    |> convert_image_to_url(struct, publication)
+    |> maybe_override_title_with_page(page)
     |> atomize_keys_to_string()
+  end
+
+  defp maybe_override_title_with_page(meta_tags, nil), do: meta_tags
+  defp maybe_override_title_with_page(meta_tags, %{page_number: 1}), do: meta_tags
+
+  defp maybe_override_title_with_page(meta_tags, page) do
+    title = meta_tags.title <> " Page (#{page.page_number})"
+
+    Map.put(meta_tags, :title, title)
   end
 
   defp maybe_convert_name_to_title(meta_tags, %struct{} = author_or_tag)
@@ -234,18 +247,18 @@ defmodule Literature.StaticPages.MetaTagHelpers do
 
   defp maybe_put_description(meta_tags, _), do: meta_tags
 
-  defp convert_image_to_url(meta_tags, resource) do
-    {image, publication} =
+  defp convert_image_to_url(meta_tags, resource, publication) do
+    image =
       case resource do
         %Author{} = author ->
-          {literature_image_url(author, :profile_image) ||
-             literature_image_url(author, :cover_image), author.publication}
+          literature_image_url(author, :profile_image) ||
+            literature_image_url(author, :cover_image)
 
         %struct{} = tag_or_post when struct in [Post, Tag] ->
-          {literature_image_url(tag_or_post, :feature_image), tag_or_post.publication}
+          literature_image_url(tag_or_post, :feature_image)
 
-        publication ->
-          {nil, publication}
+        _ ->
+          nil
       end
 
     # default to publication if resource has no og or twitter image

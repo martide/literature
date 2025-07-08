@@ -126,6 +126,48 @@ defmodule Literature.StaticPages.Templates do
     """
   end
 
+  def show_author(assigns) do
+    ~H"""
+    <.layout {assigns}>
+      <.header {assigns} />
+      <.main>
+        <h1>{@author.name}</h1>
+      </.main>
+      <.footer {assigns} />
+    </.layout>
+    """
+  end
+
+  def tags(assigns) do
+    ~H"""
+    <.layout {assigns}>
+      <.header {assigns} />
+      <.main>
+        <h1>{@publication.name}</h1>
+        <h2>Tags</h2>
+        <ul>
+          <li :for={tag <- @tags}>
+            {tag.name}
+          </li>
+        </ul>
+      </.main>
+      <.footer {assigns} />
+    </.layout>
+    """
+  end
+
+  def show_tag(assigns) do
+    ~H"""
+    <.layout {assigns}>
+      <.header {assigns} />
+      <.main>
+        <h1>{@tag.name}</h1>
+      </.main>
+      <.footer {assigns} />
+    </.layout>
+    """
+  end
+
   defp main(assigns) do
     ~H"""
     <main class="mx-auto max-w-6xl">
@@ -137,5 +179,5 @@ defmodule Literature.StaticPages.Templates do
   def css_path, do: "/css/app.css"
   def js_path, do: "/js/app.js"
   def favicon_path, do: "/favicon/favicon.ico"
-  def rss_path, do: "/rss/feed.xml"
+  def rss_path, do: "/feed"
 end

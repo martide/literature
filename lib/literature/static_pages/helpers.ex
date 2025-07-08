@@ -35,6 +35,15 @@ defmodule Literature.StaticPages.Helpers do
     })
   end
 
+  @spec list_public_tags(String.t()) :: [Literature.Tag.t()]
+  def list_public_tags(publication_slug) do
+    Literature.list_tags(%{
+      "publication_slug" => publication_slug,
+      "status" => "public",
+      "with_published_posts_count" => true
+    })
+  end
+
   defp published_posts_params(publication_slug) do
     %{
       "publication_slug" => publication_slug,
