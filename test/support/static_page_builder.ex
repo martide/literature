@@ -1,9 +1,7 @@
-defmodule Literature.Test.StaticPageBuilder do
+defmodule Literature.Test.StaticPageGenerator do
   alias Literature.Test.Endpoint
 
-  use Literature.StaticPages.Builder,
-    only: ~w(index tags authors show)a,
+  use Literature.StaticPages.Generator,
     publication_slug: "blog",
-    path: "/en",
-    endpoint: Endpoint
+    path: "/en"
 end

@@ -133,6 +133,7 @@ defmodule Literature.StaticPages.MetaTagHelpers do
   Render pagination link tags
   """
   attr :page, :any, default: nil
+  attr :current_url, :string, required: true
 
   def pagination_link_tags(
         %{page: %{page_number: page_number, total_pages: total_pages}} = assigns
@@ -185,21 +186,19 @@ defmodule Literature.StaticPages.MetaTagHelpers do
 
   defp next_url(current_url, page_number) do
     current_url
-    |> String.replace("/page/#{page_number}", "")
+    |> String.replace("/page/#{page_number}/index.html", "")
     |> put_page_number(page_number + 1)
   end
-
-  defp prev_url(current_url, 2), do: String.replace(current_url, "/page/2", "")
 
   defp prev_url(current_url, page_number),
     do:
       current_url
-      |> String.replace("/page/#{page_number}", "")
+      |> String.replace("/page/#{page_number}/index.html", "")
       |> put_page_number(page_number - 1)
 
   defp put_page_number(current_url, page_number) do
     current_url
     |> String.replace_suffix("/", "")
-    |> Kernel.<>("/page/#{page_number}")
+    |> Kernel.<>("/page/#{page_number}/index.html")
   end
 end

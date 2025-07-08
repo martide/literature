@@ -1,8 +1,17 @@
 defmodule Literature.StaticPages.Templates do
   use Phoenix.Component
+
   import Literature.StaticPages.MetaTagHelpers
 
   def layout(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:meta_tags, fn -> %{} end)
+      |> assign_new(:rss_path, fn -> rss_path() end)
+      |> assign_new(:favicon_path, fn -> favicon_path() end)
+      |> assign_new(:css_path, fn -> css_path() end)
+      |> assign_new(:js_path, fn -> js_path() end)
+
     ~H"""
     <!DOCTYPE html>
     <html lang="en">
@@ -12,18 +21,18 @@ defmodule Literature.StaticPages.Templates do
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="generator" content={"Literature #{Application.spec(:literature, :vsn)}"} />
 
-        <.meta_tags tags={assigns[:meta_tags] || %{}} current_url={@current_url} />
+        <.meta_tags tags={@meta_tags} current_url={@current_url} />
         <.canonical_tag current_url={@current_url} />
         <.pagination_link_tags page={assigns[:page]} current_url={@current_url} />
-        <link rel="shortcut icon" type="image/png" href={favicon_path()} />
-        <link rel="alternate" type="application/rss+xml" title={@publication.name} href={rss_path()} />
 
-        <link phx-track-static rel="stylesheet" href={css_path()} />
+        <link rel="shortcut icon" type="image/png" href={@favicon_path} />
+        <link rel="alternate" type="application/rss+xml" title={@publication.name} href={@rss_path} />
+        <link rel="stylesheet" href={@css_path} />
         <!-- Language tag -->
         <.publication_language_tags publication={@publication} current_url={@current_url} />
         <.post_language_tags post={assigns[:post]} publication={@publication} />
         <!-- END Language tag -->
-        <script defer phx-track-static type="text/javascript" src={js_path()}>
+        <script defer type="text/javascript" src={@js_path}>
         </script>
       </head>
       <body>
@@ -40,7 +49,7 @@ defmodule Literature.StaticPages.Templates do
     ~H"""
     <.layout {assigns}>
       <.header {assigns} />
-      <main class="mx-auto max-w-6xl">
+      <.main>
         <h1>{@publication.name}</h1>
         <h2>Posts</h2>
         <ul>
@@ -48,7 +57,7 @@ defmodule Literature.StaticPages.Templates do
             {post.title}
           </li>
         </ul>
-      </main>
+      </.main>
       <.footer {assigns} />
     </.layout>
     """
@@ -56,20 +65,30 @@ defmodule Literature.StaticPages.Templates do
 
   def index_page(assigns) do
     ~H"""
-    <.layout>
-      <h1>{@publication.name}</h1>
-      <h2>Posts - {@page.page_number}</h2>
-      <ul>
-        <li :for={post <- @page.entries}>
-          {post.title}
-        </li>
-      </ul>
+    <.layout {assigns}>
+      <.main>
+        <h1>{@publication.name}</h1>
+        <h2>Posts - {@page.page_number}</h2>
+        <ul>
+          <li :for={post <- @page.entries}>
+            {post.title}
+          </li>
+        </ul>
+      </.main>
     </.layout>
     """
   end
 
-  def css_path, do: "css/app.css"
-  def js_path, do: "js/app.js"
-  def favicon_path, do: "favicon/favicon.ico"
-  def rss_path, do: "rss/feed.xml"
+  defp main(assigns) do
+    ~H"""
+    <main class="mx-auto max-w-6xl">
+      {render_slot(@inner_block)}
+    </main>
+    """
+  end
+
+  def css_path, do: "/css/app.css"
+  def js_path, do: "/js/app.js"
+  def favicon_path, do: "/favicon/favicon.ico"
+  def rss_path, do: "/rss/feed.xml"
 end
