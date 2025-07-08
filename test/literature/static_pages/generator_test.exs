@@ -3,7 +3,15 @@ defmodule Literature.StaticPages.GeneratorTest do
 
   import Literature.Test.Fixtures
 
-  alias Literature.Test.StaticPageGenerator
+  alias Literature.StaticPages.Generator
+
+  @opts [
+    publication_slug: "blog",
+    path: "/en",
+    current_url: @endpoint.url(),
+    templates: Literature.StaticPages.Templates,
+    page_size: 10
+  ]
 
   setup do
     on_exit(fn ->
@@ -36,7 +44,7 @@ defmodule Literature.StaticPages.GeneratorTest do
 
   describe "generate static pages" do
     test "generate index", %{publication: publication} do
-      StaticPageGenerator.generate(:index, @endpoint.url())
+      Generator.generate(:index, @opts)
       html = read_file("/#{publication.slug}/index.html")
 
       assert html =~ "<h1>#{publication.name}</h1>"
@@ -53,11 +61,30 @@ defmodule Literature.StaticPages.GeneratorTest do
       end
 
       # 21 posts -> 3 pages -> default 10 per page
-      StaticPageGenerator.generate(:index_page, @endpoint.url())
+      Generator.generate(:index_page, @opts)
 
       for page_number <- 1..3 do
         html = read_file("/#{publication.slug}/page/#{page_number}/index.html")
         assert html =~ "<h1>#{publication.name} - Page #{page_number}</h1>"
+      end
+    end
+
+    test "generate show_post", %{post: post_1, publication: publication, author: author, tag: tag} do
+      [post_2, post_3] =
+        for i <- 1..2 do
+          post_fixture(
+            title: "Post #{i}",
+            publication_id: publication.id,
+            authors_ids: [author.id],
+            tags_ids: [tag.id]
+          )
+        end
+
+      Generator.generate(:show_post, @opts)
+
+      for post <- [post_1, post_2, post_3] do
+        html = read_file("/#{publication.slug}/#{post.slug}.html")
+        assert html =~ "<h1>#{post.title}</h1>"
       end
     end
   end

@@ -2,24 +2,19 @@ defmodule Literature.StaticPages.Templates do
   @moduledoc """
   Provides `Phoenix.Components` for rendering static pages in Literature publications.
 
-  This module defines template components used by the static page generator to render HTML
-  for various page types, such as index and paginated index pages. It includes a
-  `layout/1` component with extensive coverage for SEO tags.
-  It also contains placeholder components for all `Available Pages` in the static pages generator.
+  This module defines components used by the `Literature.StaticPages.Generator` various page types, such as index and paginated index pages.
+  It includes a `layout/1` component with extensive coverage for SEO tags.
+  It also contains placeholder components for all `Available Pages` in the `Literature.StaticPages.Generator`.
 
   ## Provided Components
-
     * `layout/1` – main HTML layout component that can be used for all available static pages. Useful for setting up SEO tags.
                   `rss_path`, `favicon_path`, `css_path`, and `js_path` should be provided.
+
 
   ## Usage
 
   This module is intended to be used as a `:templates` option in `Literature.StaticPages.Generator` or a pattern for
   a more custom templates module for the `Literature.StaticPages.Generator`.
-
-      use Literature.StaticPages.Generator,
-        templates: Literature.StaticPages.Templates,
-        # ...other options...
 
   """
   use Phoenix.Component
@@ -97,6 +92,17 @@ defmodule Literature.StaticPages.Templates do
             {post.title}
           </li>
         </ul>
+      </.main>
+    </.layout>
+    """
+  end
+
+  def show_post(assigns) do
+    ~H"""
+    <.layout {assigns}>
+      <.main>
+        <h1>{@post.title}</h1>
+        <p>{@post.excerpt}</p>
       </.main>
     </.layout>
     """

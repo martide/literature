@@ -4,6 +4,14 @@ defmodule Literature.StaticPages.MetaTagHelpers do
   """
   use Phoenix.Component
 
+  import Literature.Helpers,
+    only: [atomize_keys_to_string: 1, literature_image_url: 2]
+
+  alias Literature.Author
+  alias Literature.Post
+  alias Literature.Publication
+  alias Literature.Tag
+
   @metatags %{
     "og_type" => "website",
     "og_locale" => "en",
@@ -200,5 +208,72 @@ defmodule Literature.StaticPages.MetaTagHelpers do
     current_url
     |> String.replace_suffix("/", "")
     |> Kernel.<>("/page/#{page_number}/index.html")
+  end
+
+  @spec get_default_meta_tags(Publication.t() | Author.t() | Post.t() | Tag.t()) :: map()
+  def get_default_meta_tags(struct) do
+    struct
+    |> Map.take(meta_tag_keys())
+    |> maybe_convert_name_to_title(struct)
+    |> maybe_put_description(struct)
+    |> convert_image_to_url(struct)
+    |> atomize_keys_to_string()
+  end
+
+  defp maybe_convert_name_to_title(meta_tags, %struct{} = author_or_tag)
+       when struct in [Author, Tag, Publication],
+       do: Map.put(meta_tags, :title, author_or_tag.name)
+
+  defp maybe_convert_name_to_title(meta_tags, _), do: meta_tags
+
+  defp maybe_put_description(meta_tags, %Post{} = post),
+    do: Map.put(meta_tags, :description, post.excerpt)
+
+  defp maybe_put_description(meta_tags, %Author{} = author),
+    do: Map.put(meta_tags, :description, author.bio)
+
+  defp maybe_put_description(meta_tags, _), do: meta_tags
+
+  defp convert_image_to_url(meta_tags, resource) do
+    {image, publication} =
+      case resource do
+        %Author{} = author ->
+          {literature_image_url(author, :profile_image) ||
+             literature_image_url(author, :cover_image), author.publication}
+
+        %struct{} = tag_or_post when struct in [Post, Tag] ->
+          {literature_image_url(tag_or_post, :feature_image), tag_or_post.publication}
+
+        publication ->
+          {nil, publication}
+      end
+
+    # default to publication if resource has no og or twitter image
+    Map.merge(meta_tags, %{
+      image: image,
+      og_image:
+        literature_image_url(resource, :og_image) || image ||
+          literature_image_url(publication, :og_image),
+      twitter_image:
+        literature_image_url(resource, :twitter_image) || image ||
+          literature_image_url(publication, :twitter_image)
+    })
+  end
+
+  defp meta_tag_keys do
+    [
+      :title,
+      :meta_title,
+      :description,
+      :meta_description,
+      :meta_keywords,
+      :image,
+      :og_title,
+      :og_image,
+      :og_description,
+      :twitter_image,
+      :twitter_title,
+      :twitter_description
+    ]
   end
 end

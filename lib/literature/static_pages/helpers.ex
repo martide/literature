@@ -2,7 +2,6 @@ defmodule Literature.StaticPages.Helpers do
   @moduledoc """
   Provides helper functions for the static pages generator in Literature.
   """
-
   require Logger
 
   @spec paginate_published_posts(String.t(), integer(), integer()) ::
@@ -85,19 +84,21 @@ defmodule Literature.StaticPages.Helpers do
       max_concurrency: max_concurrency,
       timeout: timeout
     )
-    |> then(fn enum ->
-      if flatten do
-        Enum.flat_map(enum, fn
-          {:ok, result} -> result
-          result -> result
-        end)
-      else
-        Enum.map(enum, fn
-          {:ok, result} -> result
-          result -> result
-        end)
-      end
-    end)
+    |> then(fn enum -> map_async_result(enum) end)
+  end
+
+  defp map_async_result(enum) do
+    if flatten do
+      Enum.flat_map(enum, fn
+        {:ok, result} -> result
+        result -> result
+      end)
+    else
+      Enum.map(enum, fn
+        {:ok, result} -> result
+        result -> result
+      end)
+    end
   end
 
   @doc """
