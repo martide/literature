@@ -87,6 +87,14 @@ defmodule Literature.StaticPages.GeneratorTest do
         assert html =~ "<h1>#{post.title}</h1>"
       end
     end
+
+    test "generate authors index", %{publication: publication, author: author} do
+      Generator.generate(:authors, @opts)
+      html = read_file("/#{publication.slug}/authors/index.html")
+
+      assert html =~ "<h1>#{publication.name}</h1>"
+      assert html =~ "#{author.name}"
+    end
   end
 
   defp pages_dir do

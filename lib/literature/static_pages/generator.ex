@@ -2,8 +2,8 @@ defmodule Literature.StaticPages.Generator do
   @moduledoc """
   Defines a static page generator for a given publication.
   Provides a set of functions to automate the generation of static pages such as index,
-  paginated index, tags, authors, and show pages for a publication(see `Available Pages`).
-  It supports customization through options, pagination size, output path, and custom templates.
+  paginated index, tags, authors, and show pages(see `Available Pages`).
+  It supports customization through options like pagination size, output path, and custom templates.
   Static pages are stored in the `priv/static` directory of the application.
 
   ## Functions
@@ -45,13 +45,18 @@ defmodule Literature.StaticPages.Generator do
         current_url: "https://example.com"
       ]
 
-      def generate_index(pubication_slug) do
+      def generate_blog_pages(pubication_slug) do
         Generator.generate(:index, @opts)
-      end
-      ...
-      generate_index("blog")
+        Generator.generate(:show_post, @opts)
+        Generator.generate(:authors, @opts)
+        Generator.generate(:tags, @opts)
+        ...
 
-  This will generate an `index.html` file for the publication at the appropriate static path, "https://example.com/en/blog/index.html"
+      end
+
+      def generate_all do
+        Generator.generate_all([:index_page, :authors], @opts)
+      end
   """
   import Literature.StaticPages.Helpers
   import Literature.StaticPages.MetaTagHelpers
@@ -155,6 +160,7 @@ defmodule Literature.StaticPages.Generator do
 
     publication = get_publication!(publication_slug)
     store_path = store_path(path, publication.slug)
+
     File.mkdir_p!(store_path)
 
     publication.slug
@@ -167,11 +173,39 @@ defmodule Literature.StaticPages.Generator do
           post: post,
           publication: publication,
           current_url: current_url,
-          meta_tags: get_default_meta_tags(publication)
+          meta_tags: get_default_meta_tags(post)
         })
       )
       |> format_result(publication.slug, "/#{publication.slug}/#{post.slug}.html")
     end)
+  end
+
+  def generate(:authors, opts) do
+    %{
+      publication_slug: publication_slug,
+      current_url: current_url,
+      templates: templates,
+      path: path
+    } = get_options(opts)
+
+    check_for_template!(templates, :authors)
+
+    publication = get_publication!(publication_slug)
+    store_path = store_path(path, publication.slug)
+    authors_path = Path.join(store_path, "/authors")
+    File.mkdir_p!(authors_path)
+
+    generate_file(
+      "index.html",
+      authors_path,
+      templates.authors(%{
+        authors: list_authors(publication.slug),
+        publication: publication,
+        current_url: current_url,
+        meta_tags: get_default_meta_tags(publication)
+      })
+    )
+    |> format_result(publication.slug, "/#{publication.slug}/authors/index.html")
   end
 
   defp get_options(opts) do

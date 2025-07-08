@@ -6,7 +6,7 @@ defmodule Literature.StaticPages.Helpers do
 
   @spec paginate_published_posts(String.t(), integer(), integer()) ::
           Literature.Pagination.Page.t()
-  def paginate_published_posts(publication_slug, page, page_size) do
+  def paginate_published_posts(publication_slug, page, page_size, params \\ %{}) do
     publication_slug
     |> published_posts_params()
     |> Map.merge(%{
@@ -14,15 +14,25 @@ defmodule Literature.StaticPages.Helpers do
       "page" => page,
       "preload" => ~w(authors tags)a
     })
+    |> Map.merge(params)
     |> Literature.paginate_posts()
   end
 
   @spec list_published_posts(String.t()) :: [Literature.Post.t()]
-  def list_published_posts(publication_slug) do
+  def list_published_posts(publication_slug, params \\ %{}) do
     publication_slug
     |> published_posts_params()
     |> Map.put("preload", ~w(authors tags)a)
+    |> Map.merge(params)
     |> Literature.list_posts()
+  end
+
+  @spec list_authors(String.t()) :: [Literature.Author.t()]
+  def list_authors(publication_slug) do
+    Literature.list_authors(%{
+      "publication_slug" => publication_slug,
+      "with_published_posts_count" => true
+    })
   end
 
   defp published_posts_params(publication_slug) do
@@ -84,10 +94,10 @@ defmodule Literature.StaticPages.Helpers do
       max_concurrency: max_concurrency,
       timeout: timeout
     )
-    |> then(fn enum -> map_async_result(enum) end)
+    |> then(fn enum -> map_async_result(enum, flatten) end)
   end
 
-  defp map_async_result(enum) do
+  defp map_async_result(enum, flatten) do
     if flatten do
       Enum.flat_map(enum, fn
         {:ok, result} -> result

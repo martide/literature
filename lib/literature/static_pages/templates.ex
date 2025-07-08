@@ -108,6 +108,24 @@ defmodule Literature.StaticPages.Templates do
     """
   end
 
+  def authors(assigns) do
+    ~H"""
+    <.layout {assigns}>
+      <.header {assigns} />
+      <.main>
+        <h1>{@publication.name}</h1>
+        <h2>Authors</h2>
+        <ul>
+          <li :for={author <- @authors}>
+            {author.name}
+          </li>
+        </ul>
+      </.main>
+      <.footer {assigns} />
+    </.layout>
+    """
+  end
+
   defp main(assigns) do
     ~H"""
     <main class="mx-auto max-w-6xl">
