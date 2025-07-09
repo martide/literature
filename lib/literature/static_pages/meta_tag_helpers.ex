@@ -212,7 +212,8 @@ defmodule Literature.StaticPages.MetaTagHelpers do
 
   @spec get_default_meta_tags(
           Publication.t() | Author.t() | Post.t() | Tag.t(),
-          Literature.Pagination.Page.t()
+          Publication.t(),
+          Literature.Pagination.Page.t() | nil
         ) :: map()
   def get_default_meta_tags(struct, publication, page \\ nil) do
     struct

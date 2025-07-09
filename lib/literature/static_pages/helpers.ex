@@ -4,7 +4,7 @@ defmodule Literature.StaticPages.Helpers do
   """
   require Logger
 
-  @spec paginate_published_posts(String.t(), integer(), integer()) ::
+  @spec paginate_published_posts(String.t(), integer(), integer(), map()) ::
           Literature.Pagination.Page.t()
   def paginate_published_posts(publication_slug, page, page_size, params \\ %{}) do
     publication_slug

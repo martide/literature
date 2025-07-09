@@ -4,6 +4,8 @@ defmodule Literature.Author do
   """
   use Literature.Web, :model
 
+  @type t :: %__MODULE__{}
+
   schema "literature_authors" do
     field(:slug, :string)
     field(:name, :string)
