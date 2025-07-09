@@ -138,10 +138,21 @@ defmodule Literature.StaticPages.MetaTagHelpers do
   def post_language_tags(assigns), do: ~H""
 
   @doc """
-  Render pagination link tags
+  Render pagination link tags.
+  Can be generated using a page struct and the current URL
+  or with exact `next` and `previous` URLs.
   """
-  attr :page, :any, default: nil
-  attr :current_url, :string, required: true
+  attr :page, :map
+  attr :current_url, :string
+  attr :next_url, :any
+  attr :prev_url, :any
+
+  def pagination_link_tags(%{next_url: _next_url, prev_url: _prev_url} = assigns) do
+    ~H"""
+    <link :if={@next_url} rel="next" href={@next_url} />
+    <link :if={@prev_url} rel="prev" href={@prev_url} />
+    """
+  end
 
   def pagination_link_tags(
         %{page: %{page_number: page_number, total_pages: total_pages}} = assigns
@@ -166,8 +177,10 @@ defmodule Literature.StaticPages.MetaTagHelpers do
       )
       when page_number > 1 and page_number < total_pages do
     ~H"""
-    <link rel="next" href={next_url(@current_url, @page.page_number)} />
-    <link rel="prev" href={prev_url(@current_url, @page.page_number)} />
+    <.pagination_link_tags
+      next_url={next_url(@current_url, @page.page_number)}
+      prev_url={prev_url(@current_url, @page.page_number)}
+    />
     """
   end
 

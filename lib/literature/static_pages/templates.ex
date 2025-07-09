@@ -41,7 +41,7 @@ defmodule Literature.StaticPages.Templates do
 
         <.meta_tags tags={@meta_tags} current_url={@current_url} />
         <.canonical_tag current_url={@current_url} />
-        <.pagination_link_tags page={assigns[:page]} current_url={@current_url} />
+        <.pagination_link_tags {assigns} />
 
         <link rel="shortcut icon" type="image/png" href={@favicon_path} />
         <link rel="alternate" type="application/rss+xml" title={@publication.name} href={@rss_path} />
