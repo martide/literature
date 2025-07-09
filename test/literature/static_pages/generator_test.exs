@@ -3,7 +3,7 @@ defmodule Literature.StaticPages.GeneratorTest do
 
   import Literature.Test.Fixtures
   import Literature.TestHelpers
-  import Floki, only: [parse_document!: 1, find: 2, attribute: 2]
+  import Floki, only: [parse_document!: 1, find: 2, attribute: 2, text: 1]
 
   alias Literature.StaticPages.Generator
 
@@ -676,7 +676,7 @@ defmodule Literature.StaticPages.GeneratorTest do
   end
 
   def assert_default_meta_tags(html, resources) do
-    # assert page_title(view) == resources.meta_title
+    assert get_element(html, "title") |> text() == resources.meta_title
 
     assert get_attribute(html, "meta[name='description']", "content") ==
              resources.meta_description

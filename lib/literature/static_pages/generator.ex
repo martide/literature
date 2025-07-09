@@ -67,6 +67,14 @@ defmodule Literature.StaticPages.Generator do
   @default_templates Literature.StaticPages.Templates
   @default_path "/"
 
+  def generate_all(page_types, opts) do
+    async!(page_types, fn page_type ->
+      generate(page_type, opts)
+    end)
+
+    :ok
+  end
+
   def generate(:index, opts) do
     %{
       publication_slug: publication_slug,
@@ -87,6 +95,7 @@ defmodule Literature.StaticPages.Generator do
       "index.html",
       store_path,
       templates.index(%{
+        __changed__: %{},
         posts: list_published_posts(publication.slug),
         publication: publication,
         current_url: Path.join(base_url, file_path),
@@ -120,6 +129,7 @@ defmodule Literature.StaticPages.Generator do
       "index.html",
       page_1_path,
       templates.index_page(%{
+        __changed__: %{},
         page: page_1,
         publication: publication,
         current_url: Path.join(base_url, file_path_1),
@@ -140,6 +150,7 @@ defmodule Literature.StaticPages.Generator do
           "index.html",
           page_path,
           templates.index_page(%{
+            __changed__: %{},
             page: page,
             publication: publication,
             current_url: Path.join(base_url, file_path),
@@ -149,6 +160,8 @@ defmodule Literature.StaticPages.Generator do
         |> format_result(publication.slug, file_path)
       end)
     end
+
+    :ok
   end
 
   def generate(:show_post, opts) do
@@ -175,6 +188,7 @@ defmodule Literature.StaticPages.Generator do
         "#{post.slug}.html",
         store_path,
         templates.show_post(%{
+          __changed__: %{},
           post: post,
           publication: publication,
           current_url: Path.join(base_url, file_path),
@@ -183,6 +197,8 @@ defmodule Literature.StaticPages.Generator do
       )
       |> format_result(publication.slug, file_path)
     end)
+
+    :ok
   end
 
   def generate(:authors, opts) do
@@ -206,6 +222,7 @@ defmodule Literature.StaticPages.Generator do
       "index.html",
       authors_path,
       templates.authors(%{
+        __changed__: %{},
         authors: list_authors(publication.slug),
         publication: publication,
         current_url: Path.join(base_url, file_path),
@@ -239,6 +256,7 @@ defmodule Literature.StaticPages.Generator do
         "#{author.slug}.html",
         authors_path,
         templates.show_author(%{
+          __changed__: %{},
           author: author,
           publication: publication,
           current_url: Path.join(base_url, file_path),
@@ -247,6 +265,8 @@ defmodule Literature.StaticPages.Generator do
       )
       |> format_result(publication.slug, file_path)
     end)
+
+    :ok
   end
 
   def generate(:tags, opts) do
@@ -270,6 +290,7 @@ defmodule Literature.StaticPages.Generator do
       "index.html",
       tags_path,
       templates.tags(%{
+        __changed__: %{},
         tags: list_public_tags(publication.slug),
         publication: publication,
         current_url: Path.join(base_url, file_path),
@@ -303,6 +324,7 @@ defmodule Literature.StaticPages.Generator do
         "#{tag.slug}.html",
         tags_path,
         templates.show_tag(%{
+          __changed__: %{},
           tag: tag,
           publication: publication,
           current_url: Path.join(base_url, file_path),
@@ -311,6 +333,8 @@ defmodule Literature.StaticPages.Generator do
       )
       |> format_result(publication.slug, file_path)
     end)
+
+    :ok
   end
 
   defp get_options(opts) do
