@@ -1125,7 +1125,9 @@ defmodule Literature.BlogLiveTest do
   def assert_fixed_meta_tags(document) do
     assert get_attribute(document, "meta[property='og:type']", "content") == "website"
     assert get_attribute(document, "meta[property='og:locale']", "content") == "en"
-    assert get_attribute(document, "meta[name='twitter:card']", "content") == "summary_large_image"
+
+    assert get_attribute(document, "meta[name='twitter:card']", "content") ==
+             "summary_large_image"
   end
 
   defp assert_og_meta_tags(document, resources) do
@@ -1138,9 +1140,13 @@ defmodule Literature.BlogLiveTest do
   end
 
   defp assert_twitter_meta_tags(document, resources) do
-    assert get_attribute(document, "meta[name='twitter:title']", "content") == resources.twitter_title
+    assert get_attribute(document, "meta[name='twitter:title']", "content") ==
+             resources.twitter_title
+
     assert get_attribute(document, "meta[name='twitter:url']", "content") == resources.twitter_url
-    assert get_attribute(document, "meta[name='twitter:image']", "content") =~ resources.twitter_image
+
+    assert get_attribute(document, "meta[name='twitter:image']", "content") =~
+             resources.twitter_image
 
     assert get_attribute(document, "meta[name='twitter:description']", "content") ==
              resources.twitter_description
