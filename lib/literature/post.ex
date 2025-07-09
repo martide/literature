@@ -3,6 +3,7 @@ defmodule Literature.Post do
     Literature Post Model
   """
   use Literature.Web, :model
+  @type t :: %__MODULE__{}
 
   defmodule Locale do
     @moduledoc """

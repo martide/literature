@@ -45,3 +45,6 @@ config :literature,
   storage: Waffle.Storage.Local,
   storage_dir_prefix: "/tmp/",
   asset_host: "/tmp"
+
+config :literature,
+  otp_app: :literature
