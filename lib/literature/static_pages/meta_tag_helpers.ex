@@ -117,7 +117,7 @@ defmodule Literature.StaticPages.MetaTagHelpers do
   Render post language tags
   """
   attr :post, :map, required: true
-  attr :publication, :string, required: true
+  attr :publication, :map, required: true
 
   def post_language_tags(%{post: %{locales: locales}} = assigns)
       when is_list(locales) and locales != [] do
