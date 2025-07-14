@@ -15,6 +15,15 @@ defmodule Literature.StaticPages.Templates do
   @callback show_author(assigns :: map()) :: Phoenix.LiveView.Rendered.t()
   @callback tags(assigns :: map()) :: Phoenix.LiveView.Rendered.t()
   @callback show_tag(assigns :: map()) :: Phoenix.LiveView.Rendered.t()
+  @optional_callbacks [
+    index: 1,
+    index_page: 1,
+    show_post: 1,
+    authors: 1,
+    show_author: 1,
+    tags: 1,
+    show_tag: 1
+  ]
 
   def index(assigns) do
     ~H"""

@@ -17,6 +17,7 @@ defmodule Literature.StaticPages.Layout do
   @callback css_path() :: String.t()
   @callback rss_path() :: String.t()
   @callback favicon_path() :: String.t()
+  @optional_callbacks [header: 1, footer: 1]
 
   def layout(assigns) do
     assigns =
