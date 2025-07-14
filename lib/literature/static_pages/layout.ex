@@ -13,11 +13,11 @@ defmodule Literature.StaticPages.Layout do
   @callback layout(assigns :: map()) :: Phoenix.LiveView.Rendered.t()
   @callback header(assigns :: map()) :: Phoenix.LiveView.Rendered.t()
   @callback footer(assigns :: map()) :: Phoenix.LiveView.Rendered.t()
-  @callback js_path() :: String.t()
-  @callback css_path() :: String.t()
-  @callback rss_path() :: String.t()
-  @callback favicon_path() :: String.t()
-  @optional_callbacks [header: 1, footer: 1]
+
+  @optional_callbacks [
+    header: 1,
+    footer: 1
+  ]
 
   def layout(assigns) do
     assigns =
