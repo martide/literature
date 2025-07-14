@@ -9,6 +9,7 @@ defmodule Literature.StaticPages.Generator do
   ## Functions
     * `generate_all/2` - Generates all specified static pages for the publication.
     * `generate/2` - Generates a specific static page type for the publication, given the page type options.
+    * `generate/3` - Generates a specific post, author or tag show page, given the resource slug.
     * `store_path/2` - Returns the output directory for the generated files inside `priv/static`.
     * `generate_file/3` - Writes rendered static page inside `store_path`.
 
@@ -63,10 +64,20 @@ defmodule Literature.StaticPages.Generator do
 
   alias Phoenix.HTML.Safe
 
+  @type page_type ::
+          :index
+          | :index_page
+          | :show_post
+          | :authors
+          | :show_author
+          | :tags
+          | :show_tag
+
   @default_page_size 10
   @default_templates Literature.StaticPages.Templates
   @default_path "/"
 
+  @spec generate_all([page_type()], keyword()) :: :ok
   def generate_all(page_types, opts) do
     async!(page_types, fn page_type ->
       generate(page_type, opts)
@@ -75,6 +86,7 @@ defmodule Literature.StaticPages.Generator do
     :ok
   end
 
+  @spec generate(page_type :: page_type(), keyword()) :: :ok
   def generate(:index, opts) do
     %{
       publication_slug: publication_slug,
@@ -184,18 +196,14 @@ defmodule Literature.StaticPages.Generator do
     |> async!(fn post ->
       file_path = Path.join(path, "/#{post.slug}.html")
 
-      generate_file(
-        "#{post.slug}.html",
-        store_path,
-        templates.show_post(%{
-          __changed__: %{},
-          post: post,
-          publication: publication,
-          current_url: Path.join(base_url, file_path),
-          meta_tags: get_default_meta_tags(post, publication)
-        })
-      )
-      |> format_result(publication.slug, file_path)
+      generate_post(%{
+        publication: publication,
+        post: post,
+        base_url: base_url,
+        templates: templates,
+        store_path: store_path,
+        file_path: file_path
+      })
     end)
 
     :ok
@@ -252,18 +260,14 @@ defmodule Literature.StaticPages.Generator do
     |> async!(fn author ->
       file_path = Path.join(path, "/authors/#{author.slug}.html")
 
-      generate_file(
-        "#{author.slug}.html",
-        authors_path,
-        templates.show_author(%{
-          __changed__: %{},
-          author: author,
-          publication: publication,
-          current_url: Path.join(base_url, file_path),
-          meta_tags: get_default_meta_tags(author, publication)
-        })
-      )
-      |> format_result(publication.slug, file_path)
+      generate_author(%{
+        publication: publication,
+        author: author,
+        base_url: base_url,
+        templates: templates,
+        authors_path: authors_path,
+        file_path: file_path
+      })
     end)
 
     :ok
@@ -320,21 +324,169 @@ defmodule Literature.StaticPages.Generator do
     |> async!(fn tag ->
       file_path = Path.join(path, "/tags/#{tag.slug}.html")
 
-      generate_file(
-        "#{tag.slug}.html",
-        tags_path,
-        templates.show_tag(%{
-          __changed__: %{},
-          tag: tag,
-          publication: publication,
-          current_url: Path.join(base_url, file_path),
-          meta_tags: get_default_meta_tags(tag, publication)
-        })
-      )
-      |> format_result(publication.slug, file_path)
+      generate_tag(%{
+        publication: publication,
+        tag: tag,
+        base_url: base_url,
+        templates: templates,
+        tags_path: tags_path,
+        file_path: file_path
+      })
     end)
 
     :ok
+  end
+
+  @spec generate(:show_post | :show_tag | :show_post, String.t(), keyword()) :: :ok
+  def generate(:show_post, post_slug, opts) do
+    %{
+      publication_slug: publication_slug,
+      base_url: base_url,
+      templates: templates,
+      path: path
+    } = get_options(opts)
+
+    check_for_template!(templates, :show_post)
+
+    publication = get_publication!(publication_slug)
+    post = get_post!(post_slug)
+    store_path = store_path(path)
+
+    File.mkdir_p!(store_path)
+
+    file_path = Path.join(path, "/#{post.slug}.html")
+
+    generate_post(%{
+      publication: publication,
+      post: post,
+      base_url: base_url,
+      templates: templates,
+      store_path: store_path,
+      file_path: file_path
+    })
+  end
+
+  def generate(:show_author, author_slug, opts) do
+    %{
+      publication_slug: publication_slug,
+      base_url: base_url,
+      templates: templates,
+      path: path
+    } = get_options(opts)
+
+    check_for_template!(templates, :show_author)
+
+    publication = get_publication!(publication_slug)
+    author = get_author!(author_slug)
+    store_path = store_path(path)
+    authors_path = Path.join(store_path, "/authors")
+    File.mkdir_p!(authors_path)
+
+    file_path = Path.join(path, "/authors/#{author.slug}.html")
+
+    generate_author(%{
+      publication: publication,
+      author: author,
+      base_url: base_url,
+      templates: templates,
+      authors_path: authors_path,
+      file_path: file_path
+    })
+  end
+
+  def generate(:show_tag, tag_slug, opts) do
+    %{
+      publication_slug: publication_slug,
+      base_url: base_url,
+      templates: templates,
+      path: path
+    } = get_options(opts)
+
+    check_for_template!(templates, :show_tag)
+
+    publication = get_publication!(publication_slug)
+    tag = get_tag!(tag_slug)
+
+    store_path = store_path(path)
+    tags_path = Path.join(store_path, "/tags")
+    File.mkdir_p!(tags_path)
+
+    file_path = Path.join(path, "/tags/#{tag.slug}.html")
+
+    generate_tag(%{
+      publication: publication,
+      tag: tag,
+      base_url: base_url,
+      templates: templates,
+      tags_path: tags_path,
+      file_path: file_path
+    })
+  end
+
+  defp generate_post(%{
+         publication: publication,
+         post: post,
+         base_url: base_url,
+         templates: templates,
+         store_path: store_path,
+         file_path: file_path
+       }) do
+    generate_file(
+      "#{post.slug}.html",
+      store_path,
+      templates.show_post(%{
+        __changed__: %{},
+        post: post,
+        publication: publication,
+        current_url: Path.join(base_url, file_path),
+        meta_tags: get_default_meta_tags(post, publication)
+      })
+    )
+    |> format_result(publication.slug, file_path)
+  end
+
+  defp generate_author(%{
+         publication: publication,
+         author: author,
+         base_url: base_url,
+         templates: templates,
+         authors_path: authors_path,
+         file_path: file_path
+       }) do
+    generate_file(
+      "#{author.slug}.html",
+      authors_path,
+      templates.show_author(%{
+        __changed__: %{},
+        author: author,
+        publication: publication,
+        current_url: Path.join(base_url, file_path),
+        meta_tags: get_default_meta_tags(author, publication)
+      })
+    )
+    |> format_result(publication.slug, file_path)
+  end
+
+  defp generate_tag(%{
+         publication: publication,
+         tag: tag,
+         base_url: base_url,
+         templates: templates,
+         tags_path: tags_path,
+         file_path: file_path
+       }) do
+    generate_file(
+      "#{tag.slug}.html",
+      tags_path,
+      templates.show_tag(%{
+        __changed__: %{},
+        tag: tag,
+        publication: publication,
+        current_url: Path.join(base_url, file_path),
+        meta_tags: get_default_meta_tags(tag, publication)
+      })
+    )
+    |> format_result(publication.slug, file_path)
   end
 
   defp get_options(opts) do

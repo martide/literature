@@ -55,14 +55,14 @@ defmodule Literature.StaticPages.GeneratorTest do
   end
 
   describe "generate static pages" do
-    test "generate index", %{publication: publication} do
+    test "generate/2 index", %{publication: publication} do
       Generator.generate(:index, @opts)
       html = read_file("/index.html")
 
       assert html =~ "<h1>#{publication.name}</h1>"
     end
 
-    test "generate index pages", %{publication: publication, author: author, tag: tag} do
+    test "generate/2 index pages", %{publication: publication, author: author, tag: tag} do
       for i <- 1..20 do
         post_fixture(
           title: "Post #{i}",
@@ -81,7 +81,12 @@ defmodule Literature.StaticPages.GeneratorTest do
       end
     end
 
-    test "generate show_post", %{post: post_1, publication: publication, author: author, tag: tag} do
+    test "generate/2 show_post", %{
+      post: post_1,
+      publication: publication,
+      author: author,
+      tag: tag
+    } do
       [post_2, post_3] =
         for i <- 1..2 do
           post_fixture(
@@ -100,7 +105,7 @@ defmodule Literature.StaticPages.GeneratorTest do
       end
     end
 
-    test "generate authors index", %{publication: publication, author: author} do
+    test "generate/2 authors index", %{publication: publication, author: author} do
       Generator.generate(:authors, @opts)
       html = read_file("/authors/index.html")
 
@@ -108,14 +113,14 @@ defmodule Literature.StaticPages.GeneratorTest do
       assert html =~ "#{author.name}"
     end
 
-    test "generate show author", %{publication: _publication, author: author} do
+    test "generate/2 show author", %{publication: _publication, author: author} do
       Generator.generate(:show_author, @opts)
       html = read_file("/authors/#{author.slug}.html")
 
       assert html =~ "<h1>#{author.name}</h1>"
     end
 
-    test "generate tags index", %{publication: publication, tag: tag} do
+    test "generate/2 tags index", %{publication: publication, tag: tag} do
       Generator.generate(:tags, @opts)
       html = read_file("/tags/index.html")
 
@@ -123,11 +128,65 @@ defmodule Literature.StaticPages.GeneratorTest do
       assert html =~ "#{tag.name}"
     end
 
-    test "generate show tag", %{publication: _publication, tag: tag} do
+    test "generate/2 show tag", %{publication: _publication, tag: tag} do
       Generator.generate(:show_tag, @opts)
       html = read_file("/tags/#{tag.slug}.html")
 
       assert html =~ "<h1>#{tag.name}</h1>"
+    end
+
+    test "generate/2 with missing publication" do
+      assert_raise RuntimeError, "Publication with slug 'non-existent' not found.", fn ->
+        Generator.generate(:index, Keyword.put(@opts, :publication_slug, "non-existent"))
+      end
+    end
+
+    test "generate/2 with missing template" do
+      assert_raise RuntimeError, "Template index not found in TemplateModule", fn ->
+        Generator.generate(:index, Keyword.put(@opts, :templates, TemplateModule))
+      end
+    end
+
+    test "generate/3 for show_post", %{post: post} do
+      Generator.generate(:show_post, post.slug, @opts)
+      html = read_file("/#{post.slug}.html")
+
+      assert html =~ "<h1>#{post.title}</h1>"
+      assert html =~ post.excerpt
+    end
+
+    test "generate/3 for show_author", %{author: author} do
+      Generator.generate(:show_author, author.slug, @opts)
+      html = read_file("/authors/#{author.slug}.html")
+
+      assert html =~ "<h1>#{author.name}</h1>"
+      assert html =~ author.bio
+    end
+
+    test "generate/3 for show_tag", %{tag: tag} do
+      Generator.generate(:show_tag, tag.slug, @opts)
+      html = read_file("/tags/#{tag.slug}.html")
+
+      assert html =~ "<h1>#{tag.name}</h1>"
+      assert html =~ tag.description
+    end
+
+    test "generate/3 for show_post with non-existent slug" do
+      assert_raise RuntimeError, "Post with slug 'non-existent' not found.", fn ->
+        Generator.generate(:show_post, "non-existent", @opts)
+      end
+    end
+
+    test "generate/3 for show_author with non-existent slug" do
+      assert_raise RuntimeError, "Author with slug 'non-existent' not found.", fn ->
+        Generator.generate(:show_author, "non-existent", @opts)
+      end
+    end
+
+    test "generate/3 for show_tag with non-existent slug" do
+      assert_raise RuntimeError, "Tag with slug 'non-existent' not found.", fn ->
+        Generator.generate(:show_tag, "non-existent", @opts)
+      end
     end
   end
 

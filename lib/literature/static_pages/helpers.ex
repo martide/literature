@@ -77,6 +77,39 @@ defmodule Literature.StaticPages.Helpers do
     end
   end
 
+  @spec get_post!(String.t()) :: Literature.Post.t()
+  def get_post!(post_slug) do
+    case Literature.get_post!(slug: post_slug) do
+      nil ->
+        raise "Post with slug '#{post_slug}' not found."
+
+      publication ->
+        publication
+    end
+  end
+
+  @spec get_author!(String.t()) :: Literature.Author.t()
+  def get_author!(author_slug) do
+    case Literature.get_author!(slug: author_slug) do
+      nil ->
+        raise "Author with slug '#{author_slug}' not found."
+
+      author ->
+        author
+    end
+  end
+
+  @spec get_tag!(String.t()) :: Literature.Tag.t()
+  def get_tag!(tag_slug) do
+    case Literature.get_tag!(slug: tag_slug) do
+      nil ->
+        raise "Tag with slug '#{tag_slug}' not found."
+
+      tag ->
+        tag
+    end
+  end
+
   @type async_task :: {module(), atom(), [any()]}
   @type async_opt ::
           {:timeout, timeout()}
