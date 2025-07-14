@@ -10,11 +10,4 @@ defmodule Literature.Test.Endpoint do
   plug(Literature.Test.Router)
 
   plug(Plug.Static, at: "/tmp", from: Path.expand("/tmp"), gzip: false)
-
-  plug(Plug.Static,
-    at: "/",
-    from: :literature,
-    gzip: false,
-    only: ~w(css js en)
-  )
 end
