@@ -20,7 +20,7 @@ defmodule Literature.StaticPages.Generator do
     * `:path` - Base path for generated static files (default: `"/"`).
     * `:templates` - a module providing `Phoenix.Component` for each page listed in `Available Pages`
                      e.g. `index/1`, `index_page/1`, etc. (default: `Literature.StaticPages.Templates`).
-                     See the `Literature.StaticPages.Templates` module for example.
+                     See the `Literature.StaticPages.Templates` module for Behaviour and example.
 
   ## Available Pages
 
