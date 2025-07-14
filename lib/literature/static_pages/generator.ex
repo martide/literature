@@ -337,7 +337,7 @@ defmodule Literature.StaticPages.Generator do
     :ok
   end
 
-  @spec generate(:show_post | :show_tag | :show_post, String.t(), keyword()) :: :ok
+  @spec generate(:show_post | :show_tag | :show_author, String.t(), keyword()) :: :ok
   def generate(:show_post, post_slug, opts) do
     %{
       publication_slug: publication_slug,
