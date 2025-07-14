@@ -349,7 +349,7 @@ defmodule Literature.StaticPages.Generator do
     check_for_template!(templates, :show_post)
 
     publication = get_publication!(publication_slug)
-    post = get_post!(post_slug)
+    post = get_post!(post_slug, publication_slug)
     store_path = store_path(path)
 
     File.mkdir_p!(store_path)
@@ -377,7 +377,7 @@ defmodule Literature.StaticPages.Generator do
     check_for_template!(templates, :show_author)
 
     publication = get_publication!(publication_slug)
-    author = get_author!(author_slug)
+    author = get_author!(author_slug, publication_slug)
     store_path = store_path(path)
     authors_path = Path.join(store_path, "/authors")
     File.mkdir_p!(authors_path)
@@ -405,7 +405,7 @@ defmodule Literature.StaticPages.Generator do
     check_for_template!(templates, :show_tag)
 
     publication = get_publication!(publication_slug)
-    tag = get_tag!(tag_slug)
+    tag = get_tag!(tag_slug, publication_slug)
 
     store_path = store_path(path)
     tags_path = Path.join(store_path, "/tags")

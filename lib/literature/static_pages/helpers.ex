@@ -77,20 +77,20 @@ defmodule Literature.StaticPages.Helpers do
     end
   end
 
-  @spec get_post!(String.t()) :: Literature.Post.t()
-  def get_post!(post_slug) do
-    case Literature.get_post!(slug: post_slug) do
+  @spec get_post!(String.t(), String.t()) :: Literature.Post.t()
+  def get_post!(post_slug, publication_slug) do
+    case Literature.get_post!(slug: post_slug, publication_slug: publication_slug) do
       nil ->
         raise "Post with slug '#{post_slug}' not found."
 
-      publication ->
-        publication
+      post ->
+        post
     end
   end
 
-  @spec get_author!(String.t()) :: Literature.Author.t()
-  def get_author!(author_slug) do
-    case Literature.get_author!(slug: author_slug) do
+  @spec get_author!(String.t(), String.t()) :: Literature.Author.t()
+  def get_author!(author_slug, publication_slug) do
+    case Literature.get_author!(slug: author_slug, publication_slug: publication_slug) do
       nil ->
         raise "Author with slug '#{author_slug}' not found."
 
@@ -99,9 +99,9 @@ defmodule Literature.StaticPages.Helpers do
     end
   end
 
-  @spec get_tag!(String.t()) :: Literature.Tag.t()
-  def get_tag!(tag_slug) do
-    case Literature.get_tag!(slug: tag_slug) do
+  @spec get_tag!(String.t(), String.t()) :: Literature.Tag.t()
+  def get_tag!(tag_slug, publication_slug) do
+    case Literature.get_tag!(slug: tag_slug, publication_slug: publication_slug) do
       nil ->
         raise "Tag with slug '#{tag_slug}' not found."
 
