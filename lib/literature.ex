@@ -52,6 +52,7 @@ defmodule Literature do
     |> sort_by(attrs)
     |> where_preload(attrs)
     |> where_publication(attrs)
+    |> where_updated_at(attrs)
     |> maybe_with_published_posts_count(attrs)
     |> Repo.all()
   end
@@ -192,6 +193,7 @@ defmodule Literature do
     |> where_id_not_in(attrs)
     |> where_status(attrs)
     |> where_published_at(attrs)
+    |> where_updated_at(attrs)
     |> where_tag(attrs)
     |> where_publication(attrs)
     |> Repo.all()
@@ -439,6 +441,7 @@ defmodule Literature do
     |> sort_by(attrs)
     |> where_preload(attrs)
     |> where_publication(attrs)
+    |> where_updated_at(attrs)
     |> maybe_with_published_posts_count(attrs)
     |> Repo.all()
   end

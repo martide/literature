@@ -16,6 +16,9 @@ defmodule Literature.StaticPages.GeneratorTest do
   ]
 
   setup do
+    pages_dir()
+    |> File.rm_rf!()
+
     on_exit(fn ->
       pages_dir()
       |> File.rm_rf!()

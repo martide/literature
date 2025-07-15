@@ -132,6 +132,11 @@ defmodule Literature.StaticPages.Generator do
     page_1 = paginate_published_posts(publication.slug, 1, page_size)
 
     store_path = store_path(path)
+
+    # clean page directory
+    Path.join(store_path, "/page")
+    |> File.rm_rf!()
+
     page_1_path = Path.join(store_path, "/page/1")
     File.mkdir_p!(page_1_path)
 
@@ -409,6 +414,7 @@ defmodule Literature.StaticPages.Generator do
 
     store_path = store_path(path)
     tags_path = Path.join(store_path, "/tags")
+
     File.mkdir_p!(tags_path)
 
     file_path = Path.join(path, "/tags/#{tag.slug}.html")

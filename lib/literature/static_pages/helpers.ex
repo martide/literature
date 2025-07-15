@@ -28,20 +28,24 @@ defmodule Literature.StaticPages.Helpers do
   end
 
   @spec list_authors(String.t()) :: [Literature.Author.t()]
-  def list_authors(publication_slug) do
-    Literature.list_authors(%{
+  def list_authors(publication_slug, params \\ %{}) do
+    %{
       "publication_slug" => publication_slug,
       "with_published_posts_count" => true
-    })
+    }
+    |> Map.merge(params)
+    |> Literature.list_authors()
   end
 
   @spec list_public_tags(String.t()) :: [Literature.Tag.t()]
-  def list_public_tags(publication_slug) do
-    Literature.list_tags(%{
+  def list_public_tags(publication_slug, params \\ %{}) do
+    %{
       "publication_slug" => publication_slug,
       "status" => "public",
       "with_published_posts_count" => true
-    })
+    }
+    |> Map.merge(params)
+    |> Literature.list_tags()
   end
 
   defp published_posts_params(publication_slug) do
