@@ -79,9 +79,13 @@ defmodule Literature.StaticPages.Generator do
 
   @spec generate_all([page_type()], keyword()) :: :ok
   def generate_all(page_types, opts) do
-    async!(page_types, fn page_type ->
-      generate(page_type, opts)
-    end)
+    async!(
+      page_types,
+      fn page_type ->
+        generate(page_type, opts)
+      end,
+      timeout: :infinity
+    )
 
     :ok
   end
@@ -156,26 +160,30 @@ defmodule Literature.StaticPages.Generator do
     |> format_result(publication.slug, file_path_1)
 
     if page_1.total_pages > 1 do
-      async!(2..page_1.total_pages, fn page_number ->
-        page = paginate_published_posts(publication.slug, page_number, page_size)
-        page_path = Path.join(store_path, "/page/#{page_number}")
-        File.mkdir_p!(page_path)
+      async!(
+        2..page_1.total_pages,
+        fn page_number ->
+          page = paginate_published_posts(publication.slug, page_number, page_size)
+          page_path = Path.join(store_path, "/page/#{page_number}")
+          File.mkdir_p!(page_path)
 
-        file_path = Path.join(path, "/page/#{page_number}/index.html")
+          file_path = Path.join(path, "/page/#{page_number}/index.html")
 
-        generate_file(
-          "index.html",
-          page_path,
-          templates.index_page(%{
-            __changed__: %{},
-            page: page,
-            publication: publication,
-            current_url: Path.join(base_url, file_path),
-            meta_tags: get_default_meta_tags(publication, publication, page)
-          })
-        )
-        |> format_result(publication.slug, file_path)
-      end)
+          generate_file(
+            "index.html",
+            page_path,
+            templates.index_page(%{
+              __changed__: %{},
+              page: page,
+              publication: publication,
+              current_url: Path.join(base_url, file_path),
+              meta_tags: get_default_meta_tags(publication, publication, page)
+            })
+          )
+          |> format_result(publication.slug, file_path)
+        end,
+        timeout: :infinity
+      )
     end
 
     :ok
@@ -198,18 +206,21 @@ defmodule Literature.StaticPages.Generator do
 
     publication.slug
     |> list_published_posts()
-    |> async!(fn post ->
-      file_path = Path.join(path, "/#{post.slug}.html")
+    |> async!(
+      fn post ->
+        file_path = Path.join(path, "/#{post.slug}.html")
 
-      generate_post(%{
-        publication: publication,
-        post: post,
-        base_url: base_url,
-        templates: templates,
-        store_path: store_path,
-        file_path: file_path
-      })
-    end)
+        generate_post(%{
+          publication: publication,
+          post: post,
+          base_url: base_url,
+          templates: templates,
+          store_path: store_path,
+          file_path: file_path
+        })
+      end,
+      timeout: :infinity
+    )
 
     :ok
   end
@@ -262,18 +273,21 @@ defmodule Literature.StaticPages.Generator do
 
     publication.slug
     |> list_authors()
-    |> async!(fn author ->
-      file_path = Path.join(path, "/authors/#{author.slug}.html")
+    |> async!(
+      fn author ->
+        file_path = Path.join(path, "/authors/#{author.slug}.html")
 
-      generate_author(%{
-        publication: publication,
-        author: author,
-        base_url: base_url,
-        templates: templates,
-        authors_path: authors_path,
-        file_path: file_path
-      })
-    end)
+        generate_author(%{
+          publication: publication,
+          author: author,
+          base_url: base_url,
+          templates: templates,
+          authors_path: authors_path,
+          file_path: file_path
+        })
+      end,
+      timeout: :infinity
+    )
 
     :ok
   end
@@ -326,18 +340,21 @@ defmodule Literature.StaticPages.Generator do
 
     publication.slug
     |> list_public_tags()
-    |> async!(fn tag ->
-      file_path = Path.join(path, "/tags/#{tag.slug}.html")
+    |> async!(
+      fn tag ->
+        file_path = Path.join(path, "/tags/#{tag.slug}.html")
 
-      generate_tag(%{
-        publication: publication,
-        tag: tag,
-        base_url: base_url,
-        templates: templates,
-        tags_path: tags_path,
-        file_path: file_path
-      })
-    end)
+        generate_tag(%{
+          publication: publication,
+          tag: tag,
+          base_url: base_url,
+          templates: templates,
+          tags_path: tags_path,
+          file_path: file_path
+        })
+      end,
+      timeout: :infinity
+    )
 
     :ok
   end
