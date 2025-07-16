@@ -38,13 +38,13 @@ config :flop,
 
 config :waffle,
   storage: Waffle.Storage.Local,
-  storage_dir_prefix: "/tmp/",
-  asset_host: "/tmp"
+  storage_dir_prefix: "/tmp/literature/",
+  asset_host: "/tmp/literature"
 
 config :literature,
   storage: Waffle.Storage.Local,
-  storage_dir_prefix: "/tmp/",
-  asset_host: "/tmp"
+  storage_dir_prefix: "/tmp/literature/",
+  asset_host: "/tmp/literature"
 
 config :literature,
-  otp_app: :literature
+  static_pages_storage_dir: "/tmp/literature/static_pages"

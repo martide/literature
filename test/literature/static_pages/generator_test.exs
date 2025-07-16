@@ -721,8 +721,8 @@ defmodule Literature.StaticPages.GeneratorTest do
   end
 
   defp pages_dir do
-    priv_dir = :code.priv_dir(:literature)
-    Path.join(priv_dir, "/static/en/blog")
+    storate_dir = Application.get_env(:literature, :static_pages_storage_dir)
+    Path.join(storate_dir, "/en/blog")
   end
 
   defp read_file(file_path) do

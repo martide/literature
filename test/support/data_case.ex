@@ -32,6 +32,11 @@ defmodule Literature.DataCase do
 
   setup tags do
     Literature.DataCase.setup_sandbox(tags)
+
+    on_exit(fn ->
+      File.rm_rf("/tmp/literature")
+    end)
+
     :ok
   end
 

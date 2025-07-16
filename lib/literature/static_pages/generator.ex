@@ -524,14 +524,13 @@ defmodule Literature.StaticPages.Generator do
   end
 
   @doc """
-  Returns the output directory for static files. Results to `priv/static/<path>/<publication_slug>`.
+  Returns the output directory for static files.
   """
   @spec store_path(String.t()) :: String.t()
   def store_path(path) do
-    otp_app = Application.get_env(:literature, :otp_app)
-    priv_dir = :code.priv_dir(otp_app)
+    storage_dir = Application.get_env(:literature, :static_pages_storage_dir)
 
-    Path.join([priv_dir, "static", path])
+    Path.join(storage_dir, path)
   end
 
   @doc """

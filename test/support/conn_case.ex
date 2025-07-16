@@ -36,6 +36,10 @@ defmodule Literature.ConnCase do
   setup tags do
     Literature.DataCase.setup_sandbox(tags)
 
+    on_exit(fn ->
+      File.rm_rf("/tmp/literature")
+    end)
+
     conn =
       Phoenix.ConnTest.build_conn()
       |> put_request_info()
