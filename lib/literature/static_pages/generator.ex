@@ -81,7 +81,7 @@ defmodule Literature.StaticPages.Generator do
   @default_path "/"
   @default_write_to :memory
 
-  @spec generate_all([page_type()], keyword()) :: :ok
+  @spec generate_all([page_type()], keyword()) :: :ok | {:ok, list()}
   def generate_all(page_types, opts) do
     results =
       async!(
@@ -102,7 +102,7 @@ defmodule Literature.StaticPages.Generator do
     end
   end
 
-  @spec generate(page_type :: page_type(), keyword()) :: :ok
+  @spec generate(page_type :: page_type(), keyword()) :: :ok | {:ok, list()}
   def generate(:index, opts) do
     %{
       publication_slug: publication_slug,
@@ -379,7 +379,8 @@ defmodule Literature.StaticPages.Generator do
     maybe_collect_file_tuples(tags, write_to)
   end
 
-  @spec generate(:show_post | :show_tag | :show_author, String.t(), keyword()) :: :ok
+  @spec generate(:show_post | :show_tag | :show_author, String.t(), keyword()) ::
+          :ok | {:ok, list()}
   def generate(:show_post, post_slug, opts) do
     %{
       publication_slug: publication_slug,
@@ -546,7 +547,7 @@ defmodule Literature.StaticPages.Generator do
   defp maybe_collect_file_tuples(_results, _write_to), do: :ok
 
   defp collect_files(file_tuples) do
-    Enum.map(file_tuples, fn {:ok, file_tuple} -> file_tuple end)
+    Enum.map(file_tuples, fn {:ok, [file_tuple]} -> file_tuple end)
   end
 
   defp get_options(opts) do

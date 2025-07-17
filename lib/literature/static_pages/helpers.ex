@@ -56,10 +56,10 @@ defmodule Literature.StaticPages.Helpers do
   end
 
   @spec format_result(
-          :ok | {:ok, tuple()} | {:ok, list()} | {:error, term()},
+          :ok | {:ok, tuple()} | {:error, term()},
           String.t(),
           String.t()
-        ) :: :ok
+        ) :: :ok | {:ok, list()}
   def format_result(:ok, publication_slug, file_path) do
     Logger.info("Generated static page for #{publication_slug}: #{file_path}")
 
@@ -67,7 +67,7 @@ defmodule Literature.StaticPages.Helpers do
   end
 
   def format_result({:ok, file_tuple}, _publication_slug, _file_path) do
-    {:ok, file_tuple}
+    {:ok, [file_tuple]}
   end
 
   def format_result(error, publication_slug, file_path) do

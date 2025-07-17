@@ -201,7 +201,7 @@ defmodule Literature.StaticPages.GeneratorTest do
     end
 
     test "generate/2 index", %{opts: opts} do
-      assert {:ok, {path, _content}} = Generator.generate(:index, opts)
+      assert {:ok, [{path, _content}]} = Generator.generate(:index, opts)
 
       assert path == get_file_path("/index.html")
     end
@@ -258,7 +258,7 @@ defmodule Literature.StaticPages.GeneratorTest do
     end
 
     test "generate/2 authors index", %{opts: opts} do
-      assert {:ok, {path, _content}} = Generator.generate(:authors, opts)
+      assert {:ok, [{path, _content}]} = Generator.generate(:authors, opts)
 
       assert path == get_file_path("/authors/index.html")
     end
@@ -272,7 +272,7 @@ defmodule Literature.StaticPages.GeneratorTest do
     end
 
     test "generate/2 tags index", %{opts: opts} do
-      assert {:ok, {path, _content}} = Generator.generate(:tags, opts)
+      assert {:ok, [{path, _content}]} = Generator.generate(:tags, opts)
 
       assert path == get_file_path("/tags/index.html")
     end
@@ -286,19 +286,19 @@ defmodule Literature.StaticPages.GeneratorTest do
     end
 
     test "generate/3 for show_post", %{post: post, opts: opts} do
-      assert {:ok, {path, _content}} = Generator.generate(:show_post, post.slug, opts)
+      assert {:ok, [{path, _content}]} = Generator.generate(:show_post, post.slug, opts)
 
       assert path == get_file_path("/#{post.slug}.html")
     end
 
     test "generate/3 for show_author", %{author: author, opts: opts} do
-      assert {:ok, {path, _content}} = Generator.generate(:show_author, author.slug, opts)
+      assert {:ok, [{path, _content}]} = Generator.generate(:show_author, author.slug, opts)
 
       assert path == get_file_path("/authors/#{author.slug}.html")
     end
 
     test "generate/3 for show_tag", %{tag: tag, opts: opts} do
-      assert {:ok, {path, _content}} = Generator.generate(:show_tag, tag.slug, opts)
+      assert {:ok, [{path, _content}]} = Generator.generate(:show_tag, tag.slug, opts)
 
       assert path == get_file_path("/tags/#{tag.slug}.html")
     end
