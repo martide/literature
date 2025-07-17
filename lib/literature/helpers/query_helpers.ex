@@ -121,6 +121,16 @@ defmodule Literature.QueryHelpers do
 
   def where_updated_at(query, _), do: query
 
+  def where_updated_or_published_at(query, %{"updated_or_published_at" => {">", datetime}}) do
+    where(query, [q], q.updated_at > ^datetime or q.published_at > ^datetime)
+  end
+
+  def where_updated_or_published_at(query, %{"updated_at" => {"<", datetime}}) do
+    where(query, [q], q.updated_at < ^datetime or q.published_at < ^datetime)
+  end
+
+  def where_updated_or_published_at(query, _), do: query
+
   def filter(query, %{"post_id" => post_id}) do
     where(query, [q], q.post_id in ^List.wrap(post_id))
   end

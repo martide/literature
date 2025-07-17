@@ -590,8 +590,8 @@ defmodule Literature.StaticPages.Generator do
 
         # https://hexdocs.pm/elixir/1.14.5/File.html#write/3
         # Use File.open/3 to write to the file since this can be called in a loop
-        File.open(output, [:write], fn file ->
-          IO.write(file, safe)
+        File.open(output, [:write, :binary], fn file ->
+          IO.binwrite(file, safe)
         end)
     end
   end
