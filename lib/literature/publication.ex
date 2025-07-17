@@ -3,8 +3,9 @@ defmodule Literature.Publication do
     Literature Publication Model
   """
   use Literature.Web, :model
-
   alias Literature.Language
+
+  @type t :: %__MODULE__{}
 
   schema "literature_publications" do
     field(:slug, :string)
