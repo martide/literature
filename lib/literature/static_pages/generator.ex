@@ -4,14 +4,14 @@ defmodule Literature.StaticPages.Generator do
   Provides a set of functions to automate the generation of static pages such as index,
   paginated index, tags, authors, and show pages(see `Available Pages`).
   It supports customization through options like pagination size, output path, and custom templates.
-  Static pages are stored in the `priv/static` directory of the application.
+  Static pages are stored in the `static_pages_storage_dir` Literature config.
 
   ## Functions
     * `generate_all/2` - Generates all specified static pages for the publication.
     * `generate/2` - Generates a specific static page type for the publication, given the page type options.
     * `generate/3` - Generates a specific post, author or tag show page, given the resource slug.
     * `store_path/2` - Returns the output directory for the generated files inside `priv/static`.
-    * `generate_file/3` - Writes rendered static page inside `store_path`.
+    * `generate_file/4` - Writes rendered static page to memory or to a file inside `store_path`.
 
   ## Options for `generate/2` and `generate_all/2`
     * `:publication_slug` (required) - The slug of the publication for which to generate pages.
@@ -21,6 +21,7 @@ defmodule Literature.StaticPages.Generator do
     * `:templates` - a module providing `Phoenix.Component` for each page listed in `Available Pages`
                      e.g. `index/1`, `index_page/1`, etc. (default: `Literature.StaticPages.Templates`).
                      See the `Literature.StaticPages.Templates` module for Behaviour and example.
+    * `write_to` - Specifies where to write the generated files. Can be `:memory`(default) or `:file`. Returns `Phoenix.HTML.Safe.t()` when writing to memory.
 
   ## Available Pages
 
@@ -73,21 +74,32 @@ defmodule Literature.StaticPages.Generator do
           | :tags
           | :show_tag
 
+  @type write_to :: :file | :memory
+
   @default_page_size 10
   @default_templates Literature.StaticPages.Templates
   @default_path "/"
+  @default_write_to :memory
 
   @spec generate_all([page_type()], keyword()) :: :ok
   def generate_all(page_types, opts) do
-    async!(
-      page_types,
-      fn page_type ->
-        generate(page_type, opts)
-      end,
-      timeout: :infinity
-    )
+    results =
+      async!(
+        page_types,
+        fn page_type -> generate(page_type, opts) end,
+        timeout: :infinity
+      )
 
-    :ok
+    write_to = Keyword.get(opts, :write_to, @default_write_to)
+
+    if write_to == :memory do
+      {:ok,
+       results
+       |> Enum.map(fn {:ok, result} -> result end)
+       |> List.flatten()}
+    else
+      :ok
+    end
   end
 
   @spec generate(page_type :: page_type(), keyword()) :: :ok
@@ -96,14 +108,14 @@ defmodule Literature.StaticPages.Generator do
       publication_slug: publication_slug,
       base_url: base_url,
       templates: templates,
-      path: path
+      path: path,
+      write_to: write_to
     } = get_options(opts)
 
     check_for_template!(templates, :index)
 
     publication = get_publication!(publication_slug)
     store_path = store_path(path)
-    File.mkdir_p!(store_path)
 
     file_path = Path.join(path, "/index.html")
 
@@ -116,7 +128,8 @@ defmodule Literature.StaticPages.Generator do
         publication: publication,
         current_url: Path.join(base_url, file_path),
         meta_tags: get_default_meta_tags(publication, publication)
-      })
+      }),
+      write_to
     )
     |> format_result(publication.slug, file_path)
   end
@@ -127,7 +140,8 @@ defmodule Literature.StaticPages.Generator do
       base_url: base_url,
       page_size: page_size,
       templates: templates,
-      path: path
+      path: path,
+      write_to: write_to
     } = get_options(opts)
 
     check_for_template!(templates, :index_page)
@@ -137,56 +151,55 @@ defmodule Literature.StaticPages.Generator do
 
     store_path = store_path(path)
 
-    # clean page directory
-    Path.join(store_path, "/page")
-    |> File.rm_rf!()
-
     page_1_path = Path.join(store_path, "/page/1")
-    File.mkdir_p!(page_1_path)
-
     file_path_1 = Path.join(path, "/page/1/index.html")
 
-    generate_file(
-      "index.html",
-      page_1_path,
-      templates.index_page(%{
-        __changed__: %{},
-        page: page_1,
-        publication: publication,
-        current_url: Path.join(base_url, file_path_1),
-        meta_tags: get_default_meta_tags(publication, publication, page_1)
-      })
-    )
-    |> format_result(publication.slug, file_path_1)
-
-    if page_1.total_pages > 1 do
-      async!(
-        2..page_1.total_pages,
-        fn page_number ->
-          page = paginate_published_posts(publication.slug, page_number, page_size)
-          page_path = Path.join(store_path, "/page/#{page_number}")
-          File.mkdir_p!(page_path)
-
-          file_path = Path.join(path, "/page/#{page_number}/index.html")
-
-          generate_file(
-            "index.html",
-            page_path,
-            templates.index_page(%{
-              __changed__: %{},
-              page: page,
-              publication: publication,
-              current_url: Path.join(base_url, file_path),
-              meta_tags: get_default_meta_tags(publication, publication, page)
-            })
-          )
-          |> format_result(publication.slug, file_path)
-        end,
-        timeout: :infinity
+    page_1_results =
+      generate_file(
+        "index.html",
+        page_1_path,
+        templates.index_page(%{
+          __changed__: %{},
+          page: page_1,
+          publication: publication,
+          current_url: Path.join(base_url, file_path_1),
+          meta_tags: get_default_meta_tags(publication, publication, page_1)
+        }),
+        write_to
       )
-    end
+      |> format_result(publication.slug, file_path_1)
 
-    :ok
+    pages =
+      if page_1.total_pages > 1 do
+        async!(
+          2..page_1.total_pages,
+          fn page_number ->
+            page = paginate_published_posts(publication.slug, page_number, page_size)
+            page_path = Path.join(store_path, "/page/#{page_number}")
+
+            file_path = Path.join(path, "/page/#{page_number}/index.html")
+
+            generate_file(
+              "index.html",
+              page_path,
+              templates.index_page(%{
+                __changed__: %{},
+                page: page,
+                publication: publication,
+                current_url: Path.join(base_url, file_path),
+                meta_tags: get_default_meta_tags(publication, publication, page)
+              }),
+              write_to
+            )
+            |> format_result(publication.slug, file_path)
+          end,
+          timeout: :infinity
+        )
+      else
+        []
+      end
+
+    maybe_collect_file_tuples([page_1_results] ++ pages, write_to)
   end
 
   def generate(:show_post, opts) do
@@ -194,7 +207,8 @@ defmodule Literature.StaticPages.Generator do
       publication_slug: publication_slug,
       base_url: base_url,
       templates: templates,
-      path: path
+      path: path,
+      write_to: write_to
     } = get_options(opts)
 
     check_for_template!(templates, :show_post)
@@ -202,27 +216,27 @@ defmodule Literature.StaticPages.Generator do
     publication = get_publication!(publication_slug)
     store_path = store_path(path)
 
-    File.mkdir_p!(store_path)
+    posts =
+      publication.slug
+      |> list_published_posts()
+      |> async!(
+        fn post ->
+          file_path = Path.join(path, "/#{post.slug}.html")
 
-    publication.slug
-    |> list_published_posts()
-    |> async!(
-      fn post ->
-        file_path = Path.join(path, "/#{post.slug}.html")
+          generate_post(%{
+            publication: publication,
+            post: post,
+            base_url: base_url,
+            templates: templates,
+            store_path: store_path,
+            file_path: file_path,
+            write_to: write_to
+          })
+        end,
+        timeout: :infinity
+      )
 
-        generate_post(%{
-          publication: publication,
-          post: post,
-          base_url: base_url,
-          templates: templates,
-          store_path: store_path,
-          file_path: file_path
-        })
-      end,
-      timeout: :infinity
-    )
-
-    :ok
+    maybe_collect_file_tuples(posts, write_to)
   end
 
   def generate(:authors, opts) do
@@ -230,7 +244,8 @@ defmodule Literature.StaticPages.Generator do
       publication_slug: publication_slug,
       base_url: base_url,
       templates: templates,
-      path: path
+      path: path,
+      write_to: write_to
     } = get_options(opts)
 
     check_for_template!(templates, :authors)
@@ -238,7 +253,6 @@ defmodule Literature.StaticPages.Generator do
     publication = get_publication!(publication_slug)
     store_path = store_path(path)
     authors_path = Path.join(store_path, "/authors")
-    File.mkdir_p!(authors_path)
 
     file_path = Path.join(path, "/authors/index.html")
 
@@ -251,7 +265,8 @@ defmodule Literature.StaticPages.Generator do
         publication: publication,
         current_url: Path.join(base_url, file_path),
         meta_tags: get_default_meta_tags(publication, publication)
-      })
+      }),
+      write_to
     )
     |> format_result(publication.slug, file_path)
   end
@@ -261,7 +276,8 @@ defmodule Literature.StaticPages.Generator do
       publication_slug: publication_slug,
       base_url: base_url,
       templates: templates,
-      path: path
+      path: path,
+      write_to: write_to
     } = get_options(opts)
 
     check_for_template!(templates, :show_author)
@@ -269,27 +285,28 @@ defmodule Literature.StaticPages.Generator do
     publication = get_publication!(publication_slug)
     store_path = store_path(path)
     authors_path = Path.join(store_path, "/authors")
-    File.mkdir_p!(authors_path)
 
-    publication.slug
-    |> list_authors()
-    |> async!(
-      fn author ->
-        file_path = Path.join(path, "/authors/#{author.slug}.html")
+    authors =
+      publication.slug
+      |> list_authors()
+      |> async!(
+        fn author ->
+          file_path = Path.join(path, "/authors/#{author.slug}.html")
 
-        generate_author(%{
-          publication: publication,
-          author: author,
-          base_url: base_url,
-          templates: templates,
-          authors_path: authors_path,
-          file_path: file_path
-        })
-      end,
-      timeout: :infinity
-    )
+          generate_author(%{
+            publication: publication,
+            author: author,
+            base_url: base_url,
+            templates: templates,
+            authors_path: authors_path,
+            file_path: file_path,
+            write_to: write_to
+          })
+        end,
+        timeout: :infinity
+      )
 
-    :ok
+    maybe_collect_file_tuples(authors, write_to)
   end
 
   def generate(:tags, opts) do
@@ -297,7 +314,8 @@ defmodule Literature.StaticPages.Generator do
       publication_slug: publication_slug,
       base_url: base_url,
       templates: templates,
-      path: path
+      path: path,
+      write_to: write_to
     } = get_options(opts)
 
     check_for_template!(templates, :tags)
@@ -305,7 +323,6 @@ defmodule Literature.StaticPages.Generator do
     publication = get_publication!(publication_slug)
     store_path = store_path(path)
     tags_path = Path.join(store_path, "/tags")
-    File.mkdir_p!(tags_path)
 
     file_path = Path.join(path, "/tags/index.html")
 
@@ -318,7 +335,8 @@ defmodule Literature.StaticPages.Generator do
         publication: publication,
         current_url: Path.join(base_url, file_path),
         meta_tags: get_default_meta_tags(publication, publication)
-      })
+      }),
+      write_to
     )
     |> format_result(publication.slug, file_path)
   end
@@ -328,7 +346,8 @@ defmodule Literature.StaticPages.Generator do
       publication_slug: publication_slug,
       base_url: base_url,
       templates: templates,
-      path: path
+      path: path,
+      write_to: write_to
     } = get_options(opts)
 
     check_for_template!(templates, :show_tag)
@@ -336,27 +355,28 @@ defmodule Literature.StaticPages.Generator do
     publication = get_publication!(publication_slug)
     store_path = store_path(path)
     tags_path = Path.join(store_path, "/tags")
-    File.mkdir_p!(tags_path)
 
-    publication.slug
-    |> list_public_tags()
-    |> async!(
-      fn tag ->
-        file_path = Path.join(path, "/tags/#{tag.slug}.html")
+    tags =
+      publication.slug
+      |> list_public_tags()
+      |> async!(
+        fn tag ->
+          file_path = Path.join(path, "/tags/#{tag.slug}.html")
 
-        generate_tag(%{
-          publication: publication,
-          tag: tag,
-          base_url: base_url,
-          templates: templates,
-          tags_path: tags_path,
-          file_path: file_path
-        })
-      end,
-      timeout: :infinity
-    )
+          generate_tag(%{
+            publication: publication,
+            tag: tag,
+            base_url: base_url,
+            templates: templates,
+            tags_path: tags_path,
+            file_path: file_path,
+            write_to: write_to
+          })
+        end,
+        timeout: :infinity
+      )
 
-    :ok
+    maybe_collect_file_tuples(tags, write_to)
   end
 
   @spec generate(:show_post | :show_tag | :show_author, String.t(), keyword()) :: :ok
@@ -365,7 +385,8 @@ defmodule Literature.StaticPages.Generator do
       publication_slug: publication_slug,
       base_url: base_url,
       templates: templates,
-      path: path
+      path: path,
+      write_to: write_to
     } = get_options(opts)
 
     check_for_template!(templates, :show_post)
@@ -373,8 +394,6 @@ defmodule Literature.StaticPages.Generator do
     publication = get_publication!(publication_slug)
     post = get_post!(post_slug, publication_slug)
     store_path = store_path(path)
-
-    File.mkdir_p!(store_path)
 
     file_path = Path.join(path, "/#{post.slug}.html")
 
@@ -384,7 +403,8 @@ defmodule Literature.StaticPages.Generator do
       base_url: base_url,
       templates: templates,
       store_path: store_path,
-      file_path: file_path
+      file_path: file_path,
+      write_to: write_to
     })
   end
 
@@ -393,7 +413,8 @@ defmodule Literature.StaticPages.Generator do
       publication_slug: publication_slug,
       base_url: base_url,
       templates: templates,
-      path: path
+      path: path,
+      write_to: write_to
     } = get_options(opts)
 
     check_for_template!(templates, :show_author)
@@ -402,7 +423,6 @@ defmodule Literature.StaticPages.Generator do
     author = get_author!(author_slug, publication_slug)
     store_path = store_path(path)
     authors_path = Path.join(store_path, "/authors")
-    File.mkdir_p!(authors_path)
 
     file_path = Path.join(path, "/authors/#{author.slug}.html")
 
@@ -412,7 +432,8 @@ defmodule Literature.StaticPages.Generator do
       base_url: base_url,
       templates: templates,
       authors_path: authors_path,
-      file_path: file_path
+      file_path: file_path,
+      write_to: write_to
     })
   end
 
@@ -421,7 +442,8 @@ defmodule Literature.StaticPages.Generator do
       publication_slug: publication_slug,
       base_url: base_url,
       templates: templates,
-      path: path
+      path: path,
+      write_to: write_to
     } = get_options(opts)
 
     check_for_template!(templates, :show_tag)
@@ -432,8 +454,6 @@ defmodule Literature.StaticPages.Generator do
     store_path = store_path(path)
     tags_path = Path.join(store_path, "/tags")
 
-    File.mkdir_p!(tags_path)
-
     file_path = Path.join(path, "/tags/#{tag.slug}.html")
 
     generate_tag(%{
@@ -442,7 +462,8 @@ defmodule Literature.StaticPages.Generator do
       base_url: base_url,
       templates: templates,
       tags_path: tags_path,
-      file_path: file_path
+      file_path: file_path,
+      write_to: write_to
     })
   end
 
@@ -452,7 +473,8 @@ defmodule Literature.StaticPages.Generator do
          base_url: base_url,
          templates: templates,
          store_path: store_path,
-         file_path: file_path
+         file_path: file_path,
+         write_to: write_to
        }) do
     generate_file(
       "#{post.slug}.html",
@@ -463,7 +485,8 @@ defmodule Literature.StaticPages.Generator do
         publication: publication,
         current_url: Path.join(base_url, file_path),
         meta_tags: get_default_meta_tags(post, publication)
-      })
+      }),
+      write_to
     )
     |> format_result(publication.slug, file_path)
   end
@@ -474,7 +497,8 @@ defmodule Literature.StaticPages.Generator do
          base_url: base_url,
          templates: templates,
          authors_path: authors_path,
-         file_path: file_path
+         file_path: file_path,
+         write_to: write_to
        }) do
     generate_file(
       "#{author.slug}.html",
@@ -485,7 +509,8 @@ defmodule Literature.StaticPages.Generator do
         publication: publication,
         current_url: Path.join(base_url, file_path),
         meta_tags: get_default_meta_tags(author, publication)
-      })
+      }),
+      write_to
     )
     |> format_result(publication.slug, file_path)
   end
@@ -496,7 +521,8 @@ defmodule Literature.StaticPages.Generator do
          base_url: base_url,
          templates: templates,
          tags_path: tags_path,
-         file_path: file_path
+         file_path: file_path,
+         write_to: write_to
        }) do
     generate_file(
       "#{tag.slug}.html",
@@ -507,9 +533,20 @@ defmodule Literature.StaticPages.Generator do
         publication: publication,
         current_url: Path.join(base_url, file_path),
         meta_tags: get_default_meta_tags(tag, publication)
-      })
+      }),
+      write_to
     )
     |> format_result(publication.slug, file_path)
+  end
+
+  defp maybe_collect_file_tuples(results, :memory) do
+    {:ok, collect_files(results)}
+  end
+
+  defp maybe_collect_file_tuples(_results, _write_to), do: :ok
+
+  defp collect_files(file_tuples) do
+    Enum.map(file_tuples, fn {:ok, file_tuple} -> file_tuple end)
   end
 
   defp get_options(opts) do
@@ -518,6 +555,7 @@ defmodule Literature.StaticPages.Generator do
     page_size = Keyword.get(opts, :page_size, @default_page_size)
     path = Keyword.get(opts, :path, @default_path)
     templates = Keyword.get(opts, :templates, @default_templates)
+    write_to = Keyword.get(opts, :write_to, @default_write_to)
 
     binding()
     |> Map.new()
@@ -536,10 +574,24 @@ defmodule Literature.StaticPages.Generator do
   @doc """
   Writes rendered HTML content to a file within the given static output directory.
   """
-  @spec generate_file(String.t(), String.t(), Safe.t()) :: :ok | {:error, term()}
-  def generate_file(file_name, store_path, rendered) do
+  @spec generate_file(String.t(), String.t(), Safe.t(), write_to()) ::
+          :ok | {:ok, tuple()} | {:error, term()}
+  def generate_file(file_name, store_path, rendered, write_to) do
     safe = Safe.to_iodata(rendered)
     output = Path.join([store_path, file_name])
-    File.write(output, safe)
+
+    case write_to do
+      :memory ->
+        {:ok, {output, safe}}
+
+      :file ->
+        File.mkdir_p!(store_path)
+
+        # https://hexdocs.pm/elixir/1.14.5/File.html#write/3
+        # Use File.open/3 to write to the file since this can be called in a loop
+        File.open(output, [:write], fn file ->
+          IO.write(file, safe)
+        end)
+    end
   end
 end

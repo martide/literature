@@ -12,7 +12,8 @@ defmodule Literature.StaticPages.GeneratorTest do
     path: "/en/blog",
     base_url: @endpoint.url(),
     templates: Literature.StaticPages.Templates,
-    page_size: 10
+    page_size: 10,
+    write_to: :file
   ]
 
   setup do
@@ -57,7 +58,7 @@ defmodule Literature.StaticPages.GeneratorTest do
     {:ok, binding()}
   end
 
-  describe "generate static pages" do
+  describe "generate static pages write to file" do
     test "generate/2 index", %{publication: publication} do
       Generator.generate(:index, @opts)
       html = read_file("/index.html")
@@ -189,6 +190,147 @@ defmodule Literature.StaticPages.GeneratorTest do
     test "generate/3 for show_tag with non-existent slug" do
       assert_raise RuntimeError, "Tag with slug 'non-existent' not found.", fn ->
         Generator.generate(:show_tag, "non-existent", @opts)
+      end
+    end
+  end
+
+  describe "generate static page write to  memory" do
+    setup do
+      opts = Keyword.put(@opts, :write_to, :memory)
+      {:ok, opts: opts}
+    end
+
+    test "generate/2 index", %{opts: opts} do
+      assert {:ok, {path, _content}} = Generator.generate(:index, opts)
+
+      assert path == get_file_path("/index.html")
+    end
+
+    test "generate/2 index pages", %{
+      publication: publication,
+      author: author,
+      tag: tag,
+      opts: opts
+    } do
+      for i <- 1..20 do
+        post_fixture(
+          title: "Post #{i}",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+      end
+
+      # 21 posts -> 3 pages -> default 10 per page
+      assert {:ok, file_tuples} = Generator.generate(:index_page, opts)
+
+      for page_number <- 1..3 do
+        assert Enum.find(file_tuples, fn {path, _content} ->
+                 path == get_file_path("/page/#{page_number}/index.html")
+               end)
+      end
+    end
+
+    test "generate/2 show_post", %{
+      publication: publication,
+      author: author,
+      tag: tag,
+      post: post_1,
+      opts: opts
+    } do
+      [post_2, post_3] =
+        for i <- 1..2 do
+          post_fixture(
+            title: "Post #{i}",
+            publication_id: publication.id,
+            authors_ids: [author.id],
+            tags_ids: [tag.id]
+          )
+        end
+
+      assert {:ok, file_tuples} = Generator.generate(:show_post, opts)
+
+      for post <- [post_1, post_2, post_3] do
+        assert Enum.find(file_tuples, fn {path, _content} ->
+                 path == get_file_path("/#{post.slug}.html")
+               end)
+      end
+    end
+
+    test "generate/2 authors index", %{opts: opts} do
+      assert {:ok, {path, _content}} = Generator.generate(:authors, opts)
+
+      assert path == get_file_path("/authors/index.html")
+    end
+
+    test "generate/2 show author", %{publication: _publication, author: author, opts: opts} do
+      assert {:ok, file_tuples} = Generator.generate(:show_author, opts)
+
+      assert Enum.find(file_tuples, fn {path, _content} ->
+               path == get_file_path("/authors/#{author.slug}.html")
+             end)
+    end
+
+    test "generate/2 tags index", %{opts: opts} do
+      assert {:ok, {path, _content}} = Generator.generate(:tags, opts)
+
+      assert path == get_file_path("/tags/index.html")
+    end
+
+    test "generate/2 show tag", %{publication: _publication, tag: tag, opts: opts} do
+      assert {:ok, file_tuples} = Generator.generate(:show_tag, opts)
+
+      assert Enum.find(file_tuples, fn {path, _content} ->
+               path == get_file_path("/tags/#{tag.slug}.html")
+             end)
+    end
+
+    test "generate/3 for show_post", %{post: post, opts: opts} do
+      assert {:ok, {path, _content}} = Generator.generate(:show_post, post.slug, opts)
+
+      assert path == get_file_path("/#{post.slug}.html")
+    end
+
+    test "generate/3 for show_author", %{author: author, opts: opts} do
+      assert {:ok, {path, _content}} = Generator.generate(:show_author, author.slug, opts)
+
+      assert path == get_file_path("/authors/#{author.slug}.html")
+    end
+
+    test "generate/3 for show_tag", %{tag: tag, opts: opts} do
+      assert {:ok, {path, _content}} = Generator.generate(:show_tag, tag.slug, opts)
+
+      assert path == get_file_path("/tags/#{tag.slug}.html")
+    end
+
+    test "generate_all/3", %{
+      post: post,
+      author: author,
+      tag: tag,
+      opts: opts
+    } do
+      all_page_types = [:index, :index_page, :authors, :tags, :show_post, :show_author, :show_tag]
+
+      assert {:ok, file_tuples} =
+               Generator.generate_all(
+                 all_page_types,
+                 opts
+               )
+
+      files = [
+        "/index.html",
+        "/page/1/index.html",
+        "/authors/index.html",
+        "/tags/index.html",
+        "/#{post.slug}.html",
+        "/authors/#{author.slug}.html",
+        "/tags/#{tag.slug}.html"
+      ]
+
+      for file <- files do
+        assert Enum.find(file_tuples, fn {path, _content} ->
+                 path == get_file_path(file)
+               end)
       end
     end
   end
@@ -725,9 +867,14 @@ defmodule Literature.StaticPages.GeneratorTest do
     Path.join(storate_dir, "/en/blog")
   end
 
-  defp read_file(file_path) do
+  defp get_file_path(file_path) do
     pages_dir()
     |> Path.join(file_path)
+  end
+
+  defp read_file(file_path) do
+    file_path
+    |> get_file_path()
     |> File.read!()
   end
 
