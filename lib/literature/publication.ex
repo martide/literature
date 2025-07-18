@@ -27,6 +27,9 @@ defmodule Literature.Publication do
     field(:rss_email, :string)
     field(:rss_is_excerpt_only, :boolean)
 
+    # For Webhook for static pages
+    field(:update_url, :string)
+
     has_many(:authors, Author)
     has_many(:tags, Tag)
     has_many(:posts, Post)
@@ -66,6 +69,7 @@ defmodule Literature.Publication do
     rss_author
     rss_email
     rss_is_excerpt_only
+    update_url
   )a
 
   @attachments ~w(

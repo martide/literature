@@ -75,6 +75,25 @@ defmodule Literature.PublicationLive do
     {:noreply, socket}
   end
 
+  def handle_event("update_static_pages", %{"id" => publication_id}, socket) do
+    socket =
+      with %Publication{update_url: update_url} = publication <-
+             Literature.get_publication!(publication_id),
+           {:ok, _} <-
+             call_update_url(update_url, %{publication_slug: publication.slug, action: "update"}) do
+        socket
+        |> put_flash(:success, "Publication update url called successfully.")
+      else
+        error ->
+          IO.inspect(error)
+
+          socket
+          |> put_flash(:success, "Failed to call update url.")
+      end
+
+    {:noreply, socket}
+  end
+
   defp apply_action(socket, :index, _params) do
     push_patch(socket, to: literature_dashboard_path(socket, :list_publications))
   end
@@ -100,4 +119,19 @@ defmodule Literature.PublicationLive do
 
   defp list_publications,
     do: Literature.list_publications(%{"preload" => ~w(posts authors tags)a})
+
+  defp call_update_url(update_url, data, timeout \\ 5000) do
+    url = String.to_charlist(update_url)
+    headers = [{'content-type', 'application/json'}]
+    body = Jason.encode!(data)
+
+    IO.inspect(url: url, headers: headers, body: body)
+
+    :httpc.request(
+      :post,
+      {url, headers, 'application/json', body},
+      [{:timeout, timeout}],
+      []
+    )
+  end
 end
