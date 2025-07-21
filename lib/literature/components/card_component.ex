@@ -2,6 +2,8 @@ defmodule Literature.CardComponent do
   @moduledoc false
   use Phoenix.Component
 
+  import Literature.FormComponent, only: [input: 1]
+
   def card_container(assigns) do
     ~H"""
     <div class="grid grid-cols-3 gap-5">
@@ -61,22 +63,26 @@ defmodule Literature.CardComponent do
         </.link>
       </div>
       <div :if={@item.update_url} class="flex items-center justify-end">
-        <button
-          type="button"
-          phx-click="update_static_pages"
-          phx-value-id={@item.id}
-          class="text-gray-500 bg-white focus:outline-hidden hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5"
-        >
-          Update
-        </button>
-        <button
-          type="button"
-          phx-click="regenerate_all_static_pages"
-          phx-value-id={@item.id}
-          class="text-gray-500 bg-white focus:outline-hidden hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5"
-        >
-          Regenerate
-        </button>
+        <.form :let={f} for={%{}} action={@item.update_url} target="_blank">
+          <.input type="hidden" field={f[:publication_slug]} value={@item.slug} />
+          <.input type="hidden" field={f[:action]} value="update" />
+          <button
+            class="text-gray-500 bg-white focus:outline-hidden hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5"
+            type="submit"
+          >
+            Update Static Pages
+          </button>
+        </.form>
+        <.form :let={f} for={%{}} action={@item.update_url} target="_blank">
+          <.input type="hidden" field={f[:publication_slug]} value={@item.slug} />
+          <.input type="hidden" field={f[:action]} value="regenerate_all" />
+          <button
+            class="text-gray-500 bg-white focus:outline-hidden hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5"
+            type="submit"
+          >
+            Regenerate All
+          </button>
+        </.form>
       </div>
     </div>
     """
