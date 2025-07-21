@@ -118,6 +118,9 @@ defmodule Literature.PublicationFormComponent do
             </p>
           </div>
         </.accordion>
+        <.accordion id="static-pages-webhook" title="Static Pages">
+          <.form_field form={f} type="url_input" field={:update_url} label="Update URL" />
+        </.accordion>
         <.button_group>
           <.back_button label="Cancel" return_to={@return_to} />
           <.submit_button label="Save changes" />
