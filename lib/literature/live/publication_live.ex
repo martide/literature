@@ -75,6 +75,15 @@ defmodule Literature.PublicationLive do
     {:noreply, socket}
   end
 
+  @impl Phoenix.LiveView
+  def handle_event("show_alert", %{"message" => message, "type" => type}, socket) do
+    socket =
+      socket
+      |> put_flash(String.to_existing_atom(type), message)
+
+    {:noreply, socket}
+  end
+
   defp apply_action(socket, :index, _params) do
     push_patch(socket, to: literature_dashboard_path(socket, :list_publications))
   end
