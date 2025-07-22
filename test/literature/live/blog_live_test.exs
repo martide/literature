@@ -64,8 +64,9 @@ defmodule Literature.BlogLiveTest do
 
     test "lists all blog posts", %{conn: conn, publication: publication, post: post} do
       {:ok, _view, html} = live(conn, Routes.literature_path(conn, :index))
+      document = parse_document!(html)
 
-      assert get_element(html, "link[href='#{@endpoint.url()}/blog'][rel='canonical']")
+      assert get_element(document, "link[href='#{@endpoint.url()}/blog'][rel='canonical']")
 
       assert html =~ publication.name
       assert html =~ publication.description
@@ -281,8 +282,9 @@ defmodule Literature.BlogLiveTest do
         )
 
       {:ok, _view, html} = live(conn, Routes.literature_path(conn, :index))
+      document = parse_document!(html)
 
-      assert get_element(html, "link[href='http://www.localhost:4001/blog'][rel='canonical']")
+      assert get_element(document, "link[href='http://www.localhost:4001/blog'][rel='canonical']")
     end
   end
 
@@ -349,7 +351,7 @@ defmodule Literature.BlogLiveTest do
       document = parse_document!(html)
       url = @endpoint.url() <> "/blog"
 
-      assert_fixed_meta_tags(html)
+      assert_fixed_meta_tags(document)
 
       resources =
         publication
@@ -419,7 +421,7 @@ defmodule Literature.BlogLiveTest do
       document = parse_document!(html)
       url = @endpoint.url() <> Routes.literature_path(conn, :show, post.slug)
 
-      assert_fixed_meta_tags(html)
+      assert_fixed_meta_tags(document)
 
       resources =
         post
@@ -484,7 +486,7 @@ defmodule Literature.BlogLiveTest do
       document = parse_document!(html)
       url = @endpoint.url() <> "/blog/authors"
 
-      assert_fixed_meta_tags(html)
+      assert_fixed_meta_tags(document)
 
       resources =
         publication
@@ -531,7 +533,7 @@ defmodule Literature.BlogLiveTest do
       document = parse_document!(html)
       url = @endpoint.url() <> Routes.literature_path(conn, :show, author.slug)
 
-      assert_fixed_meta_tags(html)
+      assert_fixed_meta_tags(document)
 
       resources =
         author
@@ -590,7 +592,7 @@ defmodule Literature.BlogLiveTest do
       document = parse_document!(html)
       url = @endpoint.url() <> "/blog/tags"
 
-      assert_fixed_meta_tags(html)
+      assert_fixed_meta_tags(document)
 
       resources =
         publication
@@ -637,7 +639,7 @@ defmodule Literature.BlogLiveTest do
       document = parse_document!(html)
       url = @endpoint.url() <> Routes.literature_path(conn, :show, tag.slug)
 
-      assert_fixed_meta_tags(html)
+      assert_fixed_meta_tags(document)
 
       resources =
         tag
@@ -1111,36 +1113,42 @@ defmodule Literature.BlogLiveTest do
     assert_twitter_meta_tags(document, resources)
   end
 
-  def assert_default_meta_tags(view, html, resources) do
+  def assert_default_meta_tags(view, document, resources) do
     assert page_title(view) == resources.meta_title
 
-    assert get_attribute(html, "meta[name='description']", "content") ==
+    assert get_attribute(document, "meta[name='description']", "content") ==
              resources.meta_description
 
-    assert get_attribute(html, "meta[name='keywords']", "content") == resources.meta_keywords
+    assert get_attribute(document, "meta[name='keywords']", "content") == resources.meta_keywords
   end
 
-  def assert_fixed_meta_tags(html) do
-    assert get_attribute(html, "meta[property='og:type']", "content") == "website"
-    assert get_attribute(html, "meta[property='og:locale']", "content") == "en"
-    assert get_attribute(html, "meta[name='twitter:card']", "content") == "summary_large_image"
+  def assert_fixed_meta_tags(document) do
+    assert get_attribute(document, "meta[property='og:type']", "content") == "website"
+    assert get_attribute(document, "meta[property='og:locale']", "content") == "en"
+
+    assert get_attribute(document, "meta[name='twitter:card']", "content") ==
+             "summary_large_image"
   end
 
-  defp assert_og_meta_tags(html, resources) do
-    assert get_attribute(html, "meta[property='og:title']", "content") == resources.og_title
-    assert get_attribute(html, "meta[property='og:url']", "content") == resources.og_url
-    assert get_attribute(html, "meta[property='og:image']", "content") =~ resources.og_image
+  defp assert_og_meta_tags(document, resources) do
+    assert get_attribute(document, "meta[property='og:title']", "content") == resources.og_title
+    assert get_attribute(document, "meta[property='og:url']", "content") == resources.og_url
+    assert get_attribute(document, "meta[property='og:image']", "content") =~ resources.og_image
 
-    assert get_attribute(html, "meta[property='og:description']", "content") ==
+    assert get_attribute(document, "meta[property='og:description']", "content") ==
              resources.og_description
   end
 
-  defp assert_twitter_meta_tags(html, resources) do
-    assert get_attribute(html, "meta[name='twitter:title']", "content") == resources.twitter_title
-    assert get_attribute(html, "meta[name='twitter:url']", "content") == resources.twitter_url
-    assert get_attribute(html, "meta[name='twitter:image']", "content") =~ resources.twitter_image
+  defp assert_twitter_meta_tags(document, resources) do
+    assert get_attribute(document, "meta[name='twitter:title']", "content") ==
+             resources.twitter_title
 
-    assert get_attribute(html, "meta[name='twitter:description']", "content") ==
+    assert get_attribute(document, "meta[name='twitter:url']", "content") == resources.twitter_url
+
+    assert get_attribute(document, "meta[name='twitter:image']", "content") =~
+             resources.twitter_image
+
+    assert get_attribute(document, "meta[name='twitter:description']", "content") ==
              resources.twitter_description
   end
 
