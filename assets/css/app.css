@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "@milkdown/crepe/theme/common/style.css";
+@import "@milkdown/crepe/theme/frame.css";
 
 @config "../tailwind.config.js";
 
@@ -9,8 +11,26 @@
   }
 }
 
-#editorjs {
+.milkdown {
+  --crepe-font-default: inherit;
+  --crepe-font-title: inherit;
+}
+
+#editorjs,
+.milkdown {
   @apply prose prose-sm sm:prose max-w-full;
+}
+
+.milkdown > .ProseMirror {
+  @apply p-0!;
+}
+
+.milkdown > .ProseMirror * p {
+  @apply m-0!;
+}
+
+.milkdown-list-item-block > .list-item {
+  @apply items-center!;
 }
 
 /* Pagination */

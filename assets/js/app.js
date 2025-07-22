@@ -1,8 +1,44 @@
 import { LiveSocket } from "phoenix_live_view";
 import { Socket } from "phoenix";
 import { Sortable } from "sortablejs";
+import { Crepe } from "@milkdown/crepe";
 
 let Hooks = {};
+
+Hooks.MarkdownEditor = {
+  mounted() {
+    const inputMarkdown = document.querySelector("#form-markdown-input");
+    const defaultMarkdown = inputMarkdown.value || "";
+
+    const crepe = new Crepe({
+      root: this.el,
+      defaultValue: defaultMarkdown,
+      features: {
+        // Disable specific features
+        [Crepe.Feature.CodeMirror]: false,
+        [Crepe.Feature.Latex]: false,
+      },
+      featureConfigs: {
+        [Crepe.Feature.BlockEdit]: {
+          blockHandle: {
+            getPlacement: () => "right",
+          },
+        },
+      },
+    });
+
+    this.el.crepe = crepe;
+
+    crepe.on((listener) => {
+      listener.markdownUpdated((markdown) => {
+        console.log(markdown);
+        inputMarkdown.value = crepe.getMarkdown();
+      });
+    });
+
+    crepe.create();
+  },
+};
 
 Hooks.EditorJS = {
   loadEditorJS() {
