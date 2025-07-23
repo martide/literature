@@ -29,8 +29,20 @@
   @apply m-0!;
 }
 
-.milkdown-list-item-block > .list-item {
-  @apply items-center!;
+.milkdown-slash-menu .tab-group > ul {
+  @apply m-0! px-2.5! py-2! list-none!;
+}
+
+.milkdown-slash-menu .tab-group > ul > li {
+  @apply m-0! px-2.5! py-2!;
+}
+
+.milkdown-slash-menu .menu-groups ul {
+  @apply m-0! p-0! list-none!;
+}
+
+.milkdown-slash-menu .menu-groups ul > li {
+  @apply m-0! px-2.5! py-2!;
 }
 
 /* Pagination */

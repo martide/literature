@@ -24,6 +24,13 @@ Hooks.MarkdownEditor = {
             getPlacement: () => "right",
           },
         },
+        [Crepe.Feature.ImageBlock]: {
+          onUpload: async (file) => {
+            console.log(file)
+            const url = "https://example.com";
+            return url;
+          },
+        },
       },
     });
 

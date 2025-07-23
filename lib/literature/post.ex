@@ -38,6 +38,7 @@ defmodule Literature.Post do
     field(:excerpt, :string)
     field(:editor_json, :string)
     field(:html, {:array, :string})
+    field(:markdown, :string)
     field(:meta_title, :string)
     field(:meta_description, :string)
     field(:meta_keywords, :string)
@@ -82,6 +83,7 @@ defmodule Literature.Post do
     excerpt
     editor_json
     html
+    markdown
     published_at
     meta_title
     meta_description
