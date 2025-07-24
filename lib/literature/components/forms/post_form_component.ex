@@ -46,11 +46,7 @@ defmodule Literature.PostFormComponent do
         <div class="md:flex">
           <div class="w-full">
             <div id="markdown-editor-container" phx-update="ignore">
-              <div
-                id="markdown-editor"
-                phx-hook="MarkdownEditor"
-                data-default-value={f.params["markdown"] || @post.markdown}
-              >
+              <div id="markdown-editor" phx-hook="MarkdownEditor" data-default-value={@post.markdown}>
               </div>
               <input type="hidden" id="form-markdown-input" name={f[:markdown].name} />
             </div>
@@ -306,6 +302,7 @@ defmodule Literature.PostFormComponent do
 
   defp merge_post_params(post_params, socket, :new_post) do
     post_params
+    |> put_id(socket)
     |> put_publication_id(socket)
     |> Map.merge(build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a))
     |> build_images()
@@ -336,6 +333,10 @@ defmodule Literature.PostFormComponent do
     [slug: slug]
     |> Literature.get_publication!()
     |> then(&Map.put(params, "publication_id", &1.id))
+  end
+
+  defp put_id(params, socket) do
+    Map.put_new(params, "id", socket.assigns.post.id)
   end
 
   defp put_validation(changeset, :new_post), do: changeset

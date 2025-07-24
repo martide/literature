@@ -2,13 +2,16 @@ import { LiveSocket } from "phoenix_live_view";
 import { Socket } from "phoenix";
 import { Sortable } from "sortablejs";
 import { Crepe } from "@milkdown/crepe";
+import { getHTML } from "@milkdown/kit/utils";
+import { commonmark } from "@milkdown/kit/preset/commonmark";
 
 let Hooks = {};
 
 Hooks.MarkdownEditor = {
   mounted() {
     const inputMarkdown = document.querySelector("#form-markdown-input");
-    const defaultMarkdown = inputMarkdown.value || "";
+    const defaultMarkdown = this.el.dataset.defaultValue || "";
+    inputMarkdown.value = defaultMarkdown;
 
     const crepe = new Crepe({
       root: this.el,
@@ -25,10 +28,34 @@ Hooks.MarkdownEditor = {
           },
         },
         [Crepe.Feature.ImageBlock]: {
-          onUpload: async (file) => {
-            console.log(file)
-            const url = "https://example.com";
-            return url;
+          inlineOnUpload: async (file) => {
+            // Create FormData for file upload
+            const formData = new FormData();
+            formData.append("image", file);
+
+            // Get CSRF token
+            const csrfToken = document
+              .querySelector('meta[name="csrf-token"]')
+              .getAttribute("content");
+
+            const response = await fetch(
+              `${window.location.href}/upload-image`,
+              {
+                method: "POST",
+                body: formData,
+                headers: {
+                  "X-CSRF-Token": csrfToken,
+                  "X-Requested-With": "XMLHttpRequest",
+                },
+              },
+            );
+
+            if (response.ok) {
+              const result = await response.json();
+              return result.file.url;
+            }
+
+            throw new Error(`Upload failed: ${response.statusText}`);
           },
         },
       },
@@ -36,14 +63,14 @@ Hooks.MarkdownEditor = {
 
     this.el.crepe = crepe;
 
-    crepe.on((listener) => {
-      listener.markdownUpdated((markdown) => {
-        console.log(markdown);
-        inputMarkdown.value = crepe.getMarkdown();
+    crepe.create().then(() => {
+      crepe.on((listener) => {
+        listener.markdownUpdated((markdown) => {
+          console.log(crepe.getMarkdown());
+          inputMarkdown.value = crepe.getMarkdown();
+        });
       });
     });
-
-    crepe.create();
   },
 };
 

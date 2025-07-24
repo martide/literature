@@ -61,7 +61,7 @@ const HTMLEditorJS = (element) => {
             "X-CSRF-TOKEN": csrfToken,
           },
           endpoints: {
-            byFile: `${window.location.href}/upload-file`,
+            byFile: `${window.location.href}/upload-image`,
             byURL: `${window.location.href}/fetch-url`,
           },
         },

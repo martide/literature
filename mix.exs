@@ -70,6 +70,8 @@ defmodule Literature.MixProject do
       {:poolboy, "~> 1.5"},
       {:ex_cldr_languages, "~> 0.3"},
       {:floki, "~> 0.38"},
+      {:html2markdown, "~> 0.3.0"},
+      {:mdex, "~> 0.7"},
 
       # Test
       {:credo, "~> 1.6", only: [:test, :dev], runtime: false},

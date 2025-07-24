@@ -177,4 +177,11 @@ defmodule Literature.StaticPages.Helpers do
       raise "Template #{template} not found in #{inspect(module)}"
     end
   end
+
+  def render_markdown(markdown) do
+    markdown
+    |> MDEx.parse_document!(extension: [tasklist: true])
+    |> MDEx.to_html!()
+    |> Phoenix.HTML.raw()
+  end
 end
