@@ -13,7 +13,7 @@ const blockEditOpts = {
 const uploadUrl = new URL("upload-image", window.location.href).href;
 
 const imageBlockOpts = {
-  inlineOnUpload: async (file) => {
+  onUpload: async (file) => {
     // Create FormData for file upload
     const formData = new FormData();
     formData.append("image", file);

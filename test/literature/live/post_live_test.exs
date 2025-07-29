@@ -13,6 +13,11 @@ defmodule Literature.PostLiveTest do
     notes: "Some notes"
   }
 
+  @sample_markdown ~s"""
+  # Some markdown
+  ![An image's test](/path/to/image-w300x453.jpg)
+  """
+
   @update_attrs %{title: "some updated title"}
 
   defp create_post(_) do
@@ -149,13 +154,11 @@ defmodule Literature.PostLiveTest do
 
       assert html =~ "New Post"
 
-      markdown = "# some markdown"
-
       new_live
       |> form("#post-form",
         post: %{@create_attrs | authors_ids: [author.id], tags_ids: [tag.id]}
       )
-      |> render_submit(%{post: %{"markdown" => markdown}})
+      |> render_submit(%{post: %{"markdown" => @sample_markdown}})
 
       {path, flash} = assert_redirect(new_live)
 

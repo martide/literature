@@ -300,6 +300,7 @@ defmodule Literature.PostFormComponent do
     post_params
     |> Map.merge(build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a))
     |> build_images()
+    |> build_html()
     |> Map.put_new("locales", [])
   end
 
@@ -308,6 +309,7 @@ defmodule Literature.PostFormComponent do
     |> put_publication_id(socket)
     |> Map.merge(build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a))
     |> build_images()
+    |> build_html()
   end
 
   defp save_post(post, :edit_post, post_params) do
@@ -338,6 +340,29 @@ defmodule Literature.PostFormComponent do
 
   defp put_validation(changeset, :new_post), do: changeset
   defp put_validation(changeset, :edit_post), do: Map.put(changeset, :action, :validate)
+
+  defp build_html(%{"markdown" => markdown} = params) do
+    html = Earmark.as_html!(markdown)
+
+    html =
+      html
+      |> Floki.parse_fragment!()
+      |> Enum.map(&parse_tag/1)
+
+    Map.put(params, "html", html)
+  end
+
+  defp parse_tag({"img", _, _} = tag) do
+    tag
+    |> parse_image_tag()
+  end
+
+  defp parse_tag({_, [], [{"img", _, _} = image_tag]}) do
+    image_tag
+    |> parse_image_tag()
+  end
+
+  defp parse_tag(tag), do: Floki.raw_html(tag)
 
   defp delete_icon(assigns) do
     ~H"""

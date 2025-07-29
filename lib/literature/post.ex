@@ -36,7 +36,6 @@ defmodule Literature.Post do
     field(:published_at, :utc_datetime)
     field(:is_published, :boolean, default: false)
     field(:excerpt, :string)
-    field(:editor_json, :string)
     field(:html, {:array, :string})
     field(:markdown, :string)
     field(:meta_title, :string)
@@ -81,7 +80,6 @@ defmodule Literature.Post do
     feature_image_caption
     featured
     excerpt
-    editor_json
     html
     markdown
     published_at

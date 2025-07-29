@@ -9,7 +9,7 @@ defmodule Literature.PostTest do
       ~w(
         id slug title publication_id
         feature_image feature_image_alt feature_image_caption featured published_at
-        is_published excerpt editor_json html markdown meta_title meta_description meta_keywords
+        is_published excerpt html markdown meta_title meta_description meta_keywords
         og_image og_title og_description twitter_image twitter_title twitter_description
         notes locales
       )a ++ timestamps()

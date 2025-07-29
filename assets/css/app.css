@@ -17,7 +17,7 @@
 }
 
 .milkdown {
-  @apply prose prose-sm sm:prose max-w-full;
+  @apply prose! prose-sm! sm:prose! max-w-full;
 }
 
 .milkdown > .ProseMirror {

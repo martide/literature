@@ -16,7 +16,7 @@ defmodule Literature.ImageComponent do
 
     ~H"""
     <%= if file = Map.get(@post, @field) do %>
-      <%= case get_image_field_size(@post, @field) do %>
+      <%= case get_post_field_img_size(@post, @field) do %>
         <% {width, height} -> %>
           <picture>
             <source srcset={load_srcset(:webp, {file, @post})} sizes={@sizes} />
@@ -42,43 +42,28 @@ defmodule Literature.ImageComponent do
     """
   end
 
-  def parse_image_tag({"img", _, _, _} = image_node) do
-    # Still outputs empty image picture tag, will investigate
-    # This is for converting <img> tags to <picture> with srcset for responsive images in post content
-    src = find_img_attribute(image_node, "src")
-    alt = find_img_attribute(image_node, "alt")
+  def parse_image_tag(tag) when is_binary(tag) do
+    tag
+    |> Floki.parse_fragment!()
+    |> List.first()
+    |> parse_image_tag(tag)
+  end
 
-    case get_img_size(image_node) do
+  def parse_image_tag({"img", _, _} = tag, img_str \\ nil) do
+    case get_img_size(tag) do
       {width, height} ->
-        # Convert to picture tag AST
-        {"p", [],
-         [
-           {"source", [{"srcset", load_srcset(:webp, src)}], [], %{}},
-           {"source", [{"srcset", load_srcset(:jpg, src)}], [], %{}},
-           {"img",
-            [
-              {"src", src},
-              {"alt", alt},
-              {"width", to_string(width)},
-              {"height", to_string(height)},
-              {"loading", "lazy"}
-            ], [], %{}}
-         ], %{}}
+        ~s"""
+        <picture>
+          <source srcset="#{load_srcset(:jpg, find_img_attribute(tag, "src"))}"/>
+          <source srcset="#{load_srcset(:webp, find_img_attribute(tag, "src"))}"/>
+          <img src="#{find_img_attribute(tag, "src")}" alt="#{find_img_attribute(tag, "alt")}" width="#{width}" height="#{height}" loading="lazy" />
+          <figcaption style="font-style: italic;";>#{find_img_attribute(tag, "caption")}</figcaption>
+        </picture>
+        """
 
       _missing_size ->
-        image_node
+        img_str || Floki.raw_html(tag)
     end
-  end
-
-  defp find_img_attribute(image_node, attr) do
-    image_node
-    |> Earmark.AstTools.find_att_in_node(attr)
-  end
-
-  defp get_img_size(image_node) do
-    image_node
-    |> find_img_attribute("src")
-    |> Helpers.get_dimension()
   end
 
   def build_images(params) do
@@ -88,12 +73,6 @@ defmodule Literature.ImageComponent do
     |> Enum.map(&rename_filename/1)
     |> Enum.into(%{})
     |> then(&Map.merge(params, &1))
-  end
-
-  defp get_image_field_size(struct, field) do
-    struct
-    |> literature_image_url(field)
-    |> Helpers.get_dimension()
   end
 
   defp load_srcset(version, {file, scope}) when version in ~w(jpg webp)a do
@@ -113,6 +92,24 @@ defmodule Literature.ImageComponent do
 
   defp get_original_size(%{file_name: file_name}) do
     Helpers.get_dimension(file_name)
+  end
+
+  defp find_img_attribute(tag, attr) do
+    [tag]
+    |> Floki.attribute(attr)
+    |> List.first()
+  end
+
+  defp get_img_size(tag) do
+    tag
+    |> find_img_attribute("src")
+    |> Helpers.get_dimension()
+  end
+
+  defp get_post_field_img_size(struct, field) do
+    struct
+    |> literature_image_url(field)
+    |> Helpers.get_dimension()
   end
 
   defp rename_filename({field, file}) do
