@@ -46,7 +46,11 @@ defmodule Literature.PostFormComponent do
         <div class="md:flex">
           <div class="w-full">
             <div id="markdown-editor-container" phx-update="ignore">
-              <div id="markdown-editor" phx-hook="MarkdownEditor" data-default-value={@post.markdown}>
+              <div
+                id="markdown-editor"
+                phx-hook="MilkdownEditor"
+                data-default-value={@post.markdown || ""}
+              >
               </div>
               <input type="hidden" id="form-markdown-input" name={f[:markdown].name} />
             </div>
@@ -296,17 +300,14 @@ defmodule Literature.PostFormComponent do
     post_params
     |> Map.merge(build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a))
     |> build_images()
-    |> build_html()
     |> Map.put_new("locales", [])
   end
 
   defp merge_post_params(post_params, socket, :new_post) do
     post_params
-    |> put_id(socket)
     |> put_publication_id(socket)
     |> Map.merge(build_uploaded_entries(socket, ~w(og_image twitter_image feature_image)a))
     |> build_images()
-    |> build_html()
   end
 
   defp save_post(post, :edit_post, post_params) do
@@ -335,29 +336,8 @@ defmodule Literature.PostFormComponent do
     |> then(&Map.put(params, "publication_id", &1.id))
   end
 
-  defp put_id(params, socket) do
-    Map.put_new(params, "id", socket.assigns.post.id)
-  end
-
   defp put_validation(changeset, :new_post), do: changeset
   defp put_validation(changeset, :edit_post), do: Map.put(changeset, :action, :validate)
-
-  defp build_html(%{"html" => html} = params) do
-    html =
-      (html || "")
-      |> Floki.parse_fragment!()
-      |> Enum.map(&parse_tag/1)
-
-    %{params | "html" => html}
-  end
-
-  defp parse_tag({"img", _, _} = image_tag) do
-    image_tag
-    |> Floki.raw_html()
-    |> parse_image_tag()
-  end
-
-  defp parse_tag(tag), do: Floki.raw_html(tag)
 
   defp delete_icon(assigns) do
     ~H"""

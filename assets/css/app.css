@@ -16,13 +16,16 @@
   --crepe-font-title: inherit;
 }
 
-#editorjs,
 .milkdown {
   @apply prose prose-sm sm:prose max-w-full;
 }
 
 .milkdown > .ProseMirror {
   @apply p-0!;
+}
+
+.milkdown > .ProseMirror h4 {
+  @apply text-[length:inherit]!;
 }
 
 .milkdown > .ProseMirror * p {

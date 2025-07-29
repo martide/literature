@@ -1,96 +1,21 @@
 import { LiveSocket } from "phoenix_live_view";
 import { Socket } from "phoenix";
 import { Sortable } from "sortablejs";
-import { Crepe } from "@milkdown/crepe";
-import { getHTML } from "@milkdown/kit/utils";
-import { commonmark } from "@milkdown/kit/preset/commonmark";
 
 let Hooks = {};
 
-Hooks.MarkdownEditor = {
-  mounted() {
-    const inputMarkdown = document.querySelector("#form-markdown-input");
-    const defaultMarkdown = this.el.dataset.defaultValue || "";
-    inputMarkdown.value = defaultMarkdown;
-
-    const crepe = new Crepe({
-      root: this.el,
-      defaultValue: defaultMarkdown,
-      features: {
-        // Disable specific features
-        [Crepe.Feature.CodeMirror]: false,
-        [Crepe.Feature.Latex]: false,
-      },
-      featureConfigs: {
-        [Crepe.Feature.BlockEdit]: {
-          blockHandle: {
-            getPlacement: () => "right",
-          },
-        },
-        [Crepe.Feature.ImageBlock]: {
-          inlineOnUpload: async (file) => {
-            // Create FormData for file upload
-            const formData = new FormData();
-            formData.append("image", file);
-
-            // Get CSRF token
-            const csrfToken = document
-              .querySelector('meta[name="csrf-token"]')
-              .getAttribute("content");
-
-            const response = await fetch(
-              `${window.location.href}/upload-image`,
-              {
-                method: "POST",
-                body: formData,
-                headers: {
-                  "X-CSRF-Token": csrfToken,
-                  "X-Requested-With": "XMLHttpRequest",
-                },
-              },
-            );
-
-            if (response.ok) {
-              const result = await response.json();
-              return result.file.url;
-            }
-
-            throw new Error(`Upload failed: ${response.statusText}`);
-          },
-        },
-      },
-    });
-
-    this.el.crepe = crepe;
-
-    crepe.create().then(() => {
-      crepe.on((listener) => {
-        listener.markdownUpdated((markdown) => {
-          console.log(crepe.getMarkdown());
-          inputMarkdown.value = crepe.getMarkdown();
-        });
-      });
-    });
-  },
-};
-
-Hooks.EditorJS = {
-  loadEditorJS() {
+Hooks.MilkdownEditor = {
+  loadMilkdownEditor() {
     const element = this.el;
-    element.addEventListener("click", (event) => {
-      if (event.target.tagName === "A") {
-        event.stopImmediatePropagation();
-      }
-    });
-    import("./editor").then(({ HTMLEditorJS }) => {
-      HTMLEditorJS(element);
+    import("./milkdown").then(({ MilkdownEditor }) => {
+      MilkdownEditor(element);
     });
   },
   mounted() {
-    this.loadEditorJS();
+    this.loadMilkdownEditor();
   },
   updated() {
-    this.loadEditorJS();
+    this.loadMilkdownEditor();
   },
 };
 

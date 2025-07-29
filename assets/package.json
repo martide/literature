@@ -10,14 +10,8 @@
     "watch": "npm-run-all --parallel watch:*"
   },
   "devDependencies": {
-    "@editorjs/editorjs": "^2.30.8",
-    "@editorjs/header": "^2.8.8",
-    "@editorjs/image": "github:martide/editor-js-image#WEB-8452-image-alt",
-    "@editorjs/list": "^2.0.8",
-    "@editorjs/table": "^2.4.4",
     "@tailwindcss/cli": "^4.1.11",
     "@tailwindcss/typography": "^0.5.16",
-    "editorjs-html": "^4.0.5",
     "esbuild": "^0.25.5",
     "eslint": "^9.30.0",
     "eslint-config-prettier": "^10.1.3",

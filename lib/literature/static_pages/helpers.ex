@@ -180,8 +180,7 @@ defmodule Literature.StaticPages.Helpers do
 
   def render_markdown(markdown) do
     markdown
-    |> MDEx.parse_document!(extension: [tasklist: true])
-    |> MDEx.to_html!()
+    |> Earmark.as_html!()
     |> Phoenix.HTML.raw()
   end
 end

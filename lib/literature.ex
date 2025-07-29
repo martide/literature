@@ -166,7 +166,7 @@ defmodule Literature do
     |> search(:title, attrs)
     |> search(:slug, attrs)
     |> search(:excerpt, attrs)
-    |> search(:html, attrs)
+    |> search(:markdown, attrs)
     |> sort_by(attrs, {:desc, :published_at})
     |> where_preload(attrs)
     |> where_status(attrs)

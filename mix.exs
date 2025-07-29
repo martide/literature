@@ -71,7 +71,7 @@ defmodule Literature.MixProject do
       {:ex_cldr_languages, "~> 0.3"},
       {:floki, "~> 0.38"},
       {:html2markdown, "~> 0.3.0"},
-      {:mdex, "~> 0.7"},
+      {:earmark, "~> 1.4"},
 
       # Test
       {:credo, "~> 1.6", only: [:test, :dev], runtime: false},
