@@ -10,7 +10,6 @@ defmodule Literature.Uploaders.DifferentSizes do
   alias Waffle.Transformations.Convert
 
   @extension_whitelist ~w(.jpg .jpeg .png)
-  # imagemagick 7 is required for avif conversions
   @versions ~w(jpg webp)a
 
   def asset_host, do: Config.waffle_asset_host()
@@ -32,15 +31,13 @@ defmodule Literature.Uploaders.DifferentSizes do
   end
 
   def transform(:jpg, _) do
+    IO.inspect("here at jpg")
     {:convert, "-format jpg", :jpg}
   end
 
   def transform(:webp, _) do
+    IO.inspect("here at webp")
     {:convert, "-format webp", :webp}
-  end
-
-  def transform(:avif, _) do
-    {:convert, "-format avif", :avif}
   end
 
   def storage_dir(_, {_, scope}),
@@ -54,7 +51,7 @@ defmodule Literature.Uploaders.DifferentSizes do
   # Appends the width in "-w{width}" format to the filename if none exists or
   # replaces the existing width with the new width
   def filename(_version, {%Waffle.File{path: path, file_name: file_name}, _scope}) do
-    %{width: width} = Mogrify.verbose(Mogrify.open(path))
+    width = path |> Image.open!() |> Image.width()
     Helpers.append_width(file_name, width)
   end
 
@@ -70,7 +67,7 @@ defmodule Literature.Uploaders.DifferentSizes do
 
   def store_different_sizes({url, scope}, width_step \\ Config.waffle_width_step()) do
     %{path: path} = file = Waffle.File.new(url, __MODULE__)
-    width = path |> Mogrify.open() |> Mogrify.verbose() |> Map.get(:width)
+    width = path |> Image.open!() |> Image.width()
 
     if width < 100 do
       []

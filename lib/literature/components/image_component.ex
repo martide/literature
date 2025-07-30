@@ -113,7 +113,7 @@ defmodule Literature.ImageComponent do
   end
 
   defp rename_filename({field, file}) do
-    %{width: width, height: height} = Mogrify.verbose(Mogrify.open(file.path))
+    {width, height, _} = file.path |> Image.open!() |> Image.shape()
 
     file_name =
       Slugy.slugify(

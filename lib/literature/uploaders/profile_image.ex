@@ -26,16 +26,8 @@ defmodule Literature.Uploaders.ProfileImage do
     )
   end
 
-  def transform(:jpg, _) do
-    {:convert, "-resize 160x -format jpg", :jpg}
-  end
-
-  def transform(:png, _) do
-    {:convert, "-resize 160x -format png", :png}
-  end
-
-  def transform(:webp, _) do
-    {:convert, "-resize 160x -format webp", :webp}
+  def transform(file_extension, _) when file_extension in @versions do
+    &transform_image/2
   end
 
   def storage_dir(_, {_, scope}),
@@ -58,5 +50,17 @@ defmodule Literature.Uploaders.ProfileImage do
 
   def s3_object_headers(_version, _) do
     [cache_control: "public, max-age=31536000"]
+  end
+
+  def transform_image(_version, original_file) do
+    with {:ok, new_image} <-
+           original_file.path |> Image.open!() |> Image.thumbnail("160x"),
+         tmp_path = Waffle.File.generate_temporary_path(original_file),
+         {:ok, _new_image} <- Image.write(new_image, tmp_path) do
+      {
+        :ok,
+        %Waffle.File{original_file | path: tmp_path, is_tempfile?: true}
+      }
+    end
   end
 end
