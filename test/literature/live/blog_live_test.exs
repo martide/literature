@@ -8,15 +8,6 @@ defmodule Literature.BlogLiveTest do
 
   alias Literature.BlogView
 
-  @sample_markdown [
-    """
-    ![An image's test](/path/to/image-w300x453.jpg)
-    """,
-    """
-    ![An image's test](/path/to/image-w300x453.jpg)
-    """
-  ]
-
   defp create_blog(_) do
     publication =
       publication_fixture(
@@ -146,11 +137,14 @@ defmodule Literature.BlogLiveTest do
       publication: publication
     } do
       # 3 mins reading time
-      additional_markdown =
+      additional_html =
         for i <- 1..80 do
           # 5 words per paragraph
           # Create paragraphs with 5 words each to fill out 1 minute
-          "Paragraph with five words #{i}\n"
+          ~s"""
+            <p> Paragraph with five words #{i} </p>
+            <p></p>
+          """
         end
 
       post =
@@ -159,7 +153,7 @@ defmodule Literature.BlogLiveTest do
           publication_id: publication.id,
           authors_ids: [author.id],
           tags_ids: [tag.id],
-          markdown: Enum.join(@sample_markdown ++ additional_markdown, "\n"),
+          html: additional_html,
           locales: [
             %{locale: "en", url: "http://example.com/en"},
             %{locale: "de", url: "http://example.com/de"}
@@ -169,7 +163,7 @@ defmodule Literature.BlogLiveTest do
       {:ok, _view, html} = live(conn, Routes.literature_path(conn, :show, post.slug))
 
       assert html =~ post.title
-      # assert html =~ "3 mins read"
+      assert html =~ "3 mins read"
       assert html =~ author.name
       assert html =~ tag.name
     end
