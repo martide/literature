@@ -110,10 +110,10 @@ defmodule LiteratureTest do
           tags_ids: [tag.id]
         )
 
-      post_with_html =
+      post_with_markdown =
         post_fixture(
           title: "Post with html",
-          html: ["Test content", "Other post contains Keyword Phrase in html"],
+          markdown: "# Test content ## Other post contains Keyword Phrase in html",
           publication_id: publication.id,
           authors_ids: [author.id],
           tags_ids: [tag.id]
@@ -123,7 +123,7 @@ defmodule LiteratureTest do
         post_fixture(
           title: "Another post without keyword",
           excerpt: "Not in excerpt",
-          html: ["Test content", "Without keyword in html"],
+          markdown: "#Test content ## Without keyword in html",
           publication_id: publication.id,
           authors_ids: [author.id],
           tags_ids: [tag.id]
@@ -137,7 +137,7 @@ defmodule LiteratureTest do
 
       assert post.id in post_ids
       assert other_post.id in post_ids
-      assert post_with_html.id in post_ids
+      assert post_with_markdown.id in post_ids
       assert another_post.id not in post_ids
     end
 

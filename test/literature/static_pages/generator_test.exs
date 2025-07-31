@@ -48,7 +48,7 @@ defmodule Literature.StaticPages.GeneratorTest do
         excerpt: "Post excerpt",
         authors_ids: [author.id],
         tags_ids: [tag.id],
-        html: ["<p>content</p>"],
+        markdown: "# Content",
         locales: [
           %{locale: "en", url: "http://example.com/en"},
           %{locale: "de", url: "http://example.com/de"}

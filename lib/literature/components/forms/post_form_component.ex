@@ -44,15 +44,16 @@ defmodule Literature.PostFormComponent do
         phx-submit="save"
       >
         <div class="md:flex">
-          <div id="ignore-updates" class="w-full" phx-update="ignore">
-            <div
-              id="editorjs"
-              data-post-data={f.params["editor_json"] || @post.editor_json}
-              phx-hook="EditorJS"
-            >
+          <div class="w-full">
+            <div id="markdown-editor-container" phx-update="ignore">
+              <div
+                id="markdown-editor"
+                phx-hook="MilkdownEditor"
+                data-default-value={@post.markdown || ""}
+              >
+              </div>
+              <input type="hidden" id="form-markdown-input" name={f[:markdown].name} />
             </div>
-            <input type="hidden" id="form-editor-json" name={f[:editor_json].name} />
-            <input type="hidden" id="form-html" name={f[:html].name} />
           </div>
           <div class="w-full md:w-2/3 md:border-gray-200 md:border-l md:pl-8">
             <div class="space-y-5 mb-5">
@@ -340,18 +341,24 @@ defmodule Literature.PostFormComponent do
   defp put_validation(changeset, :new_post), do: changeset
   defp put_validation(changeset, :edit_post), do: Map.put(changeset, :action, :validate)
 
-  defp build_html(%{"html" => html} = params) do
+  defp build_html(%{"markdown" => markdown} = params) do
+    html = Earmark.as_html!(markdown)
+
     html =
-      (html || "")
+      html
       |> Floki.parse_fragment!()
       |> Enum.map(&parse_tag/1)
 
-    %{params | "html" => html}
+    Map.put(params, "html", html)
   end
 
-  defp parse_tag({"img", _, _} = image_tag) do
+  defp parse_tag({"img", _, _} = tag) do
+    tag
+    |> parse_image_tag()
+  end
+
+  defp parse_tag({_, [], [{"img", _, _} = image_tag]}) do
     image_tag
-    |> Floki.raw_html()
     |> parse_image_tag()
   end
 
