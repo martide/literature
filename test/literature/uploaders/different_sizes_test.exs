@@ -1,5 +1,5 @@
 defmodule Literature.Uploaders.DifferentSizesTest do
-  use Literature.DataCase, async: true
+  use Literature.DataCase
 
   alias Literature.Uploaders.DifferentSizes
 

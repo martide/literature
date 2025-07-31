@@ -1,5 +1,5 @@
 defmodule Literature.Uploaders.ProfileImageTest do
-  use Literature.DataCase, async: true
+  use Literature.DataCase
 
   alias Literature.Uploaders.ProfileImage
 

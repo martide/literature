@@ -1,5 +1,5 @@
 defmodule Literature.UploadersTest do
-  use Literature.DataCase, async: true
+  use Literature.DataCase
 
   alias Literature.Uploaders
 
