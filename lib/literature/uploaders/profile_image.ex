@@ -8,8 +8,8 @@ defmodule Literature.Uploaders.ProfileImage do
   alias Literature.Config
   alias Literature.Uploaders.Helpers
 
+  @thumbnail_width 160
   @extension_whitelist ~w(.jpg .jpeg .png)
-  # imagemagick 7 is required for avif conversions
   @versions ~w(jpg png webp)a
 
   def asset_host, do: Config.waffle_asset_host()
@@ -26,7 +26,7 @@ defmodule Literature.Uploaders.ProfileImage do
     )
   end
 
-  def transform(file_extension, _) when file_extension in @versions do
+  def transform(version, _) when version in @versions do
     &transform_image/2
   end
 
@@ -52,14 +52,18 @@ defmodule Literature.Uploaders.ProfileImage do
     [cache_control: "public, max-age=31536000"]
   end
 
-  def transform_image(_version, original_file) do
+  defp transform_image(version, original_file) do
+    ext = "." <> Atom.to_string(version)
+    base_file_name = Helpers.get_base_file_name(original_file.file_name)
+    new_file_name = base_file_name <> ext
+
     with {:ok, new_image} <-
-           original_file.path |> Image.open!() |> Image.thumbnail("160x"),
-         tmp_path = Waffle.File.generate_temporary_path(original_file),
-         {:ok, _new_image} <- Image.write(new_image, tmp_path) do
+           original_file.path |> Image.open!() |> Image.thumbnail("#{@thumbnail_width}x"),
+         tmp_path = Waffle.File.generate_temporary_path(new_file_name),
+         {:ok, _new_image} <- Image.write(new_image, tmp_path, suffix: ext) do
       {
         :ok,
-        %Waffle.File{original_file | path: tmp_path, is_tempfile?: true}
+        %Waffle.File{original_file | path: tmp_path, file_name: new_file_name, is_tempfile?: true}
       }
     end
   end

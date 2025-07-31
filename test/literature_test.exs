@@ -1,8 +1,9 @@
 defmodule LiteratureTest do
   use Literature.DataCase
 
-  import Literature.Helpers, only: [atomize_keys_to_string: 1]
+  import Literature.Helpers
   import Literature.Test.Fixtures
+  import Literature.TestHelpers
 
   alias Ecto.Adapters.SQL
   alias Literature
@@ -27,7 +28,13 @@ defmodule LiteratureTest do
 
     test "create_author/1 with valid data creates an author" do
       publication = publication_fixture()
-      valid_attrs = %{name: "some name", slug: "some-name", publication_id: publication.id}
+
+      valid_attrs = %{
+        name: "some name",
+        slug: "some-name",
+        publication_id: publication.id,
+        profile_image: file_upload_image()
+      }
 
       assert {:ok, %Author{} = author} = Literature.create_author(valid_attrs)
       assert author.publication_id == publication.id
