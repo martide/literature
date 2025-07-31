@@ -46,4 +46,28 @@ defmodule Literature.Uploaders.Helpers do
       DifferentSizes.store_different_sizes({url, scope})
     end)
   end
+
+  @doc """
+  Get the base file name without extension.
+  """
+  @spec get_base_file_name(String.t()) :: String.t()
+  def get_base_file_name(file_name_with_ext) do
+    Path.basename(file_name_with_ext, Path.extname(file_name_with_ext))
+  end
+
+  @spec transform_image_to_version(atom(), map()) :: {:ok, map()}
+  def transform_image_to_version(version, original_file) do
+    ext = "." <> Atom.to_string(version)
+    base_file_name = get_base_file_name(original_file.file_name)
+    new_file_name = base_file_name <> ext
+
+    with {:ok, new_image} <- original_file.path |> Image.open(),
+         tmp_path = Waffle.File.generate_temporary_path(new_file_name),
+         {:ok, _new_image} <- Image.write(new_image, tmp_path, suffix: ext) do
+      {
+        :ok,
+        %Waffle.File{original_file | path: tmp_path, file_name: new_file_name, is_tempfile?: true}
+      }
+    end
+  end
 end
