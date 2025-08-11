@@ -2,6 +2,8 @@ defmodule Literature.CardComponent do
   @moduledoc false
   use Phoenix.Component
 
+  import Literature.FormComponent, only: [input: 1]
+
   def card_container(assigns) do
     ~H"""
     <div class="grid grid-cols-3 gap-5">
@@ -59,6 +61,42 @@ defmodule Literature.CardComponent do
         >
           Create new post
         </.link>
+      </div>
+      <div :if={@item.update_url} class="flex items-center justify-end">
+        <.form
+          :let={f}
+          for={%{}}
+          method="POST"
+          action={@item.update_url}
+          phx-hook="SubmitUpdateStaticPages"
+          id={"update-static-pages-form-#{@item.id}"}
+        >
+          <.input type="hidden" field={f[:publication_slug]} value={@item.slug} />
+          <.input type="hidden" field={f[:update_action]} value="update" />
+          <button
+            class="text-gray-500 bg-white focus:outline-hidden hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5"
+            type="submit"
+          >
+            Update Static Pages
+          </button>
+        </.form>
+        <.form
+          :let={f}
+          for={%{}}
+          method="POST"
+          action={@item.update_url}
+          phx-hook="SubmitUpdateStaticPages"
+          id={"regenerate-all-static-pages-form-#{@item.id}"}
+        >
+          <.input type="hidden" field={f[:publication_slug]} value={@item.slug} />
+          <.input type="hidden" field={f[:update_action]} value="regenerate_all" />
+          <button
+            class="text-gray-500 bg-white focus:outline-hidden hover:bg-gray-100 font-medium rounded-lg text-sm px-5 py-2.5"
+            type="submit"
+          >
+            Regenerate All
+          </button>
+        </.form>
       </div>
     </div>
     """

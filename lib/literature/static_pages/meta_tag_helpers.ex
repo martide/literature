@@ -1,8 +1,16 @@
-defmodule Literature.MetaTagHelpers do
-  @moduledoc false
+defmodule Literature.StaticPages.MetaTagHelpers do
+  @moduledoc """
+  Helpers for rendering meta tags in static pages.
+  """
   use Phoenix.Component
 
-  alias Plug.Conn
+  import Literature.Helpers,
+    only: [atomize_keys_to_string: 1, literature_image_url: 2]
+
+  alias Literature.Author
+  alias Literature.Post
+  alias Literature.Publication
+  alias Literature.Tag
 
   @metatags %{
     "og_type" => "website",
@@ -13,6 +21,9 @@ defmodule Literature.MetaTagHelpers do
   @doc """
   Render default meta tags
   """
+  attr :tags, :map, required: true
+  attr :current_url, :string, required: true
+
   def meta_tags(assigns) do
     ~H"""
     <.default_tags tags={@tags} />
@@ -75,17 +86,14 @@ defmodule Literature.MetaTagHelpers do
   end
 
   defp get_tag_value(tags, default_key, key) do
-    case tags[key] do
-      %Ecto.Association.NotLoaded{} -> nil
-      value -> value || tags[default_key] || @metatags[key]
-    end
+    tags[key] || tags[default_key] || @metatags[key]
   end
 
-  attr :conn, :map, required: true
+  attr :current_url, :string, required: true
 
   def canonical_tag(assigns) do
     ~H"""
-    <link href={canonical_path(@conn)} rel="canonical" />
+    <link href={canonical_path(@current_url)} rel="canonical" />
     """
   end
 
@@ -130,11 +138,19 @@ defmodule Literature.MetaTagHelpers do
   def post_language_tags(assigns), do: ~H""
 
   @doc """
-  Render pagination link tags
+  Render pagination link tags.
+  Can be generated using a page struct and the current URL
+  or with exact `next` and `previous` URLs.
   """
-  def pagination_link_tags(%{routes: _routes} = assigns) do
+  attr :page, :map
+  attr :current_url, :string
+  attr :next_url, :any
+  attr :prev_url, :any
+
+  def pagination_link_tags(%{next_url: _next_url, prev_url: _prev_url} = assigns) do
     ~H"""
-    <.pagination_link_tags :if={:index_pages in @routes} page={@page} current_url={@current_url} />
+    <link :if={@next_url} rel="next" href={@next_url} />
+    <link :if={@prev_url} rel="prev" href={@prev_url} />
     """
   end
 
@@ -161,8 +177,10 @@ defmodule Literature.MetaTagHelpers do
       )
       when page_number > 1 and page_number < total_pages do
     ~H"""
-    <link rel="next" href={next_url(@current_url, @page.page_number)} />
-    <link rel="prev" href={prev_url(@current_url, @page.page_number)} />
+    <.pagination_link_tags
+      next_url={next_url(@current_url, @page.page_number)}
+      prev_url={prev_url(@current_url, @page.page_number)}
+    />
     """
   end
 
@@ -181,30 +199,108 @@ defmodule Literature.MetaTagHelpers do
     """
   end
 
-  defp canonical_path(conn) do
-    conn
-    |> Conn.request_url()
+  defp canonical_path(current_url) do
+    current_url
     |> String.split("?")
     |> hd()
   end
 
   defp next_url(current_url, page_number) do
     current_url
-    |> String.replace("/page/#{page_number}", "")
+    |> String.replace("/page/#{page_number}/index.html", "")
     |> put_page_number(page_number + 1)
   end
-
-  defp prev_url(current_url, 2), do: String.replace(current_url, "/page/2", "")
 
   defp prev_url(current_url, page_number),
     do:
       current_url
-      |> String.replace("/page/#{page_number}", "")
+      |> String.replace("/page/#{page_number}/index.html", "")
       |> put_page_number(page_number - 1)
 
   defp put_page_number(current_url, page_number) do
     current_url
     |> String.replace_suffix("/", "")
-    |> Kernel.<>("/page/#{page_number}")
+    |> Kernel.<>("/page/#{page_number}/index.html")
+  end
+
+  @spec get_default_meta_tags(
+          Publication.t() | Author.t() | Post.t() | Tag.t(),
+          Publication.t(),
+          Literature.Pagination.Page.t() | nil
+        ) :: map()
+  def get_default_meta_tags(struct, publication, page \\ nil) do
+    struct
+    |> Map.take(meta_tag_keys())
+    |> maybe_convert_name_to_title(struct)
+    |> maybe_put_description(struct)
+    |> convert_image_to_url(struct, publication)
+    |> maybe_override_title_with_page(page)
+    |> atomize_keys_to_string()
+  end
+
+  defp maybe_override_title_with_page(meta_tags, nil), do: meta_tags
+  defp maybe_override_title_with_page(meta_tags, %{page_number: 1}), do: meta_tags
+
+  defp maybe_override_title_with_page(meta_tags, page) do
+    title = meta_tags.title <> " Page (#{page.page_number})"
+
+    Map.put(meta_tags, :title, title)
+  end
+
+  defp maybe_convert_name_to_title(meta_tags, %struct{} = author_or_tag)
+       when struct in [Author, Tag, Publication],
+       do: Map.put(meta_tags, :title, author_or_tag.name)
+
+  defp maybe_convert_name_to_title(meta_tags, _), do: meta_tags
+
+  defp maybe_put_description(meta_tags, %Post{} = post),
+    do: Map.put(meta_tags, :description, post.excerpt)
+
+  defp maybe_put_description(meta_tags, %Author{} = author),
+    do: Map.put(meta_tags, :description, author.bio)
+
+  defp maybe_put_description(meta_tags, _), do: meta_tags
+
+  defp convert_image_to_url(meta_tags, resource, publication) do
+    image =
+      case resource do
+        %Author{} = author ->
+          literature_image_url(author, :profile_image) ||
+            literature_image_url(author, :cover_image)
+
+        %struct{} = tag_or_post when struct in [Post, Tag] ->
+          literature_image_url(tag_or_post, :feature_image)
+
+        _ ->
+          nil
+      end
+
+    # default to publication if resource has no og or twitter image
+    Map.merge(meta_tags, %{
+      image: image,
+      og_image:
+        literature_image_url(resource, :og_image) || image ||
+          literature_image_url(publication, :og_image),
+      twitter_image:
+        literature_image_url(resource, :twitter_image) || image ||
+          literature_image_url(publication, :twitter_image)
+    })
+  end
+
+  defp meta_tag_keys do
+    [
+      :title,
+      :meta_title,
+      :description,
+      :meta_description,
+      :meta_keywords,
+      :image,
+      :og_title,
+      :og_image,
+      :og_description,
+      :twitter_image,
+      :twitter_title,
+      :twitter_description
+    ]
   end
 end

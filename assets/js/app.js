@@ -86,6 +86,67 @@ Hooks.Accordion = {
   },
 };
 
+Hooks.SubmitUpdateStaticPages = {
+  mounted() {
+    this.el.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const form = this.el;
+      const formData = new FormData(form);
+      const submitButton = form.querySelector('button[type="submit"]');
+      const originalText = submitButton.textContent;
+
+      try {
+        // Update button state
+        submitButton.disabled = true;
+        submitButton.textContent = "Updating...";
+        submitButton.classList.add("loading");
+
+        // Get CSRF token
+        const csrfToken = document
+          .querySelector('meta[name="csrf-token"]')
+          .getAttribute("content");
+
+        // Make the request
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: formData,
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-Token": csrfToken,
+          },
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+
+          this.pushEvent("show_alert", {
+            message: result.message,
+            type: "success",
+          });
+        } else {
+          this.pushEvent("show_alert", {
+            type: "error",
+            message: "An error occurred while updating static pages.",
+          });
+          console.error(response);
+        }
+      } catch (error) {
+        this.pushEvent("show_alert", {
+          type: "error",
+          message: "An error occurred while updating static pages.",
+        });
+        console.error("Error:", error);
+      } finally {
+        // Reset button state
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+        submitButton.classList.remove("loading");
+      }
+    });
+  },
+};
+
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")
   .getAttribute("content");

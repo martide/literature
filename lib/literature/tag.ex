@@ -4,6 +4,8 @@ defmodule Literature.Tag do
   """
   use Literature.Web, :model
 
+  @type t :: %__MODULE__{}
+
   schema "literature_tags" do
     field(:slug, :string)
     field(:name, :string)
