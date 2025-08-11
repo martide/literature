@@ -35,7 +35,7 @@ defmodule Literature.Web do
     quote do
       @moduledoc false
 
-      use Phoenix.Controller, namespace: Literature
+      use Phoenix.Controller, formats: [html: "View", json: "View"]
       import Plug.Conn
 
       unquote(view_helpers())
