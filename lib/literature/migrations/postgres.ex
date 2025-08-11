@@ -9,6 +9,7 @@ defmodule Literature.Migrations.Postgres do
 
   @initial_version 1
   @current_version 12
+
   @default_prefix "public"
 
   @doc false

@@ -66,6 +66,7 @@ defmodule Literature.CardComponent do
         <.form
           :let={f}
           for={%{}}
+          method="POST"
           action={@item.update_url}
           phx-hook="SubmitUpdateStaticPages"
           id={"update-static-pages-form-#{@item.id}"}
@@ -82,6 +83,7 @@ defmodule Literature.CardComponent do
         <.form
           :let={f}
           for={%{}}
+          method="POST"
           action={@item.update_url}
           phx-hook="SubmitUpdateStaticPages"
           id={"regenerate-all-static-pages-form-#{@item.id}"}
