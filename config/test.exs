@@ -48,3 +48,6 @@ config :literature,
 
 config :literature,
   static_pages_storage_dir: "/tmp/literature/static_pages"
+
+config :phoenix_live_view,
+  enable_expensive_runtime_checks: true
