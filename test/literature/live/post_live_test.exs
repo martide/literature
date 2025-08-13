@@ -65,13 +65,13 @@ defmodule Literature.PostLiveTest do
       # Add language
       new_live
       |> form("#post-form",
-        post: %{"locales_order" => [""]}
+        post: %{"locales_order" => ["on"]}
       )
       |> render_change()
 
       new_live
       |> form("#post-form",
-        post: %{"locales_order" => [""]}
+        post: %{"locales_order" => ["on"]}
       )
       |> render_change()
 
