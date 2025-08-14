@@ -1,6 +1,6 @@
 # Literature
 
-`Literature` is a content management system and static page generator that uses `Phoenix.Components` to generate static html content.
+`Literature` is a content management system built with `Phoenix.LiveView` and static pages generator that uses `Phoenix.Components`. It comes with a WYSIWYG post editor, image optimization, reusable SEO tags, and seamless integration to an existing Phoenix applications.
 
 ## Installation
 
@@ -24,7 +24,7 @@ config :literature,
   static_pages_storage_dir: "/tmp/literature/static_pages"
 ```
 
-2. Setup Literature database tables that will be used for content management by creating a new migration. This will create all necessary tables `Publication`, `Post`, `Author`, and `Tag`.
+2. Setup Literature database tables by creating a new migration. This will create all necessary tables `Publication`, `Post`, `Author`, and `Tag`.
 
 ```elixir
 defmodule MyApp.Repo.Migrations.SetupLiterature do
