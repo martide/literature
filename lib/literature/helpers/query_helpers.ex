@@ -24,6 +24,10 @@ defmodule Literature.QueryHelpers do
     or_where(query, [q], ilike(q.description, ^"%#{search}%"))
   end
 
+  def search(query, :markdown, %{"q" => search}) do
+    or_where(query, [q], ilike(q.markdown, ^"%#{search}%"))
+  end
+
   def search(query, :html, %{"q" => search}) do
     # ilike on each html content
     or_where(

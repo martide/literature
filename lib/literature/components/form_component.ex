@@ -334,7 +334,7 @@ defmodule Literature.FormComponent do
     <div>
       <.input type="hidden" name={@name} classes="" phx-feedback-for={@name} />
       <%= for {label, value} <- @options do %>
-        <label class="flex items-center space-x-3 space-y-1">
+        <label class="flex items-center space-x-3">
           <.input
             name={@name <> "[]"}
             type="checkbox"
