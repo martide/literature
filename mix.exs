@@ -56,9 +56,9 @@ defmodule Literature.MixProject do
       {:flop, "~> 0.26"},
 
       # Images
-      {:mogrify, "~> 0.9"},
       {:waffle, "~> 1.1"},
       {:waffle_ecto, "~> 0.0"},
+      {:image, "~> 0.37"},
 
       # Others
       {:atomex, "~> 0.5"},

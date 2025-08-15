@@ -80,6 +80,13 @@ defmodule Literature.PostLiveTest do
       )
       |> render_change()
 
+      assert_upload_file(
+        new_live,
+        "#post-form",
+        "image.jpg",
+        :feature_image
+      )
+
       new_live
       |> form("#post-form",
         post: %{
@@ -104,6 +111,7 @@ defmodule Literature.PostLiveTest do
       assert post.notes == "Some blog post notes"
       assert Enum.find(post.locales, &(&1.locale == "en"))
       assert Enum.find(post.locales, &(&1.locale == "de"))
+      assert %{file_name: "image-w227x95.jpg", updated_at: _} = post.feature_image
     end
 
     test "renders errors", %{conn: conn, publication: publication} do
