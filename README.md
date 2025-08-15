@@ -1,6 +1,6 @@
 # Literature
 
-`Literature` is a content management system built with `Phoenix.LiveView` and static pages generator that uses `Phoenix.Components`. It comes with a WYSIWYG post editor, image optimization, reusable SEO tags, and seamless integration to an existing Phoenix applications.
+`Literature` is a content management system built with `Phoenix.LiveView` and static pages generator that uses `Phoenix.Components`. It comes with a WYSIWYG post editor, image optimization, reusable SEO tags, and seamless integration to an existing Phoenix application.
 
 ## Installation
 
@@ -121,3 +121,5 @@ defmodule MyAppWeb.BlogController do
   end
 end
 ```
+
+## Images
