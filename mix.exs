@@ -1,7 +1,7 @@
 defmodule Literature.MixProject do
   use Mix.Project
 
-  @version "0.4.17"
+  @version "0.4.18"
 
   def project do
     [
@@ -75,7 +75,8 @@ defmodule Literature.MixProject do
       {:credo, "~> 1.6", only: [:test, :dev], runtime: false},
       {:dialyxir, "~> 1.2", only: [:test, :dev], runtime: false},
       {:excoveralls, "~> 0.15", only: [:test, :dev], runtime: false},
-      {:sobelow, "~> 0.11", only: [:test, :dev], runtime: false}
+      {:sobelow, "~> 0.11", only: [:test, :dev], runtime: false},
+      {:lazy_html, ">= 0.1.0", only: :test}
     ]
   end
 
