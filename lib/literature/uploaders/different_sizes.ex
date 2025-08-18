@@ -55,38 +55,37 @@ defmodule Literature.Uploaders.DifferentSizes do
   end
 
   def store_different_sizes({url, scope}, width_step \\ Config.waffle_width_step()) do
-    %{path: path} = file = Waffle.File.new(url, __MODULE__)
-    width = path |> Image.open!() |> Image.width()
-
-    if width < 100 do
-      []
-    else
+    with %{path: path} = file <- Waffle.File.new(url, __MODULE__),
+         {:ok, image} <- Image.open(path),
+         width when width >= 100 <- Image.width(image) do
       Range.new(100, width, width_step)
       |> Enum.into([])
       |> case do
         [_ | _] = widths ->
           widths
-          |> Enum.map(&store_custom_size({file, scope}, &1))
+          |> Enum.map(&store_custom_size({file, scope}, image, &1))
           |> handle_responses()
 
         _ ->
           {file, scope}
-          |> store_custom_size(100)
+          |> store_custom_size(image, 100)
           |> List.wrap()
           |> handle_responses()
       end
+    else
+      width when is_number(width) -> []
+      error -> error
     end
   end
 
-  defp store_custom_size({file, scope}, width) do
+  defp store_custom_size({file, scope}, image, width) do
     file
-    |> resize_image(width)
+    |> resize_image(image, width)
     |> store_saved_file(scope)
   end
 
-  defp resize_image(file, width) do
-    with {:ok, image} <- Image.open(file.path),
-         {:ok, new_image} <- Image.thumbnail(image, "#{width}x"),
+  defp resize_image(file, image, width) do
+    with {:ok, new_image} <- Image.thumbnail(image, "#{width}x"),
          tmp_path = Waffle.File.generate_temporary_path(file),
          {:ok, _new_image} <- Image.write(new_image, tmp_path) do
       {

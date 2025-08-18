@@ -57,8 +57,7 @@ defmodule Literature.Uploaders.ProfileImage do
     base_file_name = Helpers.get_base_file_name(original_file.file_name)
     new_file_name = base_file_name <> ext
 
-    with {:ok, new_image} <-
-           original_file.path |> Image.open!() |> Image.thumbnail("#{@thumbnail_width}x"),
+    with {:ok, new_image} <- Helpers.resize_image(original_file.path, @thumbnail_width),
          tmp_path = Waffle.File.generate_temporary_path(new_file_name),
          {:ok, _new_image} <- Image.write(new_image, tmp_path, suffix: ext) do
       {

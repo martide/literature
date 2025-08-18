@@ -70,4 +70,11 @@ defmodule Literature.Uploaders.Helpers do
       }
     end
   end
+
+  @spec resize_image(String.t(), integer()) :: {:ok, Vix.Vips.Image.t()}
+  def resize_image(path, width) do
+    with {:ok, image} <- Image.open(path) do
+      Image.thumbnail(image, "#{width}x")
+    end
+  end
 end
