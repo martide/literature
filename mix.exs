@@ -1,7 +1,7 @@
 defmodule Literature.MixProject do
   use Mix.Project
 
-  @version "0.4.15"
+  @version "0.4.17"
 
   def project do
     [
@@ -101,11 +101,13 @@ defmodule Literature.MixProject do
       ],
       "assets.watch": "cmd npm run watch --prefix assets",
       "assets.build": [
+        "cmd npm install --prefix assets",
         "cmd npm run build --prefix assets",
         "phx.digest",
         "phx.digest.clean"
       ],
       publish: [
+        "cmd npm install --prefix assets",
         "cmd npm run build --prefix assets",
         "hex.publish"
       ]
