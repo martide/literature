@@ -44,7 +44,7 @@
 }
 
 .milkdown-table-block {
-  @apply wrap-anywhere prose! prose-th:px-3! prose-th:first:pl-0!;
+  @apply wrap-anywhere prose-table:table-auto! prose-td:px-3! prose-th:px-3! prose-th:first:pl-0! prose-td:first:pl-0!;
 }
 
 /* Pagination */
