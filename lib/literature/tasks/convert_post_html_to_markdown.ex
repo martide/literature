@@ -5,7 +5,9 @@ defmodule Literature.Tasks.ConvertPostHtmlToMarkdown do
   """
   import Ecto.Query
 
-  alias Html2Markdown.{Options, Parser, Converter}
+  alias Html2Markdown.Converter
+  alias Html2Markdown.Options
+  alias Html2Markdown.Parser
   alias Literature.Repo
 
   @batch_size 100
