@@ -16,7 +16,7 @@
 }
 
 .milkdown {
-  @apply prose prose-sm sm:prose max-w-full min-h-96 prose-th:px-2 prose-th:first:pl-0;
+  @apply prose-sm sm:prose max-w-full min-h-96 wrap-anywhere;
 }
 
 .milkdown > .ProseMirror {
@@ -44,7 +44,7 @@
 }
 
 .milkdown-table-block {
-  @apply wrap-anywhere!;
+  @apply wrap-anywhere prose! prose-th:px-3! prose-th:first:pl-0!;
 }
 
 /* Pagination */
