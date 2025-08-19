@@ -17,16 +17,18 @@
 }
 
 .milkdown {
-  @apply prose! prose-sm! sm:prose! max-w-full;
+  @apply prose! prose-sm! sm:prose! max-w-full min-h-96 prose-th:px-2! prose-th:first:pl-0!;
 }
 
 .milkdown > .ProseMirror {
   @apply p-0!;
 }
 
-.milkdown > .ProseMirror h4 {
-  @apply text-[length:inherit]!;
+.milkdown > .ProseMirror :where(h4,h5,h6) {
+  @apply text-[length:inherit]! font-[weight:inherit]! leading-[inherit]!;
 }
+
+
 
 .milkdown > .ProseMirror * p {
   @apply m-0!;
