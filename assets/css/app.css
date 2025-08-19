@@ -1,6 +1,5 @@
 @import "tailwindcss";
-@import "@milkdown/crepe/theme/common/style.css";
-@import "@milkdown/crepe/theme/frame.css";
+@import "./milkdown.css";
 
 @config "../tailwind.config.js";
 
@@ -17,15 +16,11 @@
 }
 
 .milkdown {
-  @apply prose! prose-sm! sm:prose! max-w-full min-h-96 prose-th:px-2! prose-th:first:pl-0!;
+  @apply prose-sm sm:prose max-w-full min-h-96 wrap-anywhere;
 }
 
 .milkdown > .ProseMirror {
   @apply p-0!;
-}
-
-.milkdown > .ProseMirror :where(h4, h5, h6) {
-  @apply text-[length:inherit]! font-[weight:inherit]! leading-[inherit]!;
 }
 
 .milkdown > .ProseMirror * p {
@@ -46,6 +41,10 @@
 
 .milkdown-slash-menu .menu-groups ul > li {
   @apply m-0! px-2.5! py-2!;
+}
+
+.milkdown-table-block {
+  @apply wrap-anywhere prose! prose-th:px-3! prose-th:first:pl-0!;
 }
 
 /* Pagination */

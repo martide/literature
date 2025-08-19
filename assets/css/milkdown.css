@@ -1,0 +1,210 @@
+@import "@milkdown/crepe/theme/common/prosemirror.css";
+@import "@milkdown/crepe/theme/common/block-edit.css";
+@import "@milkdown/crepe/theme/common/code-mirror.css";
+@import "@milkdown/crepe/theme/common/cursor.css";
+@import "@milkdown/crepe/theme/common/image-block.css";
+@import "@milkdown/crepe/theme/common/link-tooltip.css";
+@import "@milkdown/crepe/theme/common/list-item.css";
+@import "@milkdown/crepe/theme/common/placeholder.css";
+@import "@milkdown/crepe/theme/common/toolbar.css";
+@import "@milkdown/crepe/theme/common/table.css";
+@import "@milkdown/crepe/theme/common/latex.css";
+@import "@milkdown/crepe/theme/frame.css";
+
+/* Unwrap '@milkdown/crepe/theme/common/reset.css' and remove some styling */
+.milkdown {
+  position: relative;
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  button,
+  input {
+    border: none;
+    background: none;
+    box-shadow: none;
+    &:focus {
+      outline: none;
+    }
+  }
+
+  :focus-visible {
+    outline: none;
+  }
+
+  color: var(--crepe-color-on-background);
+  background: var(--crepe-color-background);
+
+  .milkdown-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ProseMirror-focused {
+    outline: none;
+  }
+
+  .ProseMirror {
+    padding: 60px 120px;
+
+    *::selection {
+      background: var(--crepe-color-selected);
+    }
+
+    li.ProseMirror-selectednode {
+      background: var(--crepe-color-selected);
+      outline: none;
+      ::selection {
+        background: transparent;
+      }
+      &::selection {
+        background: transparent;
+      }
+    }
+    li.ProseMirror-selectednode:after {
+      all: unset;
+    }
+
+    .ProseMirror-selectednode {
+      background: var(--crepe-color-selected);
+      outline: none;
+      background: color-mix(
+        in srgb,
+        var(--crepe-color-selected),
+        transparent 60%
+      );
+      ::selection {
+        background: transparent;
+      }
+      &::selection {
+        background: transparent;
+      }
+    }
+
+    &[data-dragging="true"] {
+      .ProseMirror-selectednode,
+      &::selection,
+      *::selection {
+        background: transparent;
+      }
+
+      input::selection {
+        background: var(--crepe-color-selected);
+      }
+    }
+
+    img {
+      vertical-align: bottom;
+      max-width: 100%;
+
+      &.ProseMirror-selectednode {
+        background: none;
+        outline: 2px solid var(--crepe-color-primary);
+      }
+    }
+
+    code {
+      color: var(--crepe-color-inline-code);
+      background: color-mix(
+        in srgb,
+        var(--crepe-color-inline-area),
+        transparent 40%
+      );
+      font-family: var(--crepe-font-code);
+      padding: 0 2px;
+      border-radius: 4px;
+      font-size: 87.5%;
+      display: inline-block;
+      line-height: 1.4286;
+    }
+
+    a {
+      color: var(--crepe-color-primary);
+      text-decoration: underline;
+    }
+
+    pre {
+      background: color-mix(
+        in srgb,
+        var(--crepe-color-inline-area),
+        transparent 40%
+      );
+      padding: 10px;
+      border-radius: 4px;
+      code {
+        padding: 0;
+        background: transparent;
+      }
+    }
+
+    blockquote {
+      position: relative;
+      padding-left: 40px;
+      padding-top: 0;
+      padding-bottom: 0;
+      box-sizing: content-box;
+      margin: 4px 0;
+
+      &::before {
+        content: "";
+        width: 4px;
+        left: 0;
+        top: 4px;
+        bottom: 4px;
+        position: absolute;
+        background: var(--crepe-color-selected);
+        border-radius: 100px;
+      }
+
+      hr {
+        margin-bottom: 16px;
+      }
+    }
+
+    hr {
+      border: none;
+      background-color: color-mix(
+        in srgb,
+        var(--crepe-color-outline),
+        transparent 80%
+      );
+      background-clip: content-box;
+      padding: 6px 0;
+      height: 13px;
+      position: relative;
+
+      &.ProseMirror-selectednode {
+        outline: none;
+        background-color: color-mix(
+          in srgb,
+          var(--crepe-color-outline),
+          transparent 20%
+        );
+        background-clip: content-box;
+        &::before {
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          right: 0;
+          background-color: color-mix(
+            in srgb,
+            var(--crepe-color-outline),
+            transparent 80%
+          );
+          pointer-events: none;
+        }
+      }
+    }
+
+    ul,
+    ol {
+      padding: 0;
+    }
+  }
+}
