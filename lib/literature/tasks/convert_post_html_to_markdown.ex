@@ -5,6 +5,7 @@ defmodule Literature.Tasks.ConvertPostHtmlToMarkdown do
   """
   import Ecto.Query
 
+  alias Html2Markdown.{Options, Parser, Converter}
   alias Literature.Repo
 
   @batch_size 100
@@ -36,12 +37,28 @@ defmodule Literature.Tasks.ConvertPostHtmlToMarkdown do
           |> Enum.join("")
 
         post
-        |> Map.put(:markdown, Html2Markdown.convert(html))
+        |> Map.put(:markdown, convert_html(html))
       end)
 
     Repo.insert_all("literature_posts", params,
       on_conflict: {:replace, [:markdown]},
       conflict_target: :id
     )
+  end
+
+  defp convert_html(html) do
+    opts = Options.merge(%{})
+
+    html
+    |> Parser.preprocess_content(opts)
+    |> convert_table_headers()
+    |> Converter.convert_to_markdown(opts)
+  end
+
+  # Convert table headers to th elements
+  # Milkdown expects th for table headers and tables are not rendered correctly without header
+  defp convert_table_headers(document) do
+    document
+    |> Floki.find_and_update("table tr:first-child td", fn {"td", attrs} -> {"th", attrs} end)
   end
 end

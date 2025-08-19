@@ -8,6 +8,15 @@ const blockEditOpts = {
   blockHandle: {
     getPlacement: () => "right",
   },
+  // List group configuration
+  listGroup: {
+    taskList: null,
+  },
+  // Advanced group configuration
+  advancedGroup: {
+    codeBlock: null,
+    math: null,
+  },
 };
 
 const uploadUrl = new URL("upload-image", window.location.href).href;
