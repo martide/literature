@@ -19,6 +19,11 @@
   @apply prose-sm sm:prose max-w-full min-h-96 wrap-anywhere;
 }
 
+/* Disable image resizing */
+.milkdown .image-resize-handle {
+  @apply pointer-events-none;
+}
+
 .milkdown > .ProseMirror {
   @apply p-0!;
 }
