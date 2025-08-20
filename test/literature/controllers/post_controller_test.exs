@@ -2,6 +2,9 @@ defmodule Literature.PostControllerTest do
   use Literature.ConnCase
 
   import Literature.Test.Fixtures
+  import Literature.TestHelpers
+
+  alias Literature.Helpers
 
   setup do
     publication = publication_fixture()
@@ -14,22 +17,32 @@ defmodule Literature.PostControllerTest do
     %{publication: publication, post: post}
   end
 
-  test "upload image to post content returns json with success 1 when data is valid", %{
-    conn: conn,
-    publication: publication,
-    post: post
-  } do
-    params = %{url: "https://www.example.com/image.png"}
+  test "upload image to post content returns json with success 1 when data is valid",
+       %{
+         conn: conn,
+         publication: publication,
+         post: post
+       } do
+    params = %{image: file_upload_image()}
 
     conn =
       post(
         conn,
         Routes.literature_dashboard_path(conn, :upload_image, publication.slug, post.slug, [
-          "fetch-url"
+          "upload-image"
         ]),
         params
       )
 
-    assert json_response(conn, 200) == %{"file" => %{"url" => params.url}, "success" => 1}
+    post =
+      Map.put(post, :upload_image, %{
+        file_name: "image-w227x95.png",
+        updated_at: DateTime.utc_now()
+      })
+
+    assert json_response(conn, 200) == %{
+             "file" => %{"url" => Helpers.literature_image_url(post, :upload_image)},
+             "success" => 1
+           }
   end
 end
