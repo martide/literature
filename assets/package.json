@@ -19,7 +19,7 @@
     "@tailwindcss/cli": "^4.1.12",
     "@tailwindcss/typography": "^0.5.16",
     "editorjs-html": "^4.0.5",
-    "esbuild": "^0.25.8",
+    "esbuild": "^0.25.9",
     "eslint": "^9.33.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
