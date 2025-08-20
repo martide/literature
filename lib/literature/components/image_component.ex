@@ -76,19 +76,20 @@ defmodule Literature.ImageComponent do
   end
 
   defp load_srcset(version, {file, scope}) when version in ~w(jpg webp)a do
-    {width, _height} = get_original_size(file)
+    url = DifferentSizes.url({file, scope})
 
-    Range.new(100, width, Config.waffle_width_step())
-    |> Enum.map_join(", ", &"#{DifferentSizes.url({file, scope}, {version, &1})} #{&1}w")
+    load_srcset(version, url)
   end
 
-  defp load_srcset(version, url) when version in ~w(jpg webp)a do
+  defp load_srcset(version, url) when version in ~w(jpg webp)a and is_binary(url) do
     url = String.replace(url, "\"", "") |> String.replace(~r/(jpeg|jpg|png)$/, to_string(version))
     {width, height} = get_original_size(%{file_name: url})
 
     Range.new(100, width, Config.waffle_width_step())
     |> Enum.map_join(", ", &"#{String.replace(url, "w#{width}x#{height}", "w#{&1}")} #{&1}w")
   end
+
+  defp load_srcset(_, _), do: ""
 
   defp get_original_size(%{file_name: file_name}) do
     Helpers.get_dimension(file_name)
