@@ -25,6 +25,12 @@ defmodule Literature.Uploaders.DifferentSizes do
     )
   end
 
+  # For file name of versions used ing url/3 function
+  # https://github.com/elixir-waffle/waffle/blob/d6614e8671ca31cd07d50de2d9cbf80b341f7b69/lib/waffle/definition/versioning.ex#L36
+  def transform({version, _width}, _) when version in @versions do
+    {:convert, :noaction, version}
+  end
+
   def transform(version, _) when version in @versions do
     &Helpers.transform_image_to_version/2
   end
