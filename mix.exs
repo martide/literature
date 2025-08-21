@@ -56,9 +56,9 @@ defmodule Literature.MixProject do
       {:flop, "~> 0.26"},
 
       # Images
-      {:mogrify, "~> 0.9"},
       {:waffle, "~> 1.1"},
       {:waffle_ecto, "~> 0.0"},
+      {:image, "~> 0.37"},
 
       # Others
       {:atomex, "~> 0.5"},
@@ -70,6 +70,8 @@ defmodule Literature.MixProject do
       {:poolboy, "~> 1.5"},
       {:ex_cldr_languages, "~> 0.3"},
       {:floki, "~> 0.38"},
+      {:html2markdown, "~> 0.3.0"},
+      {:earmark, "~> 1.4"},
 
       # Test
       {:credo, "~> 1.6", only: [:test, :dev], runtime: false},

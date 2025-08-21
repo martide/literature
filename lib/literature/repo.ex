@@ -58,4 +58,14 @@ defmodule Literature.Repo do
   def update_all(queryable, updates, opts) do
     Config.repo().update_all(queryable, updates, opts)
   end
+
+  @doc "Wraps `c:Ecto.Repo.stream/2`."
+  def stream(queryable, opts \\ []) do
+    Config.repo().stream(queryable, opts)
+  end
+
+  @doc "Wraps `c:Ecto.Repo.transaction/2`."
+  def transaction(queryable, opts \\ []) do
+    Config.repo().transaction(queryable, opts)
+  end
 end

@@ -7,10 +7,8 @@ defmodule Literature.Uploaders.DifferentSizes do
 
   alias Literature.Config
   alias Literature.Uploaders.Helpers
-  alias Waffle.Transformations.Convert
 
   @extension_whitelist ~w(.jpg .jpeg .png)
-  # imagemagick 7 is required for avif conversions
   @versions ~w(jpg webp)a
 
   def asset_host, do: Config.waffle_asset_host()
@@ -27,20 +25,14 @@ defmodule Literature.Uploaders.DifferentSizes do
     )
   end
 
+  # For file name of versions used ing url/3 function
+  # https://github.com/elixir-waffle/waffle/blob/d6614e8671ca31cd07d50de2d9cbf80b341f7b69/lib/waffle/definition/versioning.ex#L36
   def transform({version, _width}, _) when version in @versions do
     {:convert, :noaction, version}
   end
 
-  def transform(:jpg, _) do
-    {:convert, "-format jpg", :jpg}
-  end
-
-  def transform(:webp, _) do
-    {:convert, "-format webp", :webp}
-  end
-
-  def transform(:avif, _) do
-    {:convert, "-format avif", :avif}
+  def transform(version, _) when version in @versions do
+    &Helpers.transform_image_to_version/2
   end
 
   def storage_dir(_, {_, scope}),
@@ -54,7 +46,7 @@ defmodule Literature.Uploaders.DifferentSizes do
   # Appends the width in "-w{width}" format to the filename if none exists or
   # replaces the existing width with the new width
   def filename(_version, {%Waffle.File{path: path, file_name: file_name}, _scope}) do
-    %{width: width} = Mogrify.verbose(Mogrify.open(path))
+    width = path |> Image.open!() |> Image.width()
     Helpers.append_width(file_name, width)
   end
 
@@ -69,33 +61,44 @@ defmodule Literature.Uploaders.DifferentSizes do
   end
 
   def store_different_sizes({url, scope}, width_step \\ Config.waffle_width_step()) do
-    %{path: path} = file = Waffle.File.new(url, __MODULE__)
-    width = path |> Mogrify.open() |> Mogrify.verbose() |> Map.get(:width)
-
-    if width < 100 do
-      []
-    else
+    with %{path: path} = file <- Waffle.File.new(url, __MODULE__),
+         {:ok, image} <- Image.open(path),
+         width when width >= 100 <- Image.width(image) do
       Range.new(100, width, width_step)
       |> Enum.into([])
       |> case do
         [_ | _] = widths ->
           widths
-          |> Enum.map(&store_custom_size({file, scope}, &1))
+          |> Enum.map(&store_custom_size({file, scope}, image, &1))
           |> handle_responses()
 
         _ ->
           {file, scope}
-          |> store_custom_size(100)
+          |> store_custom_size(image, 100)
           |> List.wrap()
           |> handle_responses()
       end
+    else
+      width when is_number(width) -> []
+      error -> error
     end
   end
 
-  defp store_custom_size({file, scope}, width) do
-    :convert
-    |> Convert.apply(file, "-resize #{width}x")
+  defp store_custom_size({file, scope}, image, width) do
+    file
+    |> resize_image(image, width)
     |> store_saved_file(scope)
+  end
+
+  defp resize_image(file, image, width) do
+    with {:ok, new_image} <- Image.thumbnail(image, "#{width}x"),
+         tmp_path = Waffle.File.generate_temporary_path(file),
+         {:ok, _new_image} <- Image.write(new_image, tmp_path) do
+      {
+        :ok,
+        %Waffle.File{file | path: tmp_path, is_tempfile?: true}
+      }
+    end
   end
 
   defp store_saved_file({:ok, file}, scope) do
