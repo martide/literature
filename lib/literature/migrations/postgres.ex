@@ -8,7 +8,8 @@ defmodule Literature.Migrations.Postgres do
   use Ecto.Migration
 
   @initial_version 1
-  @current_version 11
+  @current_version 12
+
   @default_prefix "public"
 
   @doc false
