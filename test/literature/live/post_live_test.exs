@@ -13,6 +13,11 @@ defmodule Literature.PostLiveTest do
     notes: "Some notes"
   }
 
+  @sample_markdown ~s"""
+  # Some markdown
+  ![An image's test](/path/to/image-w300x453.jpg)
+  """
+
   @update_attrs %{title: "some updated title"}
 
   defp create_post(_) do
@@ -65,15 +70,22 @@ defmodule Literature.PostLiveTest do
       # Add language
       new_live
       |> form("#post-form",
-        post: %{"locales_order" => [""]}
+        post: %{"locales_order" => ["on"]}
       )
       |> render_change()
 
       new_live
       |> form("#post-form",
-        post: %{"locales_order" => [""]}
+        post: %{"locales_order" => ["on"]}
       )
       |> render_change()
+
+      assert_upload_file(
+        new_live,
+        "#post-form",
+        "image.jpg",
+        :feature_image
+      )
 
       new_live
       |> form("#post-form",
@@ -99,6 +111,7 @@ defmodule Literature.PostLiveTest do
       assert post.notes == "Some blog post notes"
       assert Enum.find(post.locales, &(&1.locale == "en"))
       assert Enum.find(post.locales, &(&1.locale == "de"))
+      assert %{file_name: "image-w227x95.jpg", updated_at: _} = post.feature_image
     end
 
     test "renders errors", %{conn: conn, publication: publication} do
@@ -149,13 +162,11 @@ defmodule Literature.PostLiveTest do
 
       assert html =~ "New Post"
 
-      html = "<p>some html</p>"
-
       new_live
       |> form("#post-form",
         post: %{@create_attrs | authors_ids: [author.id], tags_ids: [tag.id]}
       )
-      |> render_submit(%{post: %{"html" => html}})
+      |> render_submit(%{post: %{"markdown" => @sample_markdown}})
 
       {path, flash} = assert_redirect(new_live)
 
@@ -226,18 +237,18 @@ defmodule Literature.PostLiveTest do
         Routes.literature_dashboard_path(conn, :edit_post, publication.slug, post.slug)
       )
 
-      html = "<p>some html</p>"
+      markdown = "# some markdown"
 
       view
       |> form("#post-form", post: @update_attrs)
-      |> render_submit(%{post: %{"html" => html}})
+      |> render_submit(%{post: %{"markdown" => markdown}})
 
       {path, flash} = assert_redirect(view)
 
       assert path == Routes.literature_dashboard_path(conn, :list_posts, publication.slug)
       assert flash["success"] == "Post updated successfully"
 
-      assert Literature.get_post!(post.id).html == [html]
+      assert Literature.get_post!(post.id).markdown == markdown
 
       # Will not be able to follow redirect since redirect happens after async result
     end

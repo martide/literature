@@ -4,23 +4,18 @@ import { Sortable } from "sortablejs";
 
 let Hooks = {};
 
-Hooks.EditorJS = {
-  loadEditorJS() {
+Hooks.MilkdownEditor = {
+  loadMilkdownEditor() {
     const element = this.el;
-    element.addEventListener("click", (event) => {
-      if (event.target.tagName === "A") {
-        event.stopImmediatePropagation();
-      }
-    });
-    import("./editor").then(({ HTMLEditorJS }) => {
-      HTMLEditorJS(element);
+    import("./milkdown").then(({ MilkdownEditor }) => {
+      MilkdownEditor(element);
     });
   },
   mounted() {
-    this.loadEditorJS();
+    this.loadMilkdownEditor();
   },
   updated() {
-    this.loadEditorJS();
+    this.loadMilkdownEditor();
   },
 };
 

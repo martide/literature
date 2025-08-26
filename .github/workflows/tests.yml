@@ -25,8 +25,7 @@ jobs:
           --health-retries 5
     steps:
       - run: sudo apt update
-      - run: sudo apt install -y imagemagick
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: erlef/setup-beam@v1
         with:
           otp-version: "27.x"
@@ -89,8 +88,7 @@ jobs:
           --health-retries 5
     steps:
       - run: sudo apt update
-      - run: sudo apt install -y imagemagick
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{matrix.otp}}
@@ -121,8 +119,7 @@ jobs:
           --health-retries 5
     steps:
       - run: sudo apt update
-      - run: sudo apt install -y imagemagick
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{matrix.otp}}
@@ -135,7 +132,7 @@ jobs:
     name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     strategy:
       matrix:
-        otp: [24.x, 25.x, 26.x]
+        otp: [25.x, 26.x]
         elixir: [1.16.x]
     services:
       postgres:
@@ -153,8 +150,7 @@ jobs:
           --health-retries 5
     steps:
       - run: sudo apt update
-      - run: sudo apt install -y imagemagick
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{matrix.otp}}
@@ -167,7 +163,7 @@ jobs:
     name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     strategy:
       matrix:
-        otp: [24.x, 25.x, 26.x]
+        otp: [25.x, 26.x]
         elixir: [1.15.x]
     services:
       postgres:
@@ -185,8 +181,7 @@ jobs:
           --health-retries 5
     steps:
       - run: sudo apt update
-      - run: sudo apt install -y imagemagick
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{matrix.otp}}
@@ -199,7 +194,7 @@ jobs:
     name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
     strategy:
       matrix:
-        otp: [24.x, 25.x]
+        otp: [25.x]
         elixir: [1.14.x]
     services:
       postgres:
@@ -217,8 +212,7 @@ jobs:
           --health-retries 5
     steps:
       - run: sudo apt update
-      - run: sudo apt install -y imagemagick
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: erlef/setup-beam@v1
         with:
           otp-version: ${{matrix.otp}}

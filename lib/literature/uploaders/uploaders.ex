@@ -9,7 +9,6 @@ defmodule Literature.Uploaders do
   alias Literature.Uploaders.Helpers
 
   @extension_whitelist ~w(.jpg .jpeg .png)
-  # imagemagick 7 is required for avif conversions
   @versions ~w(original jpg webp)a
 
   def asset_host, do: Config.waffle_asset_host()
@@ -26,16 +25,8 @@ defmodule Literature.Uploaders do
     )
   end
 
-  def transform(:jpg, _) do
-    {:convert, "-format jpg", :jpg}
-  end
-
-  def transform(:webp, _) do
-    {:convert, "-format webp", :webp}
-  end
-
-  def transform(:avif, _) do
-    {:convert, "-format avif", :avif}
+  def transform(version, _) when version in [:jpg, :webp] do
+    &Helpers.transform_image_to_version/2
   end
 
   def storage_dir(_, {_, scope}),

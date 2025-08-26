@@ -8,20 +8,6 @@ defmodule Literature.BlogLiveTest do
 
   alias Literature.BlogView
 
-  @sample_html [
-    ~s"""
-    <picture>
-      <source srcset=\"/path/to/image-w100.jpg 100w, /path/to/image-w200.jpg 200w, /path/to/image-w300.jpg 300w\"/>
-      <source srcset=\"/path/to/image-w100.webp 100w, /path/to/image-w200.webp 200w, /path/to/image-w300.webp 300w\"/>
-      <img src=\"/path/to/image-w300x453.jpg\" alt=\"An image's test\" width=\"300\" height=\"453\" loading=\"lazy\" />
-      <figcaption style="font-style: italic;";></figcaption>
-    </picture>
-    """,
-    ~s"""
-      <img src=\"/path/to/image-w300x453.jpg\" alt=\"An image's test\" caption=\"An image's test\" />
-    """
-  ]
-
   defp create_blog(_) do
     publication =
       publication_fixture(
@@ -42,7 +28,7 @@ defmodule Literature.BlogLiveTest do
         excerpt: "Post excerpt",
         authors_ids: [author.id],
         tags_ids: [tag.id],
-        html: ["<p>content</p>"],
+        markdown: "# Content",
         locales: [
           %{locale: "en", url: "http://example.com/en"},
           %{locale: "de", url: "http://example.com/de"}
@@ -167,7 +153,7 @@ defmodule Literature.BlogLiveTest do
           publication_id: publication.id,
           authors_ids: [author.id],
           tags_ids: [tag.id],
-          html: @sample_html ++ additional_html,
+          html: additional_html,
           locales: [
             %{locale: "en", url: "http://example.com/en"},
             %{locale: "de", url: "http://example.com/de"}

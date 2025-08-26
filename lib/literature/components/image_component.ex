@@ -16,7 +16,7 @@ defmodule Literature.ImageComponent do
 
     ~H"""
     <%= if file = Map.get(@post, @field) do %>
-      <%= case get_img_size(@post, @field) do %>
+      <%= case get_post_field_img_size(@post, @field) do %>
         <% {width, height} -> %>
           <picture>
             <source srcset={load_srcset(:webp, {file, @post})} sizes={@sizes} />
@@ -42,24 +42,27 @@ defmodule Literature.ImageComponent do
     """
   end
 
-  def parse_image_tag(tag) do
-    if tag =~ "<img" do
-      case get_img_size(tag) do
-        {width, height} ->
-          ~s"""
-          <picture>
-            <source srcset="#{load_srcset(:jpg, find_img_attribute(tag, "src"))}"/>
-            <source srcset="#{load_srcset(:webp, find_img_attribute(tag, "src"))}"/>
-            <img src="#{find_img_attribute(tag, "src")}" alt="#{find_img_attribute(tag, "alt")}" width="#{width}" height="#{height}" loading="lazy" />
-            <figcaption style="font-style: italic;";>#{find_img_attribute(tag, "caption")}</figcaption>
-          </picture>
-          """
+  def parse_image_tag(tag) when is_binary(tag) do
+    tag
+    |> Floki.parse_fragment!()
+    |> List.first()
+    |> parse_image_tag(tag)
+  end
 
-        _missing_size ->
-          tag
-      end
-    else
-      tag
+  def parse_image_tag({"img", _, _} = tag, img_str \\ nil) do
+    case get_img_size(tag) do
+      {width, height} ->
+        ~s"""
+        <picture>
+          <source srcset="#{load_srcset(:jpg, find_img_attribute(tag, "src"))}"/>
+          <source srcset="#{load_srcset(:webp, find_img_attribute(tag, "src"))}"/>
+          <img src="#{find_img_attribute(tag, "src")}" alt="#{find_img_attribute(tag, "alt")}" width="#{width}" height="#{height}" loading="lazy" />
+          <figcaption style="font-style: italic;";>#{find_img_attribute(tag, "caption")}</figcaption>
+        </picture>
+        """
+
+      _missing_size ->
+        img_str || Floki.raw_html(tag)
     end
   end
 
@@ -91,22 +94,10 @@ defmodule Literature.ImageComponent do
     Helpers.get_dimension(file_name)
   end
 
-  defp find_img_attribute(tag, attr) when attr in ["alt", "caption"] do
-    regex_pattern = ~r/\b#{attr}=["]([^"]+)["]/
-
-    case Regex.run(regex_pattern, tag) do
-      [_, attr] -> attr
-      _ -> ""
-    end
-  end
-
   defp find_img_attribute(tag, attr) do
-    tag
-    |> String.replace("\"", "")
-    |> String.split(" ")
-    |> Enum.find(&(&1 =~ attr))
-    |> String.split("#{attr}=")
-    |> List.last()
+    [tag]
+    |> Floki.attribute(attr)
+    |> List.first()
   end
 
   defp get_img_size(tag) do
@@ -115,14 +106,14 @@ defmodule Literature.ImageComponent do
     |> Helpers.get_dimension()
   end
 
-  defp get_img_size(struct, field) do
+  defp get_post_field_img_size(struct, field) do
     struct
     |> literature_image_url(field)
     |> Helpers.get_dimension()
   end
 
   defp rename_filename({field, file}) do
-    %{width: width, height: height} = Mogrify.verbose(Mogrify.open(file.path))
+    {width, height, _} = file.path |> Image.open!() |> Image.shape()
 
     file_name =
       Slugy.slugify(

@@ -4,8 +4,8 @@ elixir 1.18.4-otp-27
 
 # https://github.com/erlang/otp/releases
 
-erlang 27.3.4
+erlang 27.3.4.2
 
 # https://nodejs.org/en
 
-nodejs 22.15.0
+nodejs 22.18.0
