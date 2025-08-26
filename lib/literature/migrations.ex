@@ -1,5 +1,7 @@
 defmodule Literature.Migrations do
-  @moduledoc false
+  @moduledoc """
+  Database Migrations for the Literature tables.
+  """
 
   defdelegate up(opts \\ []), to: Literature.Migration
   defdelegate down(opts \\ []), to: Literature.Migration
@@ -23,9 +25,9 @@ defmodule Literature.Migration do
   ```elixir
   defmodule MyApp.Repo.Migrations.AddLiterature do
     use Ecto.Migration
-    
+
     def up, do: Literature.Migrations.up(version: 1)
-    
+
     def down, do: Literature.Migrations.down(version: 1)
   end
   ```
