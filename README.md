@@ -14,7 +14,7 @@ end
 
 ## Quick Setup
 
-Literature comes with built in databse tables that can be added through a migration and content management dashboard built with LiveView.
+Literature comes with built in database tables that can be added through a migration.
 
 1. Setup config including Ecto repo for Literature to use and directory where static pages will be stored.
 
