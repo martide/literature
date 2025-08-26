@@ -63,7 +63,7 @@ mix assets.build                   # Build and digest assets for production
 #### Content Management
 
 - **Rich Editor**: Editor.js integration with custom image handling, headers, lists, and tables
-- **Image Processing**: Waffle + Mogrify for upload handling and automatic size generation
+- **Image Processing**: Waffle + Image for upload handling and automatic size generation
 - **SEO**: Comprehensive meta tags, OpenGraph, Twitter cards, and sitemap generation
 - **RSS**: Automated RSS feed generation per publication
 

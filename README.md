@@ -1,6 +1,6 @@
 # Literature
 
-`Literature` is a content management system built with `Phoenix.LiveView` and static pages generator that uses `Phoenix.Components`. It comes with a WYSIWYG post editor, image optimization, reusable SEO tags, and seamless integration to an existing Phoenix application.
+`Literature` is a blog content management system with core blog features such as `Publications`, `Posts`, `Authors`, and `Tags`. Content can be published with static html files through a static pages generator that uses `Phoenix.Components`. It comes with a WYSIWYG post editor, image optimization, reusable SEO tags, and seamless integration to an existing Phoenix application.
 
 ## Installation
 
@@ -47,7 +47,37 @@ defmodule MyAppWeb.Router do
 end
 ```
 
-4. You can separate content by main topic by creating a publication for each. Create a publication e.g. `Blog` then create authors and tags. You can now start creating Posts with a WSYIWYG editor.
+4. You can separate content by main topic by creating a publication for each. Create a publication e.g. `Blog` then create authors and tags. You can now start creating Posts with a WYSIWYG editor.
+
+## Images
+
+Literature tables have a few image columns such as feature and profile images. Post content could also have images, both are handled with
+
+- [Waffle](https://github.com/elixir-waffle/waffle) - for uploading to storage buckets
+- [Image](https://github.com/elixir-image/image) - for image processing and transforms
+
+Setup literature config for waffle, e.g. for local config
+
+```elixir
+config :literature,
+  storage: Waffle.Storage.Local,
+  storage_dir_prefix: "/tmp/literature/",
+  asset_host: "/tmp/literature"
+```
+
+## WSYIWYG Post content editor
+
+Post editor supports content formatting and is built with [Milkdown.js](https://milkdown.dev/) markdown editor.
+Content is saved both as markdown, and also converted to html for easy rendering with image tags converted to responsive images.
+Currently supported features for the editor are `Headings`, `Images`, `Lists`, `Blockquote`, `Tables`, and various formatting such as setting hyperlinks, bold, italic, and underline.
+
+Current rendered styling in the editor is styled with [Tailwind Typography prose](https://github.com/tailwindlabs/tailwindcss-typography). Content styling can be customized on the templates it will be used on and can be rendered through [Phoenix.HTML.raw/1](https://hexdocs.pm/phoenix_html/Phoenix.HTML.html#raw/1)
+
+```elixir
+<div class="prose">
+  <%= raw(post.html) %>
+</div>
+```
 
 ## Generating Static pages
 
@@ -80,6 +110,17 @@ defmodule MyAppWeb.Blog.Templates do
     </.layout>
     """
   end
+
+  def show(assigns) do
+    ~H"""
+    <.layout {assigns}>
+      <h1>{@post.title}</h1>
+      <p>
+        {raw(@post.html)}
+      </p>
+    </.layout>
+    """
+  end
 end
 ```
 
@@ -98,7 +139,7 @@ defmodule MyAppWeb.Blog.Generator do
         write_to: :file
       ]
 
-    LiteratureGenerator.generate(:show, opts)
+    LiteratureGenerator.generate(:index, opts)
   end
 end
 ```
@@ -121,5 +162,3 @@ defmodule MyAppWeb.BlogController do
   end
 end
 ```
-
-## Images
