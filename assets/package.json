@@ -24,6 +24,6 @@
     "prettier": "3.6.2",
     "sortablejs": "^1.15.6",
     "tailwindcss": "^4.1.11",
-    "@milkdown/crepe": "7.15.3"
+    "@milkdown/crepe": "^7.15.3"
   }
 }
