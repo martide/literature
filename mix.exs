@@ -62,7 +62,7 @@ defmodule Literature.MixProject do
 
       # Others
       {:atomex, "~> 0.5"},
-      {:ex_doc, "~> 0.28", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.28", only: [:dev, :test], runtime: false},
       {:httpoison, "~> 1.0 or ~> 2.0"},
       {:sitemapper, "~> 0.7"},
       {:slugy, "~> 4.1"},
