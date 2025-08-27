@@ -54,7 +54,7 @@ jobs:
       - run: mix compile --warnings-as-errors
       - run: mix deps.unlock --check-unused
       - run: mix hex.audit
-      # -run: mix doctor
+      - run: mix docs --warnings-as-errors
       - run: mix format --dry-run --check-formatted
       - run: mix sobelow --config
       - run: mix format --dry-run --check-formatted
