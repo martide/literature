@@ -4,8 +4,6 @@ defmodule Literature.Web do
   @doc false
   def model do
     quote do
-      @moduledoc false
-
       use Ecto.Schema
       use Waffle.Ecto.Schema
 

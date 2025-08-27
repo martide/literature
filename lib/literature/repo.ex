@@ -9,7 +9,7 @@ defmodule Literature.Repo do
 
   alias Literature.Config
 
-  @doc "Wraps `c:Ecto.Repo.paginate/2`."
+  @doc "Wraps paginate function of the set `repo` in the config."
   def paginate(queryable, opts \\ []) do
     Config.repo().paginate(queryable, opts)
   end
@@ -19,14 +19,14 @@ defmodule Literature.Repo do
     Config.repo().all(queryable, opts)
   end
 
-  @doc "Wraps `c:Ecto.Repo.get/2`."
-  def get(struct, opts \\ []) do
-    Config.repo().get(struct, opts)
+  @doc "Wraps `c:Ecto.Repo.get/3`."
+  def get(struct, id, opts \\ []) do
+    Config.repo().get(struct, id, opts)
   end
 
-  @doc "Wraps `c:Ecto.Repo.get_by/2`."
-  def get_by(struct, opts \\ []) do
-    Config.repo().get_by(struct, opts)
+  @doc "Wraps `c:Ecto.Repo.get_by/3`."
+  def get_by(struct, clauses, opts \\ []) do
+    Config.repo().get_by(struct, clauses, opts)
   end
 
   @doc "Wraps `c:Ecto.Repo.insert/2`."
@@ -44,7 +44,7 @@ defmodule Literature.Repo do
     Config.repo().delete(struct_or_changeset, opts)
   end
 
-  @doc "Wraps `c:Ecto.Repo.preload/2`."
+  @doc "Wraps `c:Ecto.Repo.preload/3`."
   def preload(struct_or_changeset, preloads, opts \\ []) do
     Config.repo().preload(struct_or_changeset, preloads, opts)
   end

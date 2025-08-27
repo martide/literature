@@ -62,7 +62,7 @@ defmodule Literature.MixProject do
 
       # Others
       {:atomex, "~> 0.5"},
-      {:ex_doc, "~> 0.28", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.28", only: [:dev, :test], runtime: false},
       {:httpoison, "~> 1.0 or ~> 2.0"},
       {:sitemapper, "~> 0.7"},
       {:slugy, "~> 4.1"},
@@ -78,7 +78,8 @@ defmodule Literature.MixProject do
       {:dialyxir, "~> 1.2", only: [:test, :dev], runtime: false},
       {:excoveralls, "~> 0.15", only: [:test, :dev], runtime: false},
       {:sobelow, "~> 0.11", only: [:test, :dev], runtime: false},
-      {:lazy_html, ">= 0.1.0", only: :test}
+      {:lazy_html, ">= 0.1.0", only: :test},
+      {:usage_rules, "~> 0.1", only: [:dev]}
     ]
   end
 
