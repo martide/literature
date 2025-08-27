@@ -71,6 +71,8 @@ Post editor supports content formatting and is built with [Milkdown.js](https://
 Content is saved both as markdown, and also converted to html for easy rendering with image tags converted to responsive images.
 Currently supported features for the editor are `Headings`, `Images`, `Lists`, `Blockquote`, `Tables`, and various formatting such as setting hyperlinks, bold, italic, and underline.
 
+![editor screenshot](priv/static/images/editor.png)
+
 Current rendered styling in the editor is styled with [Tailwind Typography prose](https://github.com/tailwindlabs/tailwindcss-typography). Content styling can be customized on the templates it will be used on and can be rendered through [Phoenix.HTML.raw/1](https://hexdocs.pm/phoenix_html/Phoenix.HTML.html#raw/1)
 
 ```elixir
