@@ -34,13 +34,22 @@ defmodule Literature.PostControllerTest do
         params
       )
 
+    response = json_response(conn, 200)
+
+    timestamp =
+      response["file"]["url"]
+      |> String.split("/")
+      |> Enum.at(-1)
+      |> String.split("-")
+      |> Enum.at(-2)
+
     post =
       Map.put(post, :upload_image, %{
-        file_name: "image-w227x95.png",
+        file_name: "image-#{timestamp}-w227x95.png",
         updated_at: DateTime.utc_now()
       })
 
-    assert json_response(conn, 200) == %{
+    assert response == %{
              "file" => %{"url" => Helpers.literature_image_url(post, :upload_image)},
              "success" => 1
            }

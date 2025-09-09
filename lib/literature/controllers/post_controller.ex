@@ -40,7 +40,7 @@ defmodule Literature.PostController do
 
     file_name =
       Slugy.slugify(
-        "#{Path.basename(file.filename, Path.extname(file.filename))} w#{width}x#{height}"
+        "#{Path.basename(file.filename, Path.extname(file.filename))}-#{System.os_time()} w#{width}x#{height}"
       )
 
     %{file | filename: "#{file_name}#{Path.extname(file.filename) |> String.downcase()}"}
