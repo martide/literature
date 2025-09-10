@@ -36,16 +36,24 @@ defmodule Literature.PostControllerTest do
 
     response = json_response(conn, 200)
 
-    timestamp =
+    [_ext | filename] = params.image.filename |> String.split(".") |> Enum.reverse()
+    filename = filename |> Enum.reverse() |> Enum.join(".")
+
+    uploaded_filename =
       response["file"]["url"]
       |> String.split("/")
       |> Enum.at(-1)
-      |> String.split("-")
-      |> Enum.at(-2)
+
+    ^filename <> "-" <> uuid_with_dimension = uploaded_filename
+
+    uuid =
+      uuid_with_dimension
+      |> String.split("-w")
+      |> Enum.at(0)
 
     post =
       Map.put(post, :upload_image, %{
-        file_name: "image-#{timestamp}-w227x95.png",
+        file_name: "image-#{uuid}-w227x95.png",
         updated_at: DateTime.utc_now()
       })
 
