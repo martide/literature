@@ -114,6 +114,16 @@ const imageBlockOpts = {
 };
 
 const MilkdownEditor = (element) => {
+  element.addEventListener("paste", (event) => {
+    for (const file of event.clipboardData.files) {
+      if (file.type.startsWith("image/")) {
+        event.preventDefault();
+
+        return;
+      }
+    }
+  });
+
   const inputMarkdown = document.querySelector("#form-markdown-input");
   const defaultMarkdown = element.dataset.defaultValue || "";
   inputMarkdown.value = defaultMarkdown;
