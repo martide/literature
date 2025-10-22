@@ -5,12 +5,16 @@ updates:
     schedule:
       interval: "monthly"
     open-pull-requests-limit: 99
+    commit-message:
+      prefix: "chore(bot):"
 
   - package-ecosystem: mix
     directory: "/"
     schedule:
       interval: "monthly"
     open-pull-requests-limit: 99
+    commit-message:
+      prefix: "chore(bot):"
 
   - package-ecosystem: npm
     directory: "/assets"
