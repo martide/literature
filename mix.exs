@@ -85,6 +85,7 @@ defmodule Literature.MixProject do
   defp package do
     [
       maintainers: ["Martide"],
+      files: ~w(lib priv .formatter.exs mix.exs README* LICENSE* CHANGELOG* usage-rules.md),
       licenses: ["Apache-2.0"],
       links: %{"GitHub" => "https://github.com/martide/literature"}
     ]
