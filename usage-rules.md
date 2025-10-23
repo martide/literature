@@ -168,7 +168,7 @@ defmodule MyAppWeb.Blog.Templates do
         <div class="grid gap-8">
           <article :for={post <- @posts} class="border-b pb-8 mb-8">
             <h2 class="text-2xl font-semibold mb-2">
-              <a href={"/blog/posts/#{post.slug}"} class="hover:text-blue-600">
+              <a href={"/blog/#{post.slug}"} class="hover:text-blue-600">
                 <%= post.title %>
               </a>
             </h2>
@@ -346,7 +346,7 @@ end
 ### Required Fields
 
 - **Publications**: `slug`, `name` (must be unique within application)
-- **Posts**: `publication_id`, `slug`, `title`, `content` (must be unique within publication)
+- **Posts**: `publication_id`, `slug`, `title`, `is_published` (must be unique within publication)
 - **Authors**: `publication_id`, `slug`, `name` (must be unique within publication)
 - **Tags**: `publication_id`, `slug`, `name` (must be unique within publication)
 
