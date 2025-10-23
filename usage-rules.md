@@ -20,6 +20,327 @@ Publication
 └── Tags (scoped to publication)
 ```
 
+## Setup and Installation
+
+### 1. Add Literature Dependency
+
+Add Literature to your `mix.exs` dependencies:
+
+```elixir
+def deps do
+  [
+    {:literature, "~> 0.4"}
+  ]
+end
+```
+
+### 2. Configuration Setup
+
+Configure Literature in your `config/config.exs` or environment-specific config files:
+
+```elixir
+config :literature,
+  repo: MyApp.Repo,
+  static_pages_storage_dir: "/tmp/literature/static_pages"
+```
+
+For image handling, add Waffle configuration:
+
+```elixir
+config :literature,
+  storage: Waffle.Storage.Local,
+  storage_dir_prefix: "/tmp/literature/",
+  asset_host: "/tmp/literature"
+```
+
+For production with cloud storage (S3 example):
+
+```elixir
+config :literature,
+  storage: Waffle.Storage.S3,
+  bucket: "my-literature-bucket",
+  asset_host: "https://my-literature-bucket.s3.amazonaws.com"
+
+config :ex_aws,
+  access_key_id: System.get_env("AWS_ACCESS_KEY_ID"),
+  secret_access_key: System.get_env("AWS_SECRET_ACCESS_KEY"),
+  region: "us-east-1"
+```
+
+### 3. Database Migration
+
+Create a migration to set up Literature tables:
+
+```elixir
+defmodule MyApp.Repo.Migrations.SetupLiterature do
+  use Ecto.Migration
+
+  def up, do: Literature.Migrations.up([])
+  def down, do: Literature.Migrations.down([])
+end
+```
+
+Run the migration:
+
+```bash
+mix ecto.migrate
+```
+
+### 4. Router Configuration
+
+Add Literature admin routes to your Phoenix router:
+
+```elixir
+defmodule MyAppWeb.Router do
+  use Phoenix.Router
+  use Literature.Router
+
+  ...
+
+  scope "/" do
+    # Literature admin dashboard
+    literature_dashboard("/literature")
+
+    # Literature static assets (CSS, JS)
+    literature_assets("/literature")
+  end
+end
+```
+
+### 5. Initial Data Setup
+
+Create your first publication through the admin dashboard or programmatically:
+
+```elixir
+# In IEx or a seed file
+alias Literature.{Publications, Authors, Tags}
+
+# Create a publication
+{:ok, publication} = Publications.create_publication(%{
+  slug: "blog",
+  name: "My Blog",
+  description: "A blog about technology and life",
+  meta_title: "My Blog - Technology and Life",
+  meta_description: "Insights about technology and life"
+})
+
+# Create an author
+{:ok, author} = Authors.create_author(%{
+  publication_id: publication.id,
+  slug: "john-doe",
+  name: "John Doe",
+  bio: "Software developer and writer"
+})
+
+# Create some tags
+{:ok, tech_tag} = Tags.create_tag(%{
+  publication_id: publication.id,
+  slug: "technology",
+  name: "Technology"
+})
+
+{:ok, life_tag} = Tags.create_tag(%{
+  publication_id: publication.id,
+  slug: "life",
+  name: "Life"
+})
+```
+
+### 6. Static Pages Template Setup
+
+Create your templates module for static page generation:
+
+```elixir
+defmodule MyAppWeb.Blog.Templates do
+  use Phoenix.Component
+  @behaviour Literature.StaticPages.Templates
+
+  import Literature.StaticPages.Layout, only: [layout: 1]
+
+  @impl true
+  def index(assigns) do
+    ~H"""
+    <.layout {assigns}>
+      <div class="max-w-4xl mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-8"><%= @publication.name %></h1>
+        <p class="text-xl text-gray-600 mb-12"><%= @publication.description %></p>
+
+        <div class="grid gap-8">
+          <article :for={post <- @posts} class="border-b pb-8 mb-8">
+            <h2 class="text-2xl font-semibold mb-2">
+              <a href={"/blog/posts/#{post.slug}"} class="hover:text-blue-600">
+                <%= post.title %>
+              </a>
+            </h2>
+            <p class="text-gray-600 mb-4"><%= post.excerpt %></p>
+            <div class="text-sm text-gray-500">
+              <span>By <%= Enum.map(post.authors, & &1.name) |> Enum.join(", ") %></span>
+              <span class="mx-2">•</span>
+              <span><%= Calendar.strftime(post.published_at, "%B %d, %Y") %></span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </.layout>
+    """
+  end
+
+  @impl true
+  def show_post(assigns) do
+    ~H"""
+    <.layout {assigns}>
+      <article class="max-w-4xl mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold mb-4"><%= @post.title %></h1>
+
+        <div class="text-gray-600 mb-8">
+          <span>By <%= Enum.map(@post.authors, & &1.name) |> Enum.join(", ") %></span>
+          <span class="mx-2">•</span>
+          <span><%= Calendar.strftime(@post.published_at, "%B %d, %Y") %></span>
+        </div>
+
+        <div class="prose prose-lg max-w-none">
+          <%= raw(@post.html) %>
+        </div>
+
+        <div :if={@post.tags != []} class="mt-8 pt-8 border-t">
+          <span class="text-sm font-medium text-gray-700">Tagged: </span>
+          <span :for={tag <- @post.tags} class="inline-block bg-gray-100 rounded-full px-3 py-1 text-sm font-medium text-gray-700 mr-2">
+            <%= tag.name %>
+          </span>
+        </div>
+      </article>
+    </.layout>
+    """
+  end
+
+  # Additional template implementations...
+  @impl true
+  def index_page(assigns), do: ~H"<!-- Paginated index template -->"
+
+  @impl true
+  def authors(assigns), do: ~H"<!-- Authors index template -->"
+
+  @impl true
+  def show_author(assigns), do: ~H"<!-- Author profile template -->"
+
+  @impl true
+  def tags(assigns), do: ~H"<!-- Tags index template -->"
+
+  @impl true
+  def show_tag(assigns), do: ~H"<!-- Tag listing template -->"
+end
+```
+
+### 7. Static Pages Generator
+
+Create a generator module for building static files:
+
+```elixir
+defmodule MyAppWeb.Blog.Generator do
+  alias Literature.StaticPages.Generator, as: LiteratureGenerator
+
+  def generate_all do
+    opts = [
+      publication_slug: "blog",
+      base_url: "https://myblog.com",
+      templates: MyAppWeb.Blog.Templates,
+      write_to: :file
+    ]
+
+    # Generate all page types
+    LiteratureGenerator.generate(:index, opts)
+    LiteratureGenerator.generate(:index_page, opts)
+    LiteratureGenerator.generate(:show_post, opts)
+    LiteratureGenerator.generate(:authors, opts)
+    LiteratureGenerator.generate(:show_author, opts)
+    LiteratureGenerator.generate(:tags, opts)
+    LiteratureGenerator.generate(:show_tag, opts)
+  end
+
+  def generate_index_page do
+    opts = [
+      publication_slug: "blog",
+      base_url: "https://myblog.com",
+      templates: MyAppWeb.Blog.Templates,
+      write_to: :file
+    ]
+
+    LiteratureGenerator.generate(:index, opts)
+  end
+end
+```
+
+### 8. Serving Static Content
+
+Add routes for your blog pages:
+
+```elixir
+# In your router.ex
+scope "/blog" do
+  pipe_through :browser
+
+  get("/", BlogController, :index)
+  get("/page/:page", BlogController, :index_page)
+  get("/:slug", BlogController, :show_post)
+  get("/tags", BlogController, :tags)
+  get("/tags/:slug", BlogController, :show_tag)
+  get("/authors", BlogController, :authors)
+  get("/authors/:slug", BlogController, :show_author)
+end
+```
+
+Set up a controller to serve the generated static files:
+
+```elixir
+defmodule MyAppWeb.BlogController do
+  use MyAppWeb, :controller
+
+  def index(conn, _params) do
+    serve_static_file(conn, "/index.html")
+  end
+
+  def index_page(conn, %{"page" => page}) do
+    serve_static_file(conn, "/page/#{page}/index.html")
+  end
+
+  def show_post(conn, %{"slug" => slug}) do
+    serve_static_file(conn, "/#{slug}.html")
+  end
+
+  def tags(conn, _params) do
+    serve_static_file(conn, "/tags/index.html")
+  end
+
+  def show_tag(conn, %{"slug" => slug}) do
+    serve_static_file(conn, "/tags/#{slug}.html")
+  end
+
+  def authors(conn, _params) do
+    serve_static_file(conn, "/authors/index.html")
+  end
+
+  def show_author(conn, %{"slug" => slug}) do
+    serve_static_file(conn, "/authors/#{slug}.html")
+  end
+
+  defp serve_static_file(conn, path) do
+    storage_dir = Application.get_env(:literature, :static_pages_storage_dir)
+    static_file_path = Path.join(storage_dir, path)
+
+    case File.exists?(static_file_path) do
+      true ->
+        conn
+        |> put_resp_header("content-type", "text/html; charset=utf-8")
+        |> Plug.Conn.send_file(200, static_file_path)
+      false ->
+        conn
+        |> put_status(:not_found)
+        |> text("Page not found")
+    end
+  end
+end
+```
+
 ## Database Schema Patterns
 
 ### Required Fields
@@ -52,12 +373,7 @@ Publication
 
 ### Image Configuration Requirements
 
-```elixir
-config :literature,
-  storage: Waffle.Storage.Local,  # or S3, GCS, etc.
-  storage_dir_prefix: "/tmp/literature/",
-  asset_host: "/tmp/literature"
-```
+Image handling requires Waffle configuration as shown in the [Configuration Setup](#2-configuration-setup) section above.
 
 ### Content Images
 
@@ -72,7 +388,6 @@ config :literature,
 - **Formatting**: Bold, italic, underline, hyperlinks
 - **Structure**: Headings (H1-H6), lists, blockquotes, tables
 - **Media**: Image uploads with alt text
-- **Code**: Code blocks with syntax highlighting
 
 ### Content Storage
 
@@ -91,16 +406,18 @@ config :literature,
 ### Generation Workflow
 
 1. **Templates** - Define page structure using Phoenix Components
-2. **Layout** - Reusable layout with SEO tags and meta data
+2. **Layout** - Reusable layout with SEO tags and metadata
 3. **Generator** - Processes content and writes static HTML files
 
 ### Available Page Types
 
-- **Index**: Publication homepage with post listings
-- **Post Show**: Individual post pages
-- **Author Show**: Author profile pages with their posts
-- **Tag Show**: Tag pages with associated posts
-- **Archive**: Date-based post archives
+- **`:index`**: Main index page for posts with no pagination
+- **`:index_page`**: Paginated index pages for posts
+- **`:show_post`**: Individual post pages
+- **`:authors`**: Index page listing all authors
+- **`:show_author`**: Individual author profile pages with their posts
+- **`:tags`**: Index page listing all tags
+- **`:show_tag`**: Individual tag pages with associated posts
 
 ### SEO and Meta Tags
 
@@ -113,40 +430,12 @@ config :literature,
 
 - **File system**: Write to configured `static_pages_storage_dir`
 - **Memory**: Generate in-memory for dynamic serving
-- **Custom storage**: Implement custom storage backends
-
-## Integration Patterns
-
-### Phoenix Application Integration
-
-```elixir
-# Router setup
-use Literature.Router
-literature_assets("/literature")      # CSS/JS assets
-literature_dashboard("/literature")   # Admin interface
-
-# Content serving
-literature_public("/blog", publication: "blog")  # Public pages
-```
-
-### Database Integration
-
-- Requires Ecto repository configuration
-- Uses existing Phoenix app's database connection
-- Can coexist with existing tables and schemas
-
-### Authentication Integration
-
-- Admin dashboard can integrate with existing auth systems
-- Public pages are static and don't require authentication
-- Content access can be controlled through Phoenix pipelines
 
 ## Performance Considerations
 
 ### Static Generation Benefits
 
 - **Fast loading** - Pre-generated HTML files
-- **CDN friendly** - Static assets can be cached aggressively
 - **SEO optimized** - Server-side rendered with proper meta tags
 - **Scalable** - No database queries for content delivery
 
@@ -156,12 +445,6 @@ literature_public("/blog", publication: "blog")  # Public pages
 - WebP format support for modern browsers
 - Lazy loading attributes added automatically
 - Responsive images reduce bandwidth usage
-
-### Caching Strategies
-
-- Static files can be cached indefinitely with cache-busting
-- Image assets include content-based hashes
-- RSS feeds and sitemaps generated as static files
 
 ## Best Practices
 
@@ -182,31 +465,3 @@ literature_public("/blog", publication: "blog")  # Public pages
 - Regenerate static files when content changes
 - Consider automated regeneration workflows
 - Test static output in staging environments
-
-### Development Workflow
-
-- Use draft posts for content review processes
-- Test responsive image generation locally
-- Validate HTML output with tools like W3C validator
-
-## Common Patterns
-
-### Multi-tenant Blogs
-
-```elixir
-# Different publications for different brands/topics
-create_publication(slug: "tech-blog", name: "Tech Blog")
-create_publication(slug: "company-news", name: "Company News")
-```
-
-### Content Syndication
-
-- Generate RSS feeds for each publication
-- Use structured data for rich snippets
-- Export content as JSON for API consumption
-
-### SEO Optimization
-
-- Use publication-specific meta tag templates
-- Generate XML sitemaps for search engines
-- Implement breadcrumb navigation in templates
