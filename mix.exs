@@ -78,14 +78,14 @@ defmodule Literature.MixProject do
       {:dialyxir, "~> 1.2", only: [:test, :dev], runtime: false},
       {:excoveralls, "~> 0.15", only: [:test, :dev], runtime: false},
       {:sobelow, "~> 0.11", only: [:test, :dev], runtime: false},
-      {:lazy_html, ">= 0.1.0", only: :test},
-      {:usage_rules, "~> 0.1", only: [:dev]}
+      {:lazy_html, ">= 0.1.0", only: :test}
     ]
   end
 
   defp package do
     [
       maintainers: ["Martide"],
+      files: ~w(lib priv .formatter.exs mix.exs README* LICENSE* CHANGELOG* usage-rules.md),
       licenses: ["Apache-2.0"],
       links: %{"GitHub" => "https://github.com/martide/literature"}
     ]
