@@ -2,11 +2,12 @@ defmodule Literature.PostController do
   use Literature.Web, :controller
 
   def upload_image(conn, %{"image" => image} = params) do
+    conn = put_resp_content_type(conn, "application/json")
+
     with %Literature.Post{} = post <- get_post(params),
          {:ok, post} <- Literature.update_post(post, %{"upload_image" => rename_filename(image)}) do
-      conn
-      |> put_resp_content_type("application/json")
-      |> send_resp(
+      send_resp(
+        conn,
         200,
         Jason.encode!(%{
           success: 1,
@@ -17,14 +18,10 @@ defmodule Literature.PostController do
       )
     else
       {:error, %Ecto.Changeset{}} ->
-        conn
-        |> put_resp_content_type("application/json")
-        |> send_resp(400, Jason.encode!(%{success: 0}))
+        send_resp(conn, 400, Jason.encode!(%{success: 0}))
 
       nil ->
-        conn
-        |> put_resp_content_type("application/json")
-        |> send_resp(404, Jason.encode!(%{success: 0, error: "Post not found"}))
+        send_resp(conn, 404, Jason.encode!(%{success: 0, error: "Post not found"}))
     end
   end
 
