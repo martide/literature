@@ -5,7 +5,14 @@ All notable changes to Literature will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v0.4.23] - 2025-12-23
+
+### Changed
+
+- Improve image upload error handling in PostController (WEB-10910)
+- Added explicit 404 response when post is not found
+
+## [0.4.22] - 2025-11-04
 
 ### Changed
 
