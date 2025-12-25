@@ -60,4 +60,28 @@ defmodule Literature.PostControllerTest do
              "success" => 1
            }
   end
+
+  test "upload image returns 404 when post does not exist",
+       %{conn: conn, publication: publication} do
+    params = %{image: file_upload_image()}
+
+    conn =
+      post(
+        conn,
+        Routes.literature_dashboard_path(
+          conn,
+          :upload_image,
+          publication.slug,
+          "non-existent-slug",
+          [
+            "upload-image"
+          ]
+        ),
+        params
+      )
+
+    response = json_response(conn, 404)
+
+    assert response == %{"success" => 0, "error" => "Post not found"}
+  end
 end
