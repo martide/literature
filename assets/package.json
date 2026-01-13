@@ -10,12 +10,12 @@
     "watch": "npm-run-all --parallel watch:*"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
+    "@eslint/js": "^9.39.2",
     "@milkdown/crepe": "^7.17.3",
     "@tailwindcss/cli": "^4.1.17",
     "@tailwindcss/typography": "^0.5.19",
     "esbuild": "^0.27.2",
-    "eslint": "^9.39.1",
+    "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "globals": "^16.5.0",
