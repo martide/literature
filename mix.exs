@@ -7,7 +7,7 @@ defmodule Literature.MixProject do
     [
       app: :literature,
       version: @version,
-      elixir: "~> 1.13",
+      elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       package: package(),
