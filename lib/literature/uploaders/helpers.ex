@@ -55,7 +55,7 @@ defmodule Literature.Uploaders.Helpers do
     Path.basename(file_name_with_ext, Path.extname(file_name_with_ext))
   end
 
-  @spec transform_image_to_version(atom(), Waffle.File.t()) :: {:ok, Waffle.File.t()}
+  @spec transform_image_to_version(atom(), map()) :: {:ok, map()} | {:error, term()}
   def transform_image_to_version(version, %Waffle.File{} = original_file) do
     ext = "." <> Atom.to_string(version)
     base_file_name = get_base_file_name(original_file.file_name)
