@@ -7,7 +7,7 @@
 ```elixir
 def deps do
   [
-    {:literature, "~> 0.4"}
+    {:literature, "~> 0.5"}
   ]
 end
 ```
