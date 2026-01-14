@@ -90,7 +90,7 @@ defmodule Literature.Uploaders.DifferentSizes do
     |> store_saved_file(scope)
   end
 
-  defp resize_image(file, image, width) do
+  defp resize_image(%Waffle.File{} = file, image, width) do
     with {:ok, new_image} <- Image.thumbnail(image, "#{width}x"),
          tmp_path = Waffle.File.generate_temporary_path(file),
          {:ok, _new_image} <- Image.write(new_image, tmp_path) do

@@ -52,7 +52,7 @@ defmodule Literature.Uploaders.ProfileImage do
     [cache_control: "public, max-age=31536000"]
   end
 
-  defp transform_image(version, original_file) do
+  defp transform_image(version, %Waffle.File{} = original_file) do
     ext = "." <> Atom.to_string(version)
     base_file_name = Helpers.get_base_file_name(original_file.file_name)
     new_file_name = base_file_name <> ext

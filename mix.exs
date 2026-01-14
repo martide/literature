@@ -7,7 +7,7 @@ defmodule Literature.MixProject do
     [
       app: :literature,
       version: @version,
-      elixir: "~> 1.13",
+      elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       package: package(),
@@ -15,13 +15,6 @@ defmodule Literature.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
-      preferred_cli_env: [
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.html": :test,
-        "coveralls.json": :test,
-        "coveralls.post": :test
-      ],
       dialyzer: [plt_add_apps: [:mix, :ex_unit]],
       description: "A simple CMS / Blog"
     ]
@@ -31,6 +24,18 @@ defmodule Literature.MixProject do
     [
       mod: {Literature.Application, []},
       extra_applications: [:logger, :poolboy]
+    ]
+  end
+
+  def cli do
+    [
+      preferred_envs: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.html": :test,
+        "coveralls.json": :test,
+        "coveralls.post": :test
+      ]
     ]
   end
 
