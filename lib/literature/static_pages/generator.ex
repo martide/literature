@@ -32,8 +32,10 @@ defmodule Literature.StaticPages.Generator do
     * `:show_post`    - Show page for specific post. (e.g., `/en/blog/<post.slug>/index.html`).
     * `:tags`         - Index page for tags. (e.g., `/en/blog/tags/index.html`)
     * `:show_tag`     - Show page for a specific tag (e.g., `/en/blog/tags/<tag.slug>.html`).
+    * `:show_tag_page` - Paginated show pages for a specific tag (e.g., `/en/blog/tags/<tag.slug>/page/<page_number>/index.html`).
     * `:authors`      - Index page for authors. (e.g., `/en/blog/authors/index.html`)
     * `:show_author`  - Show page for a specific author (e.g., `/en/blog/authors/<author.slug>.html`).
+    * `:show_author_page` - Paginated show pages for a specific author (e.g., `/en/blog/authors/<author.slug>/page/<page_number>/index.html`).
 
   ## Usage
 
@@ -51,13 +53,15 @@ defmodule Literature.StaticPages.Generator do
         Generator.generate(:index, @opts)
         Generator.generate(:show_post, @opts)
         Generator.generate(:authors, @opts)
+        Generator.generate(:show_author_page, @opts)
         Generator.generate(:tags, @opts)
+        Generator.generate(:show_tag_page, @opts)
         ...
 
       end
 
       def generate_all do
-        Generator.generate_all([:index_page, :authors], @opts)
+        Generator.generate_all([:index_page, :authors, :show_author_page, :tags, :show_tag_page], @opts)
       end
   """
   import Literature.StaticPages.Helpers
@@ -71,8 +75,10 @@ defmodule Literature.StaticPages.Generator do
           | :show_post
           | :authors
           | :show_author
+          | :show_author_page
           | :tags
           | :show_tag
+          | :show_tag_page
 
   @type write_to :: :file | :memory
 
@@ -309,6 +315,96 @@ defmodule Literature.StaticPages.Generator do
     maybe_collect_file_tuples(authors, write_to)
   end
 
+  def generate(:show_author_page, opts) do
+    %{
+      publication_slug: publication_slug,
+      base_url: base_url,
+      page_size: page_size,
+      templates: templates,
+      path: path,
+      write_to: write_to
+    } = get_options(opts)
+
+    check_for_template!(templates, :show_author_page)
+
+    publication = get_publication!(publication_slug)
+    store_path = store_path(path)
+    authors_path = Path.join(store_path, "/authors")
+
+    results =
+      publication.slug
+      |> list_authors()
+      |> async!(
+        fn author ->
+          page_1 = paginate_published_posts_by_author(publication.slug, author.slug, 1, page_size)
+
+          page_1_path = Path.join(authors_path, "/#{author.slug}/page/1")
+          file_path_1 = Path.join(path, "/authors/#{author.slug}/page/1/index.html")
+
+          page_1_results =
+            generate_file(
+              "index.html",
+              page_1_path,
+              templates.show_author_page(%{
+                __changed__: %{},
+                page: page_1,
+                author: author,
+                publication: publication,
+                current_url: Path.join(base_url, file_path_1),
+                meta_tags: get_default_meta_tags(author, publication, page_1)
+              }),
+              write_to
+            )
+            |> format_result(publication.slug, file_path_1)
+
+          pages =
+            if page_1.total_pages > 1 do
+              async!(
+                2..page_1.total_pages,
+                fn page_number ->
+                  page =
+                    paginate_published_posts_by_author(
+                      publication.slug,
+                      author.slug,
+                      page_number,
+                      page_size
+                    )
+
+                  page_path = Path.join(authors_path, "/#{author.slug}/page/#{page_number}")
+
+                  file_path =
+                    Path.join(path, "/authors/#{author.slug}/page/#{page_number}/index.html")
+
+                  generate_file(
+                    "index.html",
+                    page_path,
+                    templates.show_author_page(%{
+                      __changed__: %{},
+                      page: page,
+                      author: author,
+                      publication: publication,
+                      current_url: Path.join(base_url, file_path),
+                      meta_tags: get_default_meta_tags(author, publication, page)
+                    }),
+                    write_to
+                  )
+                  |> format_result(publication.slug, file_path)
+                end,
+                timeout: :infinity
+              )
+            else
+              []
+            end
+
+          [page_1_results] ++ pages
+        end,
+        timeout: :infinity
+      )
+      |> List.flatten()
+
+    maybe_collect_file_tuples(results, write_to)
+  end
+
   def generate(:tags, opts) do
     %{
       publication_slug: publication_slug,
@@ -377,6 +473,95 @@ defmodule Literature.StaticPages.Generator do
       )
 
     maybe_collect_file_tuples(tags, write_to)
+  end
+
+  def generate(:show_tag_page, opts) do
+    %{
+      publication_slug: publication_slug,
+      base_url: base_url,
+      page_size: page_size,
+      templates: templates,
+      path: path,
+      write_to: write_to
+    } = get_options(opts)
+
+    check_for_template!(templates, :show_tag_page)
+
+    publication = get_publication!(publication_slug)
+    store_path = store_path(path)
+    tags_path = Path.join(store_path, "/tags")
+
+    results =
+      publication.slug
+      |> list_public_tags()
+      |> async!(
+        fn tag ->
+          page_1 = paginate_published_posts_by_tag(publication.slug, tag.slug, 1, page_size)
+
+          page_1_path = Path.join(tags_path, "/#{tag.slug}/page/1")
+          file_path_1 = Path.join(path, "/tags/#{tag.slug}/page/1/index.html")
+
+          page_1_results =
+            generate_file(
+              "index.html",
+              page_1_path,
+              templates.show_tag_page(%{
+                __changed__: %{},
+                page: page_1,
+                tag: tag,
+                publication: publication,
+                current_url: Path.join(base_url, file_path_1),
+                meta_tags: get_default_meta_tags(tag, publication, page_1)
+              }),
+              write_to
+            )
+            |> format_result(publication.slug, file_path_1)
+
+          pages =
+            if page_1.total_pages > 1 do
+              async!(
+                2..page_1.total_pages,
+                fn page_number ->
+                  page =
+                    paginate_published_posts_by_tag(
+                      publication.slug,
+                      tag.slug,
+                      page_number,
+                      page_size
+                    )
+
+                  page_path = Path.join(tags_path, "/#{tag.slug}/page/#{page_number}")
+
+                  file_path = Path.join(path, "/tags/#{tag.slug}/page/#{page_number}/index.html")
+
+                  generate_file(
+                    "index.html",
+                    page_path,
+                    templates.show_tag_page(%{
+                      __changed__: %{},
+                      page: page,
+                      tag: tag,
+                      publication: publication,
+                      current_url: Path.join(base_url, file_path),
+                      meta_tags: get_default_meta_tags(tag, publication, page)
+                    }),
+                    write_to
+                  )
+                  |> format_result(publication.slug, file_path)
+                end,
+                timeout: :infinity
+              )
+            else
+              []
+            end
+
+          [page_1_results] ++ pages
+        end,
+        timeout: :infinity
+      )
+      |> List.flatten()
+
+    maybe_collect_file_tuples(results, write_to)
   end
 
   @spec generate(:show_post | :show_tag | :show_author, String.t(), keyword()) ::

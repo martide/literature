@@ -158,16 +158,22 @@ defmodule Literature.QueryHelpers do
 
   def where_publication(query, _), do: query
 
-  def where_tag(query, %{"tag_slug" => slug}) do
+  def where_tag(query, %{"tag_slug" => tag_slug}) do
+    tag_slug = List.wrap(tag_slug)
+
     query
-    |> join(:inner, [q], t in assoc(q, :tags), on: t.slug == ^slug)
+    |> join(:inner, [q], t in assoc(q, :tags), on: t.slug in ^tag_slug)
+    |> distinct(true)
   end
 
   def where_tag(query, _), do: query
 
-  def where_author(query, %{"author_slug" => slug}) do
+  def where_author(query, %{"author_slug" => author_slug}) do
+    author_slug = List.wrap(author_slug)
+
     query
-    |> join(:inner, [q], a in assoc(q, :authors), on: a.slug == ^slug)
+    |> join(:inner, [q], a in assoc(q, :authors), on: a.slug in ^author_slug)
+    |> distinct(true)
   end
 
   def where_author(query, _), do: query

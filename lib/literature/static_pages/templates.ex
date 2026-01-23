@@ -13,16 +13,20 @@ defmodule Literature.StaticPages.Templates do
   @callback show_post(assigns :: map()) :: Phoenix.LiveView.Rendered.t()
   @callback authors(assigns :: map()) :: Phoenix.LiveView.Rendered.t()
   @callback show_author(assigns :: map()) :: Phoenix.LiveView.Rendered.t()
+  @callback show_author_page(assigns :: map()) :: Phoenix.LiveView.Rendered.t()
   @callback tags(assigns :: map()) :: Phoenix.LiveView.Rendered.t()
   @callback show_tag(assigns :: map()) :: Phoenix.LiveView.Rendered.t()
+  @callback show_tag_page(assigns :: map()) :: Phoenix.LiveView.Rendered.t()
   @optional_callbacks [
     index: 1,
     index_page: 1,
     show_post: 1,
     authors: 1,
     show_author: 1,
+    show_author_page: 1,
     tags: 1,
-    show_tag: 1
+    show_tag: 1,
+    show_tag_page: 1
   ]
 
   def index(assigns) do
@@ -100,6 +104,24 @@ defmodule Literature.StaticPages.Templates do
     """
   end
 
+  def show_author_page(assigns) do
+    ~H"""
+    <.layout {assigns}>
+      <.header {assigns} />
+      <.main>
+        <h1>{@author.name} - Page {@page.page_number}</h1>
+        <h2>Posts</h2>
+        <ul>
+          <li :for={post <- @page.entries}>
+            {post.title}
+          </li>
+        </ul>
+      </.main>
+      <.footer {assigns} />
+    </.layout>
+    """
+  end
+
   def tags(assigns) do
     ~H"""
     <.layout {assigns}>
@@ -124,6 +146,24 @@ defmodule Literature.StaticPages.Templates do
       <.header {assigns} />
       <.main>
         <h1>{@tag.name}</h1>
+      </.main>
+      <.footer {assigns} />
+    </.layout>
+    """
+  end
+
+  def show_tag_page(assigns) do
+    ~H"""
+    <.layout {assigns}>
+      <.header {assigns} />
+      <.main>
+        <h1>{@tag.name} - Page {@page.page_number}</h1>
+        <h2>Posts</h2>
+        <ul>
+          <li :for={post <- @page.entries}>
+            {post.title}
+          </li>
+        </ul>
       </.main>
       <.footer {assigns} />
     </.layout>

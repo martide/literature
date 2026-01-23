@@ -192,6 +192,52 @@ defmodule Literature.StaticPages.GeneratorTest do
         Generator.generate(:show_tag, "non-existent", @opts)
       end
     end
+
+    test "generate/2 show_author_page", %{
+      publication: publication,
+      author: author,
+      tag: tag
+    } do
+      for i <- 1..25 do
+        post_fixture(
+          title: "Author Post #{i}",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+      end
+
+      # 26 posts -> 3 pages -> default 10 per page
+      Generator.generate(:show_author_page, @opts)
+
+      for page_number <- 1..3 do
+        html = read_file("/authors/#{author.slug}/page/#{page_number}/index.html")
+        assert html =~ "<h1>#{author.name} - Page #{page_number}</h1>"
+      end
+    end
+
+    test "generate/2 show_tag_page", %{
+      publication: publication,
+      author: author,
+      tag: tag
+    } do
+      for i <- 1..25 do
+        post_fixture(
+          title: "Tag Post #{i}",
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+      end
+
+      # 26 posts -> 3 pages -> default 10 per page
+      Generator.generate(:show_tag_page, @opts)
+
+      for page_number <- 1..3 do
+        html = read_file("/tags/#{tag.slug}/page/#{page_number}/index.html")
+        assert html =~ "<h1>#{tag.name} - Page #{page_number}</h1>"
+      end
+    end
   end
 
   describe "generate static page write to  memory" do
@@ -444,6 +490,70 @@ defmodule Literature.StaticPages.GeneratorTest do
 
     html = read_file("/page/3/index.html") |> parse_document!()
     prev_url = @endpoint.url() <> "/en/blog/page/2/index.html"
+
+    refute get_element(html, "link[rel='next']")
+    assert get_element(html, "link[href='#{prev_url}'][rel='prev']")
+  end
+
+  test "pagination links for author pages", %{publication: publication, tag: tag, author: author} do
+    for i <- 1..20 do
+      post_fixture(
+        title: "Author Post #{i}",
+        publication_id: publication.id,
+        authors_ids: [author.id],
+        tags_ids: [tag.id]
+      )
+    end
+
+    Generator.generate(:show_author_page, @opts)
+    html = read_file("/authors/#{author.slug}/page/1/index.html") |> parse_document!()
+
+    next_url = @endpoint.url() <> "/en/blog/authors/#{author.slug}/page/2/index.html"
+
+    assert get_element(html, "link[href='#{next_url}'][rel='next']")
+    refute get_element(html, "link[rel='prev']")
+
+    html = read_file("/authors/#{author.slug}/page/2/index.html") |> parse_document!()
+    next_url = @endpoint.url() <> "/en/blog/authors/#{author.slug}/page/3/index.html"
+    prev_url = @endpoint.url() <> "/en/blog/authors/#{author.slug}/page/1/index.html"
+
+    assert get_element(html, "link[href='#{next_url}'][rel='next']")
+    assert get_element(html, "link[href='#{prev_url}'][rel='prev']")
+
+    html = read_file("/authors/#{author.slug}/page/3/index.html") |> parse_document!()
+    prev_url = @endpoint.url() <> "/en/blog/authors/#{author.slug}/page/2/index.html"
+
+    refute get_element(html, "link[rel='next']")
+    assert get_element(html, "link[href='#{prev_url}'][rel='prev']")
+  end
+
+  test "pagination links for tag pages", %{publication: publication, tag: tag, author: author} do
+    for i <- 1..20 do
+      post_fixture(
+        title: "Tag Post #{i}",
+        publication_id: publication.id,
+        authors_ids: [author.id],
+        tags_ids: [tag.id]
+      )
+    end
+
+    Generator.generate(:show_tag_page, @opts)
+    html = read_file("/tags/#{tag.slug}/page/1/index.html") |> parse_document!()
+
+    next_url = @endpoint.url() <> "/en/blog/tags/#{tag.slug}/page/2/index.html"
+
+    assert get_element(html, "link[href='#{next_url}'][rel='next']")
+    refute get_element(html, "link[rel='prev']")
+
+    html = read_file("/tags/#{tag.slug}/page/2/index.html") |> parse_document!()
+    next_url = @endpoint.url() <> "/en/blog/tags/#{tag.slug}/page/3/index.html"
+    prev_url = @endpoint.url() <> "/en/blog/tags/#{tag.slug}/page/1/index.html"
+
+    assert get_element(html, "link[href='#{next_url}'][rel='next']")
+    assert get_element(html, "link[href='#{prev_url}'][rel='prev']")
+
+    html = read_file("/tags/#{tag.slug}/page/3/index.html") |> parse_document!()
+    prev_url = @endpoint.url() <> "/en/blog/tags/#{tag.slug}/page/2/index.html"
 
     refute get_element(html, "link[rel='next']")
     assert get_element(html, "link[href='#{prev_url}'][rel='prev']")
@@ -859,6 +969,80 @@ defmodule Literature.StaticPages.GeneratorTest do
       html = read_file("/tags/#{tag.slug}.html") |> parse_document!()
 
       assert_meta_tags(html, resources)
+    end
+
+    test "show author pages with pagination meta tags", %{author: author} do
+      tag = tag_fixture(publication_id: author.publication_id)
+
+      for i <- 1..20 do
+        post_fixture(
+          title: "Author Post #{i}",
+          publication_id: author.publication_id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+      end
+
+      Generator.generate(:show_author_page, @opts)
+      html = read_file("/authors/#{author.slug}/page/1/index.html") |> parse_document!()
+      url = @endpoint.url() <> "/en/blog/authors/#{author.slug}/page/1/index.html"
+
+      assert_fixed_meta_tags(html)
+
+      resources =
+        author
+        |> Map.take(@meta_keys)
+        |> Map.merge(%{
+          og_title: author.name,
+          og_description: author.bio,
+          og_image: "author-profile-image",
+          og_url: url,
+          twitter_title: author.name,
+          twitter_description: author.bio,
+          twitter_image: "author-profile-image",
+          twitter_url: url
+        })
+
+      assert_meta_tags(html, resources)
+
+      # Check pagination links
+      next_url = @endpoint.url() <> "/en/blog/authors/#{author.slug}/page/2/index.html"
+      assert get_element(html, "link[href='#{next_url}'][rel='next']")
+    end
+
+    test "show tag pages with pagination meta tags", %{tag: tag} do
+      author = author_fixture(publication_id: tag.publication_id)
+
+      for i <- 1..20 do
+        post_fixture(
+          title: "Tag Post #{i}",
+          publication_id: tag.publication_id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id]
+        )
+      end
+
+      Generator.generate(:show_tag_page, @opts)
+      html = read_file("/tags/#{tag.slug}/page/1/index.html") |> parse_document!()
+      url = @endpoint.url() <> "/en/blog/tags/#{tag.slug}/page/1/index.html"
+
+      assert_fixed_meta_tags(html)
+
+      resources =
+        tag
+        |> Map.take(@meta_keys)
+        |> Map.merge(%{
+          og_image: "tag-og-image",
+          og_url: url,
+          twitter_image: "tag-twitter-image",
+          twitter_url: url
+        })
+
+      assert_meta_tags(html, resources)
+
+      # Check pagination links
+      next_url = @endpoint.url() <> "/en/blog/tags/#{tag.slug}/page/2/index.html"
+      assert get_element(html, "link[href='#{next_url}'][rel='next']")
     end
   end
 
