@@ -6,6 +6,7 @@ defmodule Literature.Test.Fixtures do
 
   import Literature.Helpers, only: [atomize_keys_to_string: 1]
   alias Literature.Post
+  alias Literature.Test.Repo
 
   @doc """
   Generate an author.
@@ -34,7 +35,9 @@ defmodule Literature.Test.Fixtures do
       |> atomize_keys_to_string()
       |> Literature.create_post()
 
-    Post.resolve(post)
+    post
+    |> Repo.preload([:authors, :tags])
+    |> Post.resolve()
   end
 
   @doc """
