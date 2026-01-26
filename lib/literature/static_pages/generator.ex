@@ -115,7 +115,8 @@ defmodule Literature.StaticPages.Generator do
       base_url: base_url,
       templates: templates,
       path: path,
-      write_to: write_to
+      write_to: write_to,
+      page_size: page_size
     } = get_options(opts)
 
     check_for_template!(templates, :index)
@@ -125,12 +126,14 @@ defmodule Literature.StaticPages.Generator do
 
     file_path = Path.join(path, "/index.html")
 
+    page_1 = paginate_published_posts(publication.slug, 1, page_size)
+
     generate_file(
       "index.html",
       store_path,
       templates.index(%{
         __changed__: %{},
-        posts: list_published_posts(publication.slug),
+        posts: page_1.entries,
         publication: publication,
         current_url: Path.join(base_url, file_path),
         meta_tags: get_default_meta_tags(publication, publication)
