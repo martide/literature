@@ -28,17 +28,17 @@ jobs:
           --health-retries 5
     steps:
       - run: sudo apt update
-      - uses: actions/checkout@v6.0.2
-      - uses: erlef/setup-beam@v1.20.4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: erlef/setup-beam@e6d7c94229049569db56a7ad5a540c051a010af9 # v1.20.4
         with:
           otp-version: "28.x"
           elixir-version: "1.19.x"
-      - uses: actions/setup-node@v6.2.0
+      - uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version: "24"
           cache: "npm"
           cache-dependency-path: "**/package-lock.json"
-      - uses: actions/cache@v5.0.3
+      - uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: |
             deps
@@ -64,7 +64,7 @@ jobs:
       - run: mix credo --strict
       - run: mix dialyzer
       - run: elixir --logger-sasl-reports true -S mix coveralls.json
-      - uses: codecov/codecov-action@v5.5.2
+      - uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -91,8 +91,8 @@ jobs:
           --health-retries 5
     steps:
       - run: sudo apt update
-      - uses: actions/checkout@v6.0.2
-      - uses: erlef/setup-beam@v1.20.4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: erlef/setup-beam@e6d7c94229049569db56a7ad5a540c051a010af9 # v1.20.4
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
@@ -122,8 +122,8 @@ jobs:
           --health-retries 5
     steps:
       - run: sudo apt update
-      - uses: actions/checkout@v6.0.2
-      - uses: erlef/setup-beam@v1.20.4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: erlef/setup-beam@e6d7c94229049569db56a7ad5a540c051a010af9 # v1.20.4
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
@@ -153,8 +153,8 @@ jobs:
           --health-retries 5
     steps:
       - run: sudo apt update
-      - uses: actions/checkout@v6.0.2
-      - uses: erlef/setup-beam@v1.20.4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: erlef/setup-beam@e6d7c94229049569db56a7ad5a540c051a010af9 # v1.20.4
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
@@ -184,8 +184,8 @@ jobs:
           --health-retries 5
     steps:
       - run: sudo apt update
-      - uses: actions/checkout@v6.0.2
-      - uses: erlef/setup-beam@v1.20.4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: erlef/setup-beam@e6d7c94229049569db56a7ad5a540c051a010af9 # v1.20.4
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
@@ -215,8 +215,8 @@ jobs:
           --health-retries 5
     steps:
       - run: sudo apt update
-      - uses: actions/checkout@v6.0.2
-      - uses: erlef/setup-beam@v1.20.4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: erlef/setup-beam@e6d7c94229049569db56a7ad5a540c051a010af9 # v1.20.4
         with:
           otp-version: ${{matrix.otp}}
           elixir-version: ${{matrix.elixir}}
