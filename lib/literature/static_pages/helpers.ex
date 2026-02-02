@@ -27,6 +27,42 @@ defmodule Literature.StaticPages.Helpers do
     |> Literature.list_posts()
   end
 
+  @spec paginate_published_posts_by_author(String.t(), String.t(), integer(), integer(), map()) ::
+          Literature.Pagination.Page.t()
+  def paginate_published_posts_by_author(
+        publication_slug,
+        author_slug,
+        page,
+        page_size,
+        params \\ %{}
+      ) do
+    publication_slug
+    |> published_posts_params()
+    |> Map.merge(params)
+    |> Map.merge(%{
+      "author_slug" => author_slug,
+      "page_size" => page_size,
+      "page" => page,
+      "preload" => ~w(authors tags)a
+    })
+    |> Literature.paginate_posts()
+  end
+
+  @spec paginate_published_posts_by_tag(String.t(), String.t(), integer(), integer(), map()) ::
+          Literature.Pagination.Page.t()
+  def paginate_published_posts_by_tag(publication_slug, tag_slug, page, page_size, params \\ %{}) do
+    publication_slug
+    |> published_posts_params()
+    |> Map.merge(params)
+    |> Map.merge(%{
+      "tag_slug" => tag_slug,
+      "page_size" => page_size,
+      "page" => page,
+      "preload" => ~w(authors tags)a
+    })
+    |> Literature.paginate_posts()
+  end
+
   @spec list_authors(String.t()) :: [Literature.Author.t()]
   def list_authors(publication_slug, params \\ %{}) do
     %{
