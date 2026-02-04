@@ -12,6 +12,8 @@ defmodule Literature.PublicationTest do
         ex_default_locale rss_url rss_author rss_email rss_is_excerpt_only update_url
       )a ++ timestamps()
     )
+
+    has_timestamp_type(Publication, :utc_datetime)
   end
 
   describe "associations" do

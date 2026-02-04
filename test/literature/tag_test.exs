@@ -12,6 +12,8 @@ defmodule Literature.TagTest do
         twitter_description
       )a ++ timestamps()
     )
+
+    has_timestamp_type(Tag, :utc_datetime)
   end
 
   describe "associations" do

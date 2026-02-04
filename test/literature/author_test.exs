@@ -11,6 +11,8 @@ defmodule Literature.AuthorTest do
         facebook twitter meta_title meta_description meta_keywords
       )a ++ timestamps()
     )
+
+    has_timestamp_type(Author, :utc_datetime)
   end
 
   describe "associations" do

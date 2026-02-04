@@ -8,6 +8,8 @@ defmodule Literature.RedirectTest do
       Redirect,
       ~w(id from to publication_id type)a ++ timestamps()
     )
+
+    has_timestamp_type(Redirect, :utc_datetime)
   end
 
   describe "associations" do

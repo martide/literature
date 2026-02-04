@@ -14,6 +14,8 @@ defmodule Literature.PostTest do
         notes locales
       )a ++ timestamps()
     )
+
+    has_timestamp_type(Post, :utc_datetime)
   end
 
   describe "associations" do
