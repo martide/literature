@@ -30,7 +30,7 @@ defmodule Literature.Author do
       where: [is_published: true, published_at: {:fragment, "?::date < current_date"}]
     )
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @required_params ~w(

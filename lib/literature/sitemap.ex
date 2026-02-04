@@ -80,7 +80,7 @@ defmodule Literature.Sitemap do
     Author
     |> where_publication(attrs)
     |> Config.repo().stream()
-    |> Stream.map(&{String.replace(path, ":slug", &1.slug), NaiveDateTime.to_date(&1.updated_at)})
+    |> Stream.map(&{String.replace(path, ":slug", &1.slug), DateTime.to_date(&1.updated_at)})
     |> Enum.to_list()
   end
 
@@ -88,7 +88,7 @@ defmodule Literature.Sitemap do
     Tag
     |> where_publication(attrs)
     |> Config.repo().stream()
-    |> Stream.map(&{String.replace(path, ":slug", &1.slug), NaiveDateTime.to_date(&1.updated_at)})
+    |> Stream.map(&{String.replace(path, ":slug", &1.slug), DateTime.to_date(&1.updated_at)})
     |> Enum.to_list()
   end
 
@@ -97,7 +97,7 @@ defmodule Literature.Sitemap do
     |> where_publication(attrs)
     |> where_status(attrs)
     |> Config.repo().stream()
-    |> Stream.map(&{String.replace(path, ":slug", &1.slug), NaiveDateTime.to_date(&1.updated_at)})
+    |> Stream.map(&{String.replace(path, ":slug", &1.slug), DateTime.to_date(&1.updated_at)})
     |> Enum.to_list()
   end
 end

@@ -16,7 +16,7 @@ defmodule Literature.Redirect do
 
     belongs_to(:publication, Publication)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @required ~w(

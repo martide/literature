@@ -65,7 +65,7 @@ defmodule Literature.Post do
 
     embeds_many(:locales, Locale, on_replace: :delete)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @required_params ~w(

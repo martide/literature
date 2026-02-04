@@ -46,7 +46,7 @@ defmodule Literature.Publication do
 
     has_many(:redirects, Redirect)
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @required_params ~w(
