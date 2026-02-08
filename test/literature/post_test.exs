@@ -15,7 +15,9 @@ defmodule Literature.PostTest do
       )a ++ timestamps()
     )
 
-    has_timestamp_type(Post, :utc_datetime)
+    # Default to :naive_datetime for backwards compatibility
+    # Parent apps can configure: config :literature, timestamps_opts: [type: :utc_datetime]
+    has_timestamp_type(Post, :naive_datetime)
   end
 
   describe "associations" do

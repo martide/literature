@@ -836,6 +836,39 @@ defmodule LiteratureTest do
       tag = tag_fixture(publication_id: publication.id)
       assert %Ecto.Changeset{} = Literature.change_tag(tag)
     end
+
+    test "timestamp configuration works with creating and updating records" do
+      # This test verifies that configurable timestamps work correctly across the system
+      # The configurable approach allows parent apps to choose :naive_datetime or :utc_datetime
+      publication = publication_fixture()
+      tag = tag_fixture(publication_id: publication.id)
+      author = author_fixture(publication_id: publication.id)
+
+      post = post_fixture(
+        publication_id: publication.id,
+        authors_ids: [author.id],
+        tags_ids: [tag.id],
+        is_published: true,
+        published_at: DateTime.utc_now()
+      )
+
+      # Verify all records have timestamps with the configured type (naive_datetime by default)
+      assert publication.inserted_at
+      assert publication.updated_at
+      assert match?(%NaiveDateTime{}, publication.inserted_at)
+      assert match?(%NaiveDateTime{}, publication.updated_at)
+
+      assert tag.inserted_at
+      assert tag.updated_at
+      assert author.inserted_at
+      assert author.updated_at
+      assert post.inserted_at
+      assert post.updated_at
+
+      # Update operations should also work with configurable timestamps
+      assert {:ok, updated_tag} = Literature.update_tag(tag, %{name: "Updated Name"})
+      assert match?(%NaiveDateTime{}, updated_tag.updated_at)
+    end
   end
 
   describe "redirects" do

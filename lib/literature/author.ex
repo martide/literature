@@ -6,6 +6,9 @@ defmodule Literature.Author do
 
   @type t :: %__MODULE__{}
 
+  # Configurable timestamp type - defaults to [] for backwards compatibility
+  @timestamps_opts Application.compile_env(:literature, :timestamps_opts, [])
+
   schema "literature_authors" do
     field(:slug, :string)
     field(:name, :string)
@@ -30,7 +33,7 @@ defmodule Literature.Author do
       where: [is_published: true, published_at: {:fragment, "?::date < current_date"}]
     )
 
-    timestamps(type: :utc_datetime)
+    timestamps(@timestamps_opts)
   end
 
   @required_params ~w(

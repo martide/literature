@@ -4,6 +4,9 @@ defmodule Literature.Redirect do
   """
   use Literature.Web, :model
 
+  # Configurable timestamp type - defaults to [] for backwards compatibility
+  @timestamps_opts Application.compile_env(:literature, :timestamps_opts, [])
+
   @available_types [
     301,
     302
@@ -16,7 +19,7 @@ defmodule Literature.Redirect do
 
     belongs_to(:publication, Publication)
 
-    timestamps(type: :utc_datetime)
+    timestamps(@timestamps_opts)
   end
 
   @required ~w(

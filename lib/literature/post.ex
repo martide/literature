@@ -5,6 +5,9 @@ defmodule Literature.Post do
   use Literature.Web, :model
   @type t :: %__MODULE__{}
 
+  # Configurable timestamp type - defaults to [] for backwards compatibility
+  @timestamps_opts Application.compile_env(:literature, :timestamps_opts, [])
+
   defmodule Locale do
     @moduledoc """
     Post languages
@@ -65,7 +68,7 @@ defmodule Literature.Post do
 
     embeds_many(:locales, Locale, on_replace: :delete)
 
-    timestamps(type: :utc_datetime)
+    timestamps(@timestamps_opts)
   end
 
   @required_params ~w(

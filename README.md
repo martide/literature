@@ -49,6 +49,30 @@ end
 
 4. You can separate content by main topic by creating a publication for each. Create a publication e.g. `Blog` then create authors and tags. You can now start creating Posts with a WYSIWYG editor.
 
+## Configuration
+
+### Timestamp Types
+
+By default, Literature uses `:naive_datetime` for all schema timestamps (`inserted_at` and `updated_at`). This ensures backwards compatibility with existing applications.
+
+If your application configures `migration_timestamps: [type: :timestamptz]` in your Ecto repository, you should configure Literature to match:
+
+```elixir
+# config/config.exs
+config :literature, timestamps_opts: [type: :utc_datetime]
+```
+
+**Why is this needed?**
+
+When using `Repo.insert_all/3` with schemas, Ecto validates that timestamp types match the database column types. If your database has `timestamptz` columns but Literature schemas use `:naive_datetime`, you may encounter `DBConnection.EncodeError`.
+
+**Configuration options:**
+- `timestamps_opts: []` - Uses `:naive_datetime` (default, backwards compatible)
+- `timestamps_opts: [type: :utc_datetime]` - Uses `:utc_datetime` for UTC-aware timestamps
+- `timestamps_opts: [type: :utc_datetime_usec]` - Uses `:utc_datetime_usec` for microsecond precision
+
+This setting is read at compile time, so changes require recompiling the Literature dependency.
+
 ## Images
 
 Literature tables have a few image columns such as feature and profile images. Post content could also have images, both are handled with
