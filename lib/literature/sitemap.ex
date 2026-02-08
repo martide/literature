@@ -80,7 +80,7 @@ defmodule Literature.Sitemap do
     Author
     |> where_publication(attrs)
     |> Config.repo().stream()
-    |> Stream.map(&{String.replace(path, ":slug", &1.slug), NaiveDateTime.to_date(&1.updated_at)})
+    |> Stream.map(&{String.replace(path, ":slug", &1.slug), to_date(&1.updated_at)})
     |> Enum.to_list()
   end
 
@@ -88,7 +88,7 @@ defmodule Literature.Sitemap do
     Tag
     |> where_publication(attrs)
     |> Config.repo().stream()
-    |> Stream.map(&{String.replace(path, ":slug", &1.slug), NaiveDateTime.to_date(&1.updated_at)})
+    |> Stream.map(&{String.replace(path, ":slug", &1.slug), to_date(&1.updated_at)})
     |> Enum.to_list()
   end
 
@@ -97,7 +97,12 @@ defmodule Literature.Sitemap do
     |> where_publication(attrs)
     |> where_status(attrs)
     |> Config.repo().stream()
-    |> Stream.map(&{String.replace(path, ":slug", &1.slug), NaiveDateTime.to_date(&1.updated_at)})
+    |> Stream.map(&{String.replace(path, ":slug", &1.slug), to_date(&1.updated_at)})
     |> Enum.to_list()
   end
+
+  # Safely converts DateTime or NaiveDateTime to Date
+  defp to_date(%DateTime{} = dt), do: DateTime.to_date(dt)
+  defp to_date(%NaiveDateTime{} = ndt), do: NaiveDateTime.to_date(ndt)
+  defp to_date(nil), do: Date.utc_today()
 end

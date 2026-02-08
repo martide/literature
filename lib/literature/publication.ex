@@ -7,6 +7,9 @@ defmodule Literature.Publication do
 
   @type t :: %__MODULE__{}
 
+  # Configurable timestamp type - defaults to [] for backwards compatibility
+  @timestamps_opts Application.compile_env(:literature, :timestamps_opts, [])
+
   schema "literature_publications" do
     field(:slug, :string)
     field(:name, :string)
@@ -46,7 +49,7 @@ defmodule Literature.Publication do
 
     has_many(:redirects, Redirect)
 
-    timestamps()
+    timestamps(@timestamps_opts)
   end
 
   @required_params ~w(

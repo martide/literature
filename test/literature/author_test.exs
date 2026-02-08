@@ -11,6 +11,10 @@ defmodule Literature.AuthorTest do
         facebook twitter meta_title meta_description meta_keywords
       )a ++ timestamps()
     )
+
+    # Default to :naive_datetime for backwards compatibility
+    # Parent apps can configure: config :literature, timestamps_opts: [type: :utc_datetime]
+    has_timestamp_type(Author, :naive_datetime)
   end
 
   describe "associations" do

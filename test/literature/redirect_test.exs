@@ -8,6 +8,10 @@ defmodule Literature.RedirectTest do
       Redirect,
       ~w(id from to publication_id type)a ++ timestamps()
     )
+
+    # Default to :naive_datetime for backwards compatibility
+    # Parent apps can configure: config :literature, timestamps_opts: [type: :utc_datetime]
+    has_timestamp_type(Redirect, :naive_datetime)
   end
 
   describe "associations" do

@@ -5,6 +5,28 @@ All notable changes to Literature will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.6.0] - 2026-02-08
+
+### Added
+
+- Configurable timestamp types via `timestamps_opts` configuration option
+- Parent applications can now choose between `:naive_datetime` (default), `:utc_datetime`, or `:utc_datetime_usec`
+- Configuration section in README.md documenting timestamp configuration
+- Comprehensive test coverage for sitemap module (3 new tests)
+- Integration test for configurable timestamp behavior
+
+### Changed
+
+- Schema timestamps now use `Application.compile_env(:literature, :timestamps_opts, [])` for compile-time configuration
+- RSS controller updated to handle both `DateTime` and `NaiveDateTime` types with new `ensure_datetime/1` helper
+- Sitemap module updated to handle both timestamp types with new `to_date/1` helper including nil fallback
+- Default timestamp type remains `:naive_datetime` for backwards compatibility
+
+### Fixed
+
+- RSS feed generation now works correctly with both timestamp configurations
+- Sitemap generation is now type-safe and handles edge cases gracefully
+
 ## [v0.4.23] - 2025-12-23
 
 ### Changed

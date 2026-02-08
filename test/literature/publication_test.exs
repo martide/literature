@@ -12,6 +12,10 @@ defmodule Literature.PublicationTest do
         ex_default_locale rss_url rss_author rss_email rss_is_excerpt_only update_url
       )a ++ timestamps()
     )
+
+    # Default to :naive_datetime for backwards compatibility
+    # Parent apps can configure: config :literature, timestamps_opts: [type: :utc_datetime]
+    has_timestamp_type(Publication, :naive_datetime)
   end
 
   describe "associations" do

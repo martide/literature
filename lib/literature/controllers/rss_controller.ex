@@ -95,14 +95,18 @@ defmodule Literature.RSSController do
         _ -> {:cdata, html}
       end
 
-    Entry.new(entry_id, DateTime.from_naive!(updated_at, "Etc/UTC"), {:cdata, title}, "html")
+    Entry.new(entry_id, ensure_datetime(updated_at), {:cdata, title}, "html")
     |> Entry.link(post_path)
     |> Entry.author(author.name)
-    |> Entry.published(DateTime.from_naive!(published_at, "Etc/UTC"))
+    |> Entry.published(ensure_datetime(published_at))
     |> Entry.summary(excerpt, "html")
     |> maybe_content(publication, content)
     |> Entry.build()
   end
+
+  # Ensures the value is a DateTime struct, converting from NaiveDateTime if needed
+  defp ensure_datetime(%DateTime{} = dt), do: dt
+  defp ensure_datetime(%NaiveDateTime{} = ndt), do: DateTime.from_naive!(ndt, "Etc/UTC")
 
   defp maybe_content(entry, publication, content) do
     case publication.rss_is_excerpt_only do

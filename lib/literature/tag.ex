@@ -6,6 +6,9 @@ defmodule Literature.Tag do
 
   @type t :: %__MODULE__{}
 
+  # Configurable timestamp type - defaults to [] for backwards compatibility
+  @timestamps_opts Application.compile_env(:literature, :timestamps_opts, [])
+
   schema "literature_tags" do
     field(:slug, :string)
     field(:name, :string)
@@ -33,7 +36,7 @@ defmodule Literature.Tag do
       where: [is_published: true, published_at: {:fragment, "?::date < current_date"}]
     )
 
-    timestamps()
+    timestamps(@timestamps_opts)
   end
 
   @required_params ~w(

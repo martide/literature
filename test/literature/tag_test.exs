@@ -12,6 +12,10 @@ defmodule Literature.TagTest do
         twitter_description
       )a ++ timestamps()
     )
+
+    # Default to :naive_datetime for backwards compatibility
+    # Parent apps can configure: config :literature, timestamps_opts: [type: :utc_datetime]
+    has_timestamp_type(Tag, :naive_datetime)
   end
 
   describe "associations" do

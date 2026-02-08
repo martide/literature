@@ -17,6 +17,16 @@ defmodule Literature.SchemaTestHelpers do
     end
   end
 
+  defmacro has_timestamp_type(model, expected_type) do
+    quote bind_quoted: [model: model, expected_type: expected_type] do
+      for field <- ~w(inserted_at updated_at)a do
+        test "#{field} has type #{expected_type}" do
+          assert unquote(model).__schema__(:type, unquote(field)) == unquote(expected_type)
+        end
+      end
+    end
+  end
+
   defmacro has_fields(model, fields) do
     quote bind_quoted: [fields: fields, model: model] do
       test "has field count #{Enum.count(fields)}" do
