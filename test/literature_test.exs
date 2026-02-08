@@ -844,13 +844,14 @@ defmodule LiteratureTest do
       tag = tag_fixture(publication_id: publication.id)
       author = author_fixture(publication_id: publication.id)
 
-      post = post_fixture(
-        publication_id: publication.id,
-        authors_ids: [author.id],
-        tags_ids: [tag.id],
-        is_published: true,
-        published_at: DateTime.utc_now()
-      )
+      post =
+        post_fixture(
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id],
+          is_published: true,
+          published_at: DateTime.utc_now()
+        )
 
       # Verify all records have timestamps with the configured type (naive_datetime by default)
       assert publication.inserted_at

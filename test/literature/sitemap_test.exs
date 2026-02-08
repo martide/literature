@@ -11,9 +11,10 @@ defmodule Literature.SitemapTest do
 
       # Verify all paths have valid dates (tests the to_date/1 helper works)
       assert is_list(paths)
+
       assert Enum.all?(paths, fn {path, date} ->
-        is_binary(path) and match?(%Date{}, date)
-      end)
+               is_binary(path) and match?(%Date{}, date)
+             end)
     end
 
     test "returns paths without dates when no option is specified" do
@@ -32,13 +33,14 @@ defmodule Literature.SitemapTest do
       tag = tag_fixture(publication_id: publication.id, visibility: true)
 
       # Create a post with explicit DateTime (UTC datetime config)
-      post = post_fixture(
-        publication_id: publication.id,
-        authors_ids: [author.id],
-        tags_ids: [tag.id],
-        is_published: true,
-        published_at: DateTime.utc_now()
-      )
+      post =
+        post_fixture(
+          publication_id: publication.id,
+          authors_ids: [author.id],
+          tags_ids: [tag.id],
+          is_published: true,
+          published_at: DateTime.utc_now()
+        )
 
       # Verify records exist with timestamps
       assert author.updated_at
@@ -50,9 +52,10 @@ defmodule Literature.SitemapTest do
 
       # Should successfully convert timestamps to dates without errors
       assert is_list(paths)
+
       assert Enum.all?(paths, fn {path, date} ->
-        is_binary(path) and match?(%Date{}, date)
-      end)
+               is_binary(path) and match?(%Date{}, date)
+             end)
     end
   end
 end
