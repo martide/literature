@@ -58,10 +58,7 @@ const customImageBlockPlugin = $nodeSchema("image-block", () => ({
     },
   ],
 
-  toDOM: (node) => [
-    "img",
-    { "data-type": "image-block", ...node.attrs },
-  ],
+  toDOM: (node) => ["img", { "data-type": "image-block", ...node.attrs }],
 
   // Custom markdown parsing
   parseMarkdown: {
@@ -103,21 +100,9 @@ const imageAltPlugin = $prose(() => {
       const managedBlocks = new WeakMap();
 
       const sync = () => {
-        const blocks =
-          editorView.dom.querySelectorAll(".milkdown-image-block");
+        const blocks = editorView.dom.querySelectorAll(".milkdown-image-block");
 
         for (const block of blocks) {
-          const img = block.querySelector("img[src]");
-          if (!img || !img.getAttribute("src")) {
-            // Image not loaded yet, remove existing alt input
-            const existing = managedBlocks.get(block);
-            if (existing) {
-              existing.remove();
-              managedBlocks.delete(block);
-            }
-            continue;
-          }
-
           // Already managed — just sync value when not focused
           const altInput = managedBlocks.get(block);
           if (altInput && block.contains(altInput)) {
@@ -158,11 +143,10 @@ const imageAltPlugin = $prose(() => {
               const pos = editorView.posAtDOM(block, 0);
               const node = editorView.state.doc.nodeAt(pos);
               if (node && node.type.name === "image-block") {
-                const tr = editorView.state.tr.setNodeMarkup(
-                  pos,
-                  undefined,
-                  { ...node.attrs, alt: input.value },
-                );
+                const tr = editorView.state.tr.setNodeMarkup(pos, undefined, {
+                  ...node.attrs,
+                  alt: input.value,
+                });
                 editorView.dispatch(tr);
               }
             } catch {
@@ -186,20 +170,11 @@ const imageAltPlugin = $prose(() => {
         }
       };
 
-      const observer = new MutationObserver(() => {
-        requestAnimationFrame(sync);
-      });
-
-      observer.observe(editorView.dom, { childList: true, subtree: true });
-      setTimeout(sync, 200);
-
       return {
         update() {
           sync();
         },
-        destroy() {
-          observer.disconnect();
-        },
+        destroy() {},
       };
     },
   });
