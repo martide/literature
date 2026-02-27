@@ -137,7 +137,6 @@ const imageAltPlugin = $prose(() => {
             console.warn("image-alt-input: initial value lookup failed", e);
           }
 
-          // Save on blur
           const saveValue = () => {
             try {
               const pos = editorView.posAtDOM(block, 0);
@@ -154,7 +153,17 @@ const imageAltPlugin = $prose(() => {
             }
           };
 
-          input.addEventListener("blur", saveValue);
+          // Debounced save on input, immediate save on blur
+          let timer = 0;
+          input.addEventListener("input", (e) => {
+            e.stopPropagation();
+            clearTimeout(timer);
+            timer = setTimeout(saveValue, 1000);
+          });
+          input.addEventListener("blur", () => {
+            clearTimeout(timer);
+            saveValue();
+          });
           input.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
               e.preventDefault();
@@ -163,7 +172,6 @@ const imageAltPlugin = $prose(() => {
             e.stopPropagation();
           });
           input.addEventListener("keypress", (e) => e.stopPropagation());
-          input.addEventListener("input", (e) => e.stopPropagation());
 
           block.appendChild(input);
           managedBlocks.set(block, input);
