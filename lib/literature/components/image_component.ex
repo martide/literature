@@ -53,13 +53,15 @@ defmodule Literature.ImageComponent do
     case get_img_size(tag) do
       {width, height} ->
         caption = find_img_attribute(tag, "title") || find_img_attribute(tag, "caption")
+        src = find_img_attribute(tag, "src")
+        alt = find_img_attribute(tag, "alt")
 
         ~s"""
         <picture>
-          <source srcset="#{load_srcset(:jpg, find_img_attribute(tag, "src"))}"/>
-          <source srcset="#{load_srcset(:webp, find_img_attribute(tag, "src"))}"/>
-          <img src="#{find_img_attribute(tag, "src")}" alt="#{find_img_attribute(tag, "alt")}" width="#{width}" height="#{height}" loading="lazy" />
-          <figcaption style="font-style: italic;">#{caption}</figcaption>
+          <source srcset="#{load_srcset(:jpg, src)}"/>
+          <source srcset="#{load_srcset(:webp, src)}"/>
+          <img src="#{escape(src)}" alt="#{escape(alt)}" width="#{width}" height="#{height}" loading="lazy" />
+          <figcaption style="font-style: italic;">#{escape(caption)}</figcaption>
         </picture>
         """
 
@@ -95,6 +97,9 @@ defmodule Literature.ImageComponent do
   defp get_original_size(%{file_name: file_name}) do
     Helpers.get_dimension(file_name)
   end
+
+  defp escape(nil), do: ""
+  defp escape(value), do: value |> Phoenix.HTML.html_escape() |> Phoenix.HTML.safe_to_string()
 
   defp find_img_attribute(tag, attr) do
     [tag]

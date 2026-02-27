@@ -113,8 +113,8 @@ const imageAltPlugin = $prose(() => {
                 if (node) {
                   altInput.value = node.attrs.alt || "";
                 }
-              } catch {
-                /* position lookup can fail during transitions */
+              } catch (e) {
+                console.warn("image-alt-input: position lookup failed", e);
               }
             }
             continue;
@@ -133,8 +133,8 @@ const imageAltPlugin = $prose(() => {
             if (node) {
               input.value = node.attrs.alt || "";
             }
-          } catch {
-            /* ignore */
+          } catch (e) {
+            console.warn("image-alt-input: initial value lookup failed", e);
           }
 
           // Save on blur
@@ -149,8 +149,8 @@ const imageAltPlugin = $prose(() => {
                 });
                 editorView.dispatch(tr);
               }
-            } catch {
-              /* ignore */
+            } catch (e) {
+              console.warn("image-alt-input: save failed", e);
             }
           };
 
