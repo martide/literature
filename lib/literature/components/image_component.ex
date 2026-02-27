@@ -52,12 +52,14 @@ defmodule Literature.ImageComponent do
   def parse_image_tag({"img", _, _} = tag, img_str \\ nil) do
     case get_img_size(tag) do
       {width, height} ->
+        caption = find_img_attribute(tag, "title") || find_img_attribute(tag, "caption")
+
         ~s"""
         <picture>
           <source srcset="#{load_srcset(:jpg, find_img_attribute(tag, "src"))}"/>
           <source srcset="#{load_srcset(:webp, find_img_attribute(tag, "src"))}"/>
           <img src="#{find_img_attribute(tag, "src")}" alt="#{find_img_attribute(tag, "alt")}" width="#{width}" height="#{height}" loading="lazy" />
-          <figcaption style="font-style: italic;";>#{find_img_attribute(tag, "caption")}</figcaption>
+          <figcaption style="font-style: italic;">#{caption}</figcaption>
         </picture>
         """
 
