@@ -23,7 +23,7 @@
     "phoenix": "^1.8.4",
     "phoenix_live_view": "^1.1.22",
     "prettier": "3.8.1",
-    "sortablejs": "^1.15.6",
+    "sortablejs": "^1.15.7",
     "tailwindcss": "^4.1.11"
   }
 }
