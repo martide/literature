@@ -1,5 +1,6 @@
 import { Crepe } from "@milkdown/crepe";
-import { $nodeSchema } from "@milkdown/utils";
+import { $nodeSchema, $prose } from "@milkdown/utils";
+import { Plugin, PluginKey } from "@milkdown/prose/state";
 
 const csrfToken = document
   .querySelector("meta[name='csrf-token']")
@@ -23,7 +24,7 @@ const blockEditOpts = {
 const uploadUrl = new URL("upload-image", window.location.href).href;
 
 // Create custom image block schema plugin
-// Reuses caption input as alt text to get `[alt](url)` format for markdown
+// Outputs `![alt](url "caption")` format for markdown
 // https://github.com/Milkdown/milkdown/blob/main/packages/components/src/image-block/schema.ts
 const customImageBlockPlugin = $nodeSchema("image-block", () => ({
   inline: false,
@@ -36,6 +37,7 @@ const customImageBlockPlugin = $nodeSchema("image-block", () => ({
   priority: 100,
   attrs: {
     src: { default: "", validate: "string" },
+    alt: { default: "", validate: "string" },
     caption: { default: "", validate: "string" },
     ratio: { default: 1, validate: "number" },
   },
@@ -48,6 +50,7 @@ const customImageBlockPlugin = $nodeSchema("image-block", () => ({
 
         return {
           src: dom.getAttribute("src") || "",
+          alt: dom.getAttribute("alt") || "",
           caption: dom.getAttribute("caption") || "",
           ratio: 1,
         };
@@ -62,31 +65,128 @@ const customImageBlockPlugin = $nodeSchema("image-block", () => ({
     match: ({ type }) => type === "image-block",
     runner: (state, node, type) => {
       const src = node.url;
-      const caption = node.alt;
-      const ratio = 1; // Always keep ratio as 1
+      const alt = node.alt;
+      const caption = node.title;
 
       state.addNode(type, {
         src,
+        alt,
         caption,
-        ratio,
+        ratio: 1,
       });
     },
   },
 
-  // Custom markdown output - standard format
+  // Custom markdown output - ![alt](url "caption")
   toMarkdown: {
     match: (node) => node.type.name === "image-block",
     runner: (state, node) => {
       state.openNode("paragraph");
       state.addNode("image", undefined, undefined, {
-        title: "",
+        title: node.attrs.caption,
         url: node.attrs.src,
-        alt: node.attrs.caption,
+        alt: node.attrs.alt,
       });
       state.closeNode();
     },
   },
 }));
+
+// Plugin to add alt text input to image blocks in the editor
+const imageAltPlugin = $prose(() => {
+  return new Plugin({
+    key: new PluginKey("image-alt-input"),
+    view(editorView) {
+      const managedBlocks = new WeakMap();
+
+      const sync = () => {
+        const blocks = editorView.dom.querySelectorAll(".milkdown-image-block");
+
+        for (const block of blocks) {
+          // Already managed — just sync value when not focused
+          const altInput = managedBlocks.get(block);
+          if (altInput && block.contains(altInput)) {
+            if (document.activeElement !== altInput) {
+              try {
+                const pos = editorView.posAtDOM(block, 0);
+                const node = editorView.state.doc.nodeAt(pos);
+                if (node) {
+                  altInput.value = node.attrs.alt || "";
+                }
+              } catch (e) {
+                console.warn("image-alt-input: position lookup failed", e);
+              }
+            }
+            continue;
+          }
+
+          // Create alt input
+          const input = document.createElement("input");
+          input.className = "image-alt-input";
+          input.placeholder = "Enter image alt";
+          input.type = "text";
+
+          // Set initial value
+          try {
+            const pos = editorView.posAtDOM(block, 0);
+            const node = editorView.state.doc.nodeAt(pos);
+            if (node) {
+              input.value = node.attrs.alt || "";
+            }
+          } catch (e) {
+            console.warn("image-alt-input: initial value lookup failed", e);
+          }
+
+          const saveValue = () => {
+            try {
+              const pos = editorView.posAtDOM(block, 0);
+              const node = editorView.state.doc.nodeAt(pos);
+              if (node && node.type.name === "image-block") {
+                const tr = editorView.state.tr.setNodeMarkup(pos, undefined, {
+                  ...node.attrs,
+                  alt: input.value,
+                });
+                editorView.dispatch(tr);
+              }
+            } catch (e) {
+              console.warn("image-alt-input: save failed", e);
+            }
+          };
+
+          // Debounced save on input, immediate save on blur
+          let timer = 0;
+          input.addEventListener("input", (e) => {
+            e.stopPropagation();
+            clearTimeout(timer);
+            timer = setTimeout(saveValue, 1000);
+          });
+          input.addEventListener("blur", () => {
+            clearTimeout(timer);
+            saveValue();
+          });
+          input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              input.blur();
+            }
+            e.stopPropagation();
+          });
+          input.addEventListener("keypress", (e) => e.stopPropagation());
+
+          block.appendChild(input);
+          managedBlocks.set(block, input);
+        }
+      };
+
+      return {
+        update() {
+          sync();
+        },
+        destroy() {},
+      };
+    },
+  });
+});
 
 const imageBlockOpts = {
   onUpload: async (file) => {
@@ -110,7 +210,7 @@ const imageBlockOpts = {
 
     throw new Error(`Upload failed: ${response.statusText}`);
   },
-  blockCaptionPlaceholderText: "Enter image alt",
+  blockCaptionPlaceholderText: "Enter image caption",
 };
 
 const MilkdownEditor = (element) => {
@@ -142,8 +242,8 @@ const MilkdownEditor = (element) => {
     },
   });
 
-  // Add custom image block plugin before creating
-  crepe.editor.use(customImageBlockPlugin);
+  // Add custom image block plugins before creating
+  crepe.editor.use(customImageBlockPlugin).use(imageAltPlugin);
 
   crepe.create().then(() => {
     crepe.on((listener) => {
