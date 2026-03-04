@@ -10,8 +10,8 @@ defmodule Literature.ImageComponentTest do
     <picture>
       <source srcset=\"/path/to/image-w100.jpg 100w, /path/to/image-w200.jpg 200w, /path/to/image-w300.jpg 300w\"/>
       <source srcset=\"/path/to/image-w100.webp 100w, /path/to/image-w200.webp 200w, /path/to/image-w300.webp 300w\"/>
-      <img src=\"/path/to/image-w300x453.jpg\" alt=\"An image's test\" width=\"300\" height=\"453\" loading=\"lazy\" />
-      <figcaption style="font-style: italic;";>An image's test</figcaption>
+      <img src=\"/path/to/image-w300x453.jpg\" alt=\"An image&#39;s test\" width=\"300\" height=\"453\" loading=\"lazy\" />
+      <figcaption style="font-style: italic;">An image&#39;s test</figcaption>
     </picture>
     """
 
@@ -29,6 +29,18 @@ defmodule Literature.ImageComponentTest do
       "<img src=https://images.martide.com/en-employers/2022/07/aframax-tanker-1.jpg alt='Image' />"
 
     assert ImageComponent.parse_image_tag(tag) == tag
+  end
+
+  test "it escapes alt and caption attributes to prevent XSS" do
+    tag =
+      ~s[<img src="/path/to/image-w300x453.jpg" alt="<script>alert('xss')</script>" caption="<img onerror=alert(1)>">]
+
+    result = ImageComponent.parse_image_tag(tag)
+
+    refute result =~ "<script>alert"
+    refute result =~ "<img onerror="
+    assert result =~ ~s[alt="&lt;script&gt;alert(&#39;xss&#39;)&lt;/script&gt;"]
+    assert result =~ ~s[&lt;img onerror=alert(1)&gt;]
   end
 
   test "it does not convert image tags if only part of the string matches" do
