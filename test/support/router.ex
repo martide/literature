@@ -44,6 +44,7 @@ defmodule Literature.Test.Router do
 end
 
 defmodule Literature.Test.DynamicPathRouter do
+  @moduledoc false
   use Phoenix.Router
   use Literature.Router
 
