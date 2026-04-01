@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@milkdown/crepe": "^7.19.2",
+    "@milkdown/crepe": "^7.20.0",
     "@tailwindcss/cli": "^4.2.2",
     "@tailwindcss/typography": "^0.5.19",
     "esbuild": "^0.27.4",
