@@ -11,6 +11,18 @@
 @import "@milkdown/crepe/theme/common/latex.css";
 @import "@milkdown/crepe/theme/frame.css";
 
+/* Image alt text input */
+.milkdown .milkdown-image-block > .image-alt-input {
+  display: block;
+  width: 100%;
+  text-align: center;
+  color: var(--crepe-color-on-background);
+  margin: 4px auto;
+  font-family: var(--crepe-font-default);
+  font-size: 14px;
+  padding: 4px 8px;
+}
+
 /* Unwrap '@milkdown/crepe/theme/common/reset.css' and remove some styling */
 .milkdown {
   position: relative;
